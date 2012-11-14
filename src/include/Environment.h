@@ -91,6 +91,7 @@ extern int nz_layers;
 //initial conditions
 #define SCRATCH 0
 #define SPATIAL 1
+#define CHECKPOINT 2
 extern int startType;
 extern char * startDir;
 
@@ -100,6 +101,7 @@ extern int statusRate;
 extern int spatialRate;
 extern int scalarRate;
 extern int scalarPerF;
+extern int checkRate;
 
 //physics terms
 extern int momEquation;

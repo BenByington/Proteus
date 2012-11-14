@@ -165,6 +165,7 @@ void parseIO(iostream & in)
     const string spatialr("spatialRate");
     const string scalarr("scalarRate");
     const string scalarpf("scalarPerF");
+    const string sCheckRate("checkRate");
 
     string line;
     string one;
@@ -208,6 +209,11 @@ void parseIO(iostream & in)
         {
             scalarPerF = atoi(two.c_str());
             trace("scalarPerF = %d\n", scalarPerF);
+        }
+        else if((int)one.find(sCheckRate) != -1)
+        {
+            checkRate = atoi(two.c_str());
+            trace("checkpoint frequency = %d\n", checkRate);
         }
         else
         {

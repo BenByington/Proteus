@@ -109,6 +109,7 @@ int statusRate = 100;
 int spatialRate = 1000;
 int scalarRate = 1000;
 int scalarPerF = 1;
+int checkRate = 1000;
 
 int momStaticForcing = 0;
 int momTimeForcing = 0;
