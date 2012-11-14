@@ -14,9 +14,6 @@ void setupEnvironment()
     MPI_Comm_rank(MPI_COMM_WORLD, &grank);
     MPI_Comm_size(MPI_COMM_WORLD, &gsize);
 
-    initLogging();
-    info("Comencing Environment Initialization\n",0);
-
     if(n_io_nodes != gsize - hdiv*vdiv)
     {
         error("ERROR!  Wrong number of processors requested!  n_io_nodes = %d.  The code will now crash gracelessly\n", n_io_nodes);

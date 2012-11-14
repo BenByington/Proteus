@@ -48,10 +48,13 @@ int execute(char * propLoc)
 {
     srand(time(0));
 
+    initLogging();
+
     loadPrefs(propLoc);
 
-    setupEnvironment();
+
     info("Code Initialization Complete\n",0);
+    setupEnvironment();
 
     testIO();
     if(compute_node)
