@@ -164,7 +164,7 @@ void parseIO(iostream & in)
     const string statusr("statusRate");
     const string spatialr("spatialRate");
     const string scalarr("scalarRate");
-    const string scalarpf("ScalarPerF");
+    const string scalarpf("scalarPerF");
 
     string line;
     string one;
