@@ -36,6 +36,10 @@ void initState()
     {
         startSpatial();
     }
+    else if(startType == CHECKPOINT)
+    {
+        readCheckpoint();
+    }
     else
     {
         error("Unsupported start type requested: %d\n", startType);

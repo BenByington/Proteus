@@ -753,3 +753,182 @@ void writeCheckpoint()
     }
 }
 
+void readCheckpoint()
+{
+    if(compute_node)
+    {
+        FILE * in;
+        char name[100];
+
+        if(momEquation)
+        {
+            sprintf(name,"Checkpoint/upol%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->poloidal->spectral, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/upolf1%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->poloidal->force1, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/upolf2%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/utor%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->toroidal->spectral, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/utorf1%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->toroidal->force1, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/utorf2%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umx%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->mean_x, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umxf1%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->mean_xf1, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umxf2%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->mean_xf2, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umy%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->mean_y, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umyf1%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->mean_yf1, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umyf2%d",crank);
+            in = fopen(name,"r");
+            fread(u->sol->mean_yf2, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/umz%d",crank);
+            in = fopen(name,"r");
+            fread(&(u->sol->mean_z), sizeof(complex double), 1, in);
+            fclose(in);
+        }
+
+        if(magEquation)
+        {
+            sprintf(name,"Checkpoint/bpol%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->poloidal->spectral, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bpolf1%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->poloidal->force1, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bpolf2%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/btor%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->toroidal->spectral, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/btorf1%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->toroidal->force1, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/btorf2%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmx%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->mean_x, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmxf1%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->mean_xf1, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmxf2%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->mean_xf2, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmy%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->mean_y, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmyf1%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->mean_yf1, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmyf2%d",crank);
+            in = fopen(name,"r");
+            fread(B->sol->mean_yf2, sizeof(complex double), ndkz, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/bmz%d",crank);
+            in = fopen(name,"r");
+            fread(&(B->sol->mean_z), sizeof(complex double), 1, in);
+            fclose(in);
+        }
+
+        if(tEquation)
+        {
+            sprintf(name,"Checkpoint/T%d",crank);
+            in = fopen(name,"r");
+            fread(T->spectral, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/Tf1%d",crank);
+            in = fopen(name,"r");
+            fread(T->force1, sizeof(complex double), spectralCount, in);
+            fclose(in);
+
+            sprintf(name,"Checkpoint/Tf2%d",crank);
+            in = fopen(name,"r");
+            fread(T->force2, sizeof(complex double), spectralCount, in);
+            fclose(in);
+        }
+
+
+    }
+
+    if(grank == 0)
+    {
+        FILE * out = fopen("Checkpoint/state", "r");
+        fread(&iteration, sizeof(int), 1, out);
+        fread(&elapsedTime, sizeof(double), 1, out);
+        fread(&dt, sizeof(double), 1, out);
+        fread(&dt1, sizeof(double), 1, out);
+        fclose(out);
+    }
+
+    MPI_Bcast(&iteration, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&elapsedTime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&dt1, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+}
