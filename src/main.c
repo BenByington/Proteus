@@ -111,15 +111,9 @@ int benchmark(char * propLoc)
     double dstop;
     struct timeval start;
     struct timeval stop;
-
-    int contDiv = 1;
-    int contSize = 1;
     
     loadPrefs(propLoc);
 
-    hdiv = 3;
-    vdiv = 3;
-    n_io_nodes = gsize - hdiv * vdiv;
     while(n_io_nodes > 0)
     {
         setupEnvironment();
