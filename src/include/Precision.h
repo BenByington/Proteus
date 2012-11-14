@@ -8,8 +8,6 @@
 #ifndef _PRECISION_H
 #define	_PRECISION_H
 
-
-
 #ifdef FP
 
 #define PRECISION float

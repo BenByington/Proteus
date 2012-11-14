@@ -17,10 +17,7 @@ OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
         TimeFunctions.o
 
-imhd: all
-	rm *.o
-
-all: $(OBJS) 
+imhd: $(OBJS) 
 	$(CC) $(CCFLAGS) -o imhd $(OBJS) $(LIBS) 
 
 TimeFunctions.o: ${SRC}/TimeFunctions.c

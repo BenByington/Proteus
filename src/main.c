@@ -83,7 +83,7 @@ int execute(char * propLoc)
     while((iteration < maxSteps) && (elapsedTime < maxTime))
     {
         iteration++;
-        debug("Working on step %d\n", iteration);
+        info("Working on step %d\n", iteration);
         if(compute_node)
             iterate();
 
