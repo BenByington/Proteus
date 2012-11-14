@@ -1,0 +1,427 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <math.h>
+
+#include "IO.h"
+#include "Field.h"
+#include "Environment.h"
+#include "Log.h"
+#include "State.h"
+
+FILE * status = 0;
+
+void testIO()
+{
+    int i,j,k;
+    field * f = (field *)malloc(3 * sizeof(field));
+    field * f2 = (field *)malloc(3 * sizeof(field));
+
+    info("Testing IO routines\n",0);
+    if(grank == 0)
+        mkdir("Test", S_IRWXU);
+
+    if(compute_node)
+    {
+        trace("Creating data for test IO\n",0);
+        allocateSpatial(f);
+        allocateSpatial(f+1);
+        allocateSpatial(f+2);
+        allocateSpatial(f2);
+        allocateSpatial(f2+1);
+        allocateSpatial(f2+2);
+
+        for(i = 0; i < my_z->width; i++)
+        {
+            for(j = 0; j < my_x->width; j++)
+            {
+                for(k = 0; k < ny; k++)
+                {
+                    int index = k + j*ny + i*my_x->width*ny;
+                    f[0].spatial[index] = j + my_x->min;
+                    f[1].spatial[index] = k;
+                    f[2].spatial[index] = i + my_z->min;
+                }
+            }
+        }
+
+    }
+
+    debug("Writing test IO data to files\n",0);
+    writeSpatial(f, "Test/x");
+    writeSpatial(f+1, "Test/y");
+    writeSpatial(f+2, "Test/z");
+
+    debug("Reading test IO data from files\n",0);
+    readSpatial(f2, "Test/x");
+    readSpatial(f2+1, "Test/y");
+    readSpatial(f2+2, "Test/z");
+
+    if(compute_node)
+    {
+        debug("Checking integrity of data\n",0);
+        for(i = 0; i < my_z->width; i++)
+        {
+            for(j = 0; j < my_x->width; j++)
+            {
+                for(k = 0; k < ny; k++)
+                {
+                    int index = k + j*ny + i*my_x->width*ny;
+                    if(!(f2[0].spatial[index] == j + my_x->min))
+                    {
+                        error("IO for x failed %g %d!\n",f2[0].spatial[index], j + my_x->min);
+                        abort();
+                    }
+                    if(!(f2[1].spatial[index] == k))
+                    {
+                        error("IO for y failed %g %d!\n",f2[1].spatial[index], k);
+                        abort();
+                    }
+                    if(!(f2[2].spatial[index] == i + my_z->min))
+                    {
+                        error("IO for z failed %g %d!\n",f2[2].spatial[index],i + my_z->min);
+                        abort();
+                    }
+                }
+            }
+        }
+
+        eraseSpatial(f);
+        eraseSpatial(f+1);
+        eraseSpatial(f+2);
+        eraseSpatial(f2);
+        eraseSpatial(f2+1);
+        eraseSpatial(f2+2);
+    }
+    free(f);
+    free(f2);
+    info("IO Test complete\n",0);
+}
+
+void writeSpatial(field * f, char * name)
+{
+    int i,j,k,l,m;
+    debug("Writing spatial data to file %s\n", name);
+
+    int sndcnt = 0;
+    double * rcvbuff = 0;
+    double * sndbuff = 0;
+    //the extra +1 just gives a little extra room to do an extra loop below.
+    //The extra element means nothing, it just makes the code a hair easier
+    //to write
+    int displs[iosize+1];
+    int rcvcounts[iosize];
+
+    debug("consolidating data to IO nodes\n",0);
+    if(compute_node)
+    {
+        sndcnt = my_x->width * my_z->width * ny;
+        trace("Sending %d doubles\n", sndcnt);
+        MPI_Gatherv(f->spatial, sndcnt, MPI_DOUBLE, 0, 0, 0, MPI_DOUBLE, 0, iocomm);
+        debug("Write Spatial completed\n",0);
+        return;
+    }
+    else
+    {
+        rcvbuff = (double *)malloc(nx * ny * nz_layers * sizeof(double));
+        sndbuff = (double *)malloc(nx * ny * nz_layers * sizeof(double));
+        trace("Total local data will be %d doubles\n", nx*ny*nz_layers);
+
+        displs[0] = 0;
+        displs[1] = 0;
+        rcvcounts[0] = 0;
+
+        int * pidspls = displs + 2;
+        int * pircvcounts = rcvcounts+1;
+        for(i = io_layers[my_io_layer].min; i <= io_layers[my_io_layer].max; i++)
+        {
+            for(j = 0; j < hdiv; j++)
+            {
+                *pircvcounts = all_x[j].width * all_z[i].width * ny;
+                *pidspls = *(pidspls-1) + *pircvcounts;
+                trace("Proc %d should send %d doubles at displacement %d\n", hdiv * i + j, *pircvcounts, *pidspls);
+                pidspls++;
+                pircvcounts++;
+            }
+        }
+        MPI_Gatherv(0, 0, MPI_DOUBLE, rcvbuff, rcvcounts, displs, MPI_DOUBLE, 0, iocomm);
+    }
+
+    debug("transposing data so it is properly contiguous\n",0);
+    //rcvbuff is [l][h][vz][hx][y]
+    //we want [lz][y][x]
+    int indexr = 0;
+    int indexs = 0;
+    for(i = 0; i < io_layers[my_io_layer].width; i++)
+    {
+        for(j = 0; j < hdiv; j++)
+        {
+            int vz = all_z[i + io_layers[my_io_layer].min].width;
+            int vzmin = all_z[i + io_layers[my_io_layer].min].min;
+            int vzstart = all_z[io_layers[my_io_layer].min].min;
+            for(k = 0; k < vz; k++)
+            {
+                int hx = all_x[j].width;
+                int hxmin = all_x[j].min;
+                for(l = 0; l < hx; l++)
+                {
+                    for(m = 0; m < ny; m++)
+                    {
+                        indexs = ((k + vzmin - vzstart)*ny + m)*nx + l + hxmin;
+                        sndbuff[indexs] = rcvbuff[indexr];
+                        indexr++;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    debug("Performing parallel file write\n",0);
+    //TODO: revisit MPI_MODE_SEQUENTIAL and MPI_INFO_NULL to make sure these are what we want
+    MPI_File fh;
+    MPI_File_open(fcomm, name, MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
+    debug("MPI File opened successfully\n",0);
+    int disp = 0;
+    for(i = 0; i < my_io_layer; i++)
+    {
+        for(j = io_layers[i].min; j <= io_layers[i].max; j++)
+        {
+            disp += all_z[j].width;
+        }
+    }
+    disp *= nx * ny * sizeof(double);
+    trace("Our view starts at element %d\n", disp);
+    trace("Setting view...\n",0);
+    MPI_File_set_view(fh, disp, MPI_DOUBLE, MPI_DOUBLE, "native", MPI_INFO_NULL);
+    trace("Writing to file...\n",0);
+    MPI_File_write(fh, sndbuff, nx * ny * nz_layers, MPI_DOUBLE, MPI_STATUS_IGNORE );
+    MPI_File_close(&fh);
+
+    free(sndbuff);
+    free(rcvbuff);
+
+    debug("Write Spatial completed\n",0);
+
+}
+
+void readSpatial(field * f, char * name)
+{
+    int i,j,k,l,m;
+    debug("Reading spatial data from file %s\n", name);
+
+    double * sndbuff = 0;
+    double * rcvbuff = 0;
+
+    if(!compute_node)
+    {
+        sndbuff = (double *)malloc(nx * ny * nz_layers * sizeof(double));
+        rcvbuff = (double *)malloc(nx * ny * nz_layers * sizeof(double));
+        trace("Total local data will be %d doubles\n", nx*ny*nz_layers);
+
+        //do a mpi IO operation
+        //TODO: revisit MPI_MODE_SEQUENTIAL and MPI_INFO_NULL to make sure these are what we want
+        MPI_File fh;
+        debug("Reading file\n",0);
+        MPI_File_open(fcomm, name, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
+
+        int disp = 0;
+        for(i = 0; i < my_io_layer; i++)
+        {
+            for(j = io_layers[i].min; j <= io_layers[i].max; j++)
+            {
+                disp += all_z[j].width;
+            }
+        }
+        disp *= nx * ny * sizeof(double);
+        trace("Our file view starts at displacement %d\n", disp);
+        trace("Setting view\n",0);
+        MPI_File_set_view(fh, disp, MPI_DOUBLE, MPI_DOUBLE, "native", MPI_INFO_NULL);
+        trace("Reading file\n",0);
+        MPI_File_read(fh, sndbuff, nx * ny * nz_layers, MPI_DOUBLE, MPI_STATUS_IGNORE );
+
+        MPI_File_close(&fh);
+    
+
+        debug("transposing the data for scatter to compute nodes\n",0);
+        //rcvbuff is [l][h][vz][hx][y]
+        //sndbuff [l][vz][y][h][hx]
+        int indexr = 0;
+        int indexs = 0;
+        for(i = 0; i < io_layers[my_io_layer].width; i++)
+        {
+            for(j = 0; j < hdiv; j++)
+            {
+                int vz = all_z[i + io_layers[my_io_layer].min].width;
+                int vzmin = all_z[i + io_layers[my_io_layer].min].min;
+                int vzstart = all_z[io_layers[my_io_layer].min].min;
+                for(k = 0; k < vz; k++)
+                {
+                    int hx = all_x[j].width;
+                    int hxmin = all_x[j].min;
+                    for(l = 0; l < hx; l++)
+                    {
+                        for(m = 0; m < ny; m++)
+                        {
+                            indexs = ((k + vzmin - vzstart)*ny + m)*nx + l + hxmin;
+
+                            rcvbuff[indexr] = sndbuff[indexs];
+                            indexr++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    int rcvcnt;
+    int displs[iosize+1];
+    int sndcounts[iosize];
+    debug("scattering data to the compute nodes\n",0);
+    if(compute_node)
+    {
+        rcvcnt = my_x->width * my_z->width * ny;
+        trace("I expect to receive %d doubles\n", rcvcnt);
+        MPI_Scatterv(0, 0, 0, MPI_DOUBLE, f->spatial, rcvcnt, MPI_DOUBLE, 0, iocomm);
+    }
+    else
+    {
+        displs[0] = 0;
+        displs[1] = 0;
+        sndcounts[0] = 0;
+
+        int * pidspls = displs + 2;
+        int * pisndcounts = sndcounts+1;
+        for(i = io_layers[my_io_layer].min; i <= io_layers[my_io_layer].max; i++)
+        {
+            for(j = 0; j < hdiv; j++)
+            {
+                *pisndcounts = all_x[j].width * all_z[i].width * ny;
+                *pidspls = *(pidspls-1) + *pisndcounts;
+                trace("Sending %d doubles from displacement %d to proc %d\n", *pisndcounts, *pidspls, i*j);
+                pidspls++;
+                pisndcounts++;
+            }
+        }
+        MPI_Scatterv(rcvbuff, sndcounts, displs, MPI_DOUBLE, 0, 0, MPI_DOUBLE, 0, iocomm);
+    }
+
+    if(!compute_node)
+    {
+        free(rcvbuff);
+        free(sndbuff);
+    }
+    debug("Reading from file done\n",0);
+}
+
+void performOutput()
+{
+    //only one processor controls the status file
+    if(crank == 0)
+    {
+        //Is this a first time in this method?
+        if(status == 0)
+        {
+            status = fopen("status", "w");
+            fprintf(status, "Stupid message here and now to make me put a nice and informative one later\n\n");
+            fclose(status);
+
+            //This really should go elsewhere...
+            mkdir("Spatial", S_IRWXU);
+        }
+
+        //update the status file?
+        if(iteration % statusRate == 0)
+        {
+            status = fopen("status", "a");
+            fprintf(status, "Iteration %d:\n dt = %g\tElapsed Time = %g\n", iteration, dt, elapsedTime);
+            fclose(status);
+        }
+    }
+
+    //Time for spatial file output?
+    if(iteration % spatialRate == 0)
+    {
+        char * name = (char *)malloc(100);
+        //create the directory
+        if(crank == 0)
+        {
+            sprintf(name, "Spatial/%08d",iteration);
+            mkdir(name, S_IRWXU);
+        }
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        if(compute_node)
+        {
+            if(momEquation)
+            {
+                trace("Outputing u\n",0);
+                writeSpatial(u->vec->x,0);
+
+                trace("Outputing v\n",0);
+                writeSpatial(u->vec->y,0);
+
+                trace("Outputing w\n",0);
+                writeSpatial(u->vec->z,0);
+            }
+            if(tEquation)
+            {
+                trace("Outputting T\n", 0);
+                writeSpatial(T, 0);
+            }
+            if(magEquation)
+            {
+                trace("Outputing Bx\n",0);
+                writeSpatial(B->vec->x,0);
+
+                trace("Outputing By\n",0);
+                writeSpatial(B->vec->y,0);
+
+                trace("Outputing Bz\n",0);
+                writeSpatial(B->vec->z,0);
+            }
+        }
+        else
+        {
+            if(momEquation)
+            {
+                sprintf(name, "Spatial/%08d/u", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+
+                sprintf(name, "Spatial/%08d/v", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+
+                sprintf(name, "Spatial/%08d/w", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+            }
+            if(tEquation)
+            {
+                sprintf(name, "Spatial/%08d/T", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+            }
+            if(magEquation)
+            {
+                sprintf(name, "Spatial/%08d/Bx", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+
+                sprintf(name, "Spatial/%08d/By", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+
+                sprintf(name, "Spatial/%08d/Bz", iteration);
+                trace("Writing to file %s\n", name);
+                writeSpatial(0, name);
+            }
+        }
+
+        free(name);
+    }
+}
+
