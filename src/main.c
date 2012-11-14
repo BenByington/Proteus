@@ -50,12 +50,12 @@ int main(int argc, char** argv)
         initPhysics();
     }
 
+    if(compute_node)
+    {
     readSpatial(u->vec->x, "x");
     readSpatial(u->vec->y, "y");
     readSpatial(u->vec->z, "z");
 
-    if(compute_node)
-    {
     fftForward(u->vec->x);
     fftForward(u->vec->y);
     fftForward(u->vec->z);
@@ -66,10 +66,20 @@ int main(int argc, char** argv)
     fftBackward(u->vec->x);
     fftBackward(u->vec->y);
     fftBackward(u->vec->z);
-    }
+    
     writeSpatial(u->vec->x, "x2");
     writeSpatial(u->vec->x, "y2");
     writeSpatial(u->vec->x, "z2");
+    }
+    else
+    {
+        readSpatial(0, "x");
+        readSpatial(0, "y");
+        readSpatial(0, "z");
+        writeSpatial(0, "x2");
+        writeSpatial(0, "y2");
+        writeSpatial(0, "z2");
+    }
 
    /*
     while((iteration < maxSteps) && (elapsedTime < maxTime))
