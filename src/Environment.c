@@ -53,6 +53,7 @@ MPI_Comm fcomm;
 int hdiv;
 int vdiv;
 int compute_node;
+int io_node;
 
 int grank = -1;
 int gsize = -1;

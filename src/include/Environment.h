@@ -34,6 +34,7 @@ extern MPI_Comm fcomm;
 extern int hdiv;
 extern int vdiv;
 extern int compute_node;
+extern int io_node;
 
 //proc identifications
 extern int grank;

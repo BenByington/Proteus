@@ -201,7 +201,7 @@ void startSpatial()
         }
         
     }
-    else
+    else if(io_node)
     {
         if(magEquation)
         {

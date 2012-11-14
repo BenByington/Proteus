@@ -95,10 +95,23 @@ void lab_initGroups()
     //in the global group
 
     if(grank < hdiv * vdiv)
+    {
         compute_node = 1;
-    else
+        io_node = 0;
+    }
+    else if(grank < hdiv*vdiv + n_io_nodes)
+    {
         compute_node = 0;
+        io_node = 1;
+    }
+    else
+    {
+        compute_node = 0;
+        io_node = 0;
+    }
+
     info("compute_node flag set to %d\n", compute_node);
+    info("io_node flag set to %d\n", io_node);
 
     //grab the global group
     MPI_Group global;
@@ -189,14 +202,14 @@ void lab_initGroups()
     }
 
 
-    if(!compute_node)
+    if(io_node)
     {
         debug("Create group for parallel IO\n",0);
         int iotrip[1][3];
 
-        iotrip[0][0] = vdiv * hdiv;   //start index of our row
-        iotrip[0][1] = gsize-1;       //final index of our row
-        iotrip[0][2] = 1;             //stride between elements of our row
+        iotrip[0][0] = vdiv * hdiv;                     //start index of our row
+        iotrip[0][1] = iotrip[0][0] + n_io_nodes - 1;   //final index of our row
+        iotrip[0][2] = 1;                               //stride between elements of our row
         trace("Tripplet for group creation: %d %d %d\n", iotrip[0][0], iotrip[0][1], iotrip[0][2]);
 
         //create groups for our horizontal and vertical associations
@@ -223,32 +236,40 @@ void lab_initGroups()
         MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &fcomm);
     }
 
+    if(compute_node || io_node)
+    {
+        debug("Creating group for moving data to IO nodes\n",0);
+        //create the comm group for consolidating data to IO nodes
+        int iotrip[2][3];
 
-    debug("Creating group for moving data to IO nodes\n",0);
-    //create the comm group for consolidating data to IO nodes
-    int iotrip[2][3];
+        iotrip[0][0] = vdiv * hdiv + my_io_layer;
+        iotrip[0][1] = vdiv * hdiv + my_io_layer;
+        iotrip[0][2] = 1;
 
-    iotrip[0][0] = vdiv * hdiv + my_io_layer;
-    iotrip[0][1] = vdiv * hdiv + my_io_layer;
-    iotrip[0][2] = 1;
+        iotrip[1][0] = hdiv * io_layers[my_io_layer].min;   //start index of our row
+        iotrip[1][1] = hdiv * io_layers[my_io_layer].max + hdiv - 1;   //final index of our row
+        iotrip[1][2] = 1;                                    //stride between elements of our row
+        trace("Tripplets for group: %d %d %d %d %d %d\n", iotrip[0][0], iotrip[0][1], iotrip[0][2], iotrip[1][0], iotrip[1][1], iotrip[1][2])
 
-    iotrip[1][0] = hdiv * io_layers[my_io_layer].min;   //start index of our row
-    iotrip[1][1] = hdiv * io_layers[my_io_layer].max + hdiv - 1;   //final index of our row
-    iotrip[1][2] = 1;                                    //stride between elements of our row
-    trace("Tripplets for group: %d %d %d %d %d %d\n", iotrip[0][0], iotrip[0][1], iotrip[0][2], iotrip[1][0], iotrip[1][1], iotrip[1][2])
+        trace("Creating group\n",0);
+        //create groups for our horizontal and vertical associations
+        MPI_Group iogroup;
+        MPI_Group_range_incl(global, 2, iotrip, &iogroup);
 
-    trace("Creating group\n",0);
-    //create groups for our horizontal and vertical associations
-    MPI_Group iogroup;
-    MPI_Group_range_incl(global, 2, iotrip, &iogroup);
+        trace("Creating Comm\n",0);
+        //get the communicators for our groups
+        MPI_Comm_create(MPI_COMM_WORLD, iogroup, &iocomm);
 
-    trace("Creating Comm\n",0);
-    //get the communicators for our groups
-    MPI_Comm_create(MPI_COMM_WORLD, iogroup, &iocomm);
-
-    trace("Getting rank and size\n",0);
-    MPI_Comm_rank(iocomm, &iorank);
-    MPI_Comm_size(iocomm, &iosize);
+        trace("Getting rank and size\n",0);
+        MPI_Comm_rank(iocomm, &iorank);
+        MPI_Comm_size(iocomm, &iosize);
+    }
+    else
+    {
+        trace("Dummy call for parallel IO group creation\n",0);
+        //again the compute nodes need to check in for the collective operation
+        MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &iocomm);
+    }
 
     info("Communication Groups Done\n",0);
 

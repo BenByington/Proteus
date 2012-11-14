@@ -129,7 +129,7 @@ void writeSpatial(field * f, char * name)
         debug("Write Spatial completed\n",0);
         return;
     }
-    else
+    else if(io_node)
     {
         rcvbuff = (PRECISION *)malloc(nx * ny * nz_layers * sizeof(PRECISION));
         sndbuff = (PRECISION *)malloc(nx * ny * nz_layers * sizeof(PRECISION));
@@ -222,7 +222,7 @@ void readSpatial(field * f, char * name)
     PRECISION * sndbuff = 0;
     PRECISION * rcvbuff = 0;
 
-    if(!compute_node)
+    if(io_node)
     {
         sndbuff = (PRECISION *)malloc(nx * ny * nz_layers * sizeof(PRECISION));
         rcvbuff = (PRECISION *)malloc(nx * ny * nz_layers * sizeof(PRECISION));
@@ -293,7 +293,7 @@ void readSpatial(field * f, char * name)
         trace("I expect to receive %d PRECISIONs\n", rcvcnt);
         MPI_Scatterv(0, 0, 0, MPI_PRECISION, f->spatial, rcvcnt, MPI_PRECISION, 0, iocomm);
     }
-    else
+    else if(io_node)
     {
         displs[0] = 0;
         displs[1] = 0;
@@ -315,7 +315,7 @@ void readSpatial(field * f, char * name)
         MPI_Scatterv(rcvbuff, sndcounts, displs, MPI_PRECISION, 0, 0, MPI_PRECISION, 0, iocomm);
     }
 
-    if(!compute_node)
+    if(io_node)
     {
         free(rcvbuff);
         free(sndbuff);
@@ -538,7 +538,7 @@ void performOutput()
                 writeSpatial(B->vec->z,0);
             }
         }
-        else
+        else if(io_node)
         {
             if(momEquation || kinematic)
             {
