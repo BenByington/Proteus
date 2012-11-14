@@ -49,12 +49,8 @@ int main(int argc, char** argv)
 
     initLogging();
     
-    int i;
-    for(i = 0; i < 20; i++)
-    {
-        error("Doing run iteration %d\n", i);
-        status = execute(argv[1]);
-    }
+
+    status = execute(argv[1]);
 
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
@@ -82,7 +78,6 @@ int execute(char * propLoc)
     }
 
     while((iteration < maxSteps) && (elapsedTime < maxTime))
-
     {
         iteration++;
         debug("Working on step %d\n", iteration);
