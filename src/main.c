@@ -50,7 +50,28 @@ int main(int argc, char** argv)
         initPhysics();
     }
 
+    readSpatial(u->vec->x, "x");
+    readSpatial(u->vec->y, "y");
+    readSpatial(u->vec->z, "z");
+
+    fftForward(u->vec->x);
+    fftForward(u->vec->y);
+    fftForward(u->vec->z);
+
+    decomposeSolenoidal(u->sol, u->vec, 0);
+    recomposeSolenoidal(u->sol, u->vec);
+
+    fftBackward(u->vec->x);
+    fftBackward(u->vec->y);
+    fftBackward(u->vec->z);
+
+    writeSpatial(u->vec->x, "x2");
+    writeSpatial(u->vec->x, "y2");
+    writeSpatial(u->vec->x, "z2");
+
+   /*
     while((iteration < maxSteps) && (elapsedTime < maxTime))
+
     {
         iteration++;
         debug("Working on step %d\n", iteration);
@@ -59,7 +80,7 @@ int main(int argc, char** argv)
 
         MPI_Bcast(&elapsedTime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         performOutput();
-    }
+    }*/
 
     info("Run Complete: Cleaning and Exiting now\n",0);
     if(compute_node)
