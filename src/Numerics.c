@@ -724,7 +724,6 @@ extern void multiply(double * one, double * two, double * out)
 
 extern void plusEq(complex double * one, complex double * two)
 {
-
     int i;
     for(i = 0; i < spectralCount; i++)
     {
