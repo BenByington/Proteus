@@ -478,6 +478,17 @@ void performOutput()
             free(local);
             if(crank == 0)
             {
+                //make the means means and not sums
+                piScalarData[4] /= (nx*ny*nz);
+                piScalarData[7] /= (nx*ny*nz);
+                piScalarData[10] /= (nx*ny*nz);
+                if(magEquation)
+                {
+                    piScalarData[15] /= (nx*ny*nz);
+                    piScalarData[18] /= (nx*ny*nz);
+                    piScalarData[21] /= (nx*ny*nz);
+                }
+
                 scalarCount++;
                 piScalarData += numScalar;
 
@@ -505,6 +516,11 @@ void performOutput()
         {
             sprintf(name, "Spatial/%08d",iteration);
             mkdir(name, S_IRWXU);
+
+            sprintf(name, "Spatial/%08d/info",iteration);
+            FILE * info;
+            info = fopen(name, "w");
+            fprintf(info, "Time: %g", elapsedTime);
         }
         MPI_Barrier(MPI_COMM_WORLD);
 
