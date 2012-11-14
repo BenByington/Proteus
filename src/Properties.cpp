@@ -309,7 +309,7 @@ void parsePhysics(iostream & in)
     const string sRA("Ra");
     const string sPM("Pm");
     const string sAlpha("alpha");
-    const string sMagBuoyScale("magBuoyScale");
+    const string sMBuoyScale("mBuoyScale");
     
     string line;
     string one;
@@ -497,10 +497,10 @@ void parsePhysics(iostream & in)
             alpha = atof(two.c_str());
             debug("alpha set to %g\n", alpha);
         }
-        else if((int)one.find(sMagBuoyScale) != -1)
+        else if((int)one.find(sMBuoyScale) != -1)
         {
             magBuoyScale = atof(two.c_str());
-            debug("magBuoyScale set to %g\n", alpha);
+            debug("mBuoyScale set to %g\n", alpha);
         }
         else
         {
