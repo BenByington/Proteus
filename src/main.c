@@ -68,8 +68,8 @@ int main(int argc, char** argv)
     fftBackward(u->vec->z);
     
     writeSpatial(u->vec->x, "x2");
-    writeSpatial(u->vec->x, "y2");
-    writeSpatial(u->vec->x, "z2");
+    writeSpatial(u->vec->y, "y2");
+    writeSpatial(u->vec->z, "z2");
     }
     else
     {
