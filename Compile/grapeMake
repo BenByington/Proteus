@@ -1,22 +1,22 @@
 .SUFFIXES: .c .o .cpp
 
-LIBS =  -L/cse/grads/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
--I/cse/grads/bbyingto/fftw/include
+LIBS =  -L/soe/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
+-I/soe/bbyingto/fftw/include
 
 cc = mpicc -std=c99
 CC = mpic++
 
 FASTSSE= -O3
 
- CCFLAGS = $(FASTSSE)  -I../src/include -I/cse/grads/bbyingto/fftw/include
+  CCFLAGS = $(FASTSSE)  -I../src/include -I/cse/grads/bbyingto/fftw/include
 # Debug flags
-#CCFLAGS =  -g  -I./src
+# CCFLAGS =  -g  -I../src/include -I/cse/grads/bbyingto/fftw/include
 
 SRC = ../src
 
 OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
-        TimeFunctions.o
+        TimeFunctions.o FFTWrapper.o
 
 imhd: $(OBJS) 
 	$(CC) $(CCFLAGS) -o imhd $(OBJS) $(LIBS) 
@@ -60,4 +60,5 @@ Properties.o: ${SRC}/Properties.cpp
 State.o: ${SRC}/State.c
 	$(cc) $(CCFLAGS) -c $(SRC)/State.c
 	
-
+FFTWrapper.o: ${SRC}/FFTWrapper.c
+	${cc} $(CCFLAGS) -c $(SRC)/FFTWrapper.c
