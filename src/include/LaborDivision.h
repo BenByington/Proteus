@@ -11,6 +11,7 @@
 void lab_initGeometry();
 void lab_initGroups();
 void lab_initDistributions();
+void lab_finalize();
 
 
 #endif	/* _LABORDIVISION_H */

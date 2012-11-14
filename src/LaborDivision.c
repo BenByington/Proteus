@@ -396,3 +396,11 @@ void lab_initDistributions()
     info("Work Distrubution Done\n",0);
 }
 
+void lab_finalize()
+{
+    free(all_x);
+    free(all_z);
+    free(all_kx);
+    free(all_ky);
+    free(io_layers);
+}

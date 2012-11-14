@@ -10,7 +10,7 @@
 
 #include <mpi.h>
 
-void setupEnvironment(char * loc);
+void setupEnvironment();
 
 extern double PI;
 

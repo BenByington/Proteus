@@ -20,8 +20,6 @@
 
 int whichfft;
 
-void clean();
-
 fftw_plan planf1;
 fftw_plan planf2;
 fftw_plan planf3;
@@ -1341,3 +1339,7 @@ void fftBackward(p_field f)
         fft2_backward(f->spectral, f->spatial);
 }
 
+void com_finalize()
+{
+    fftw_cleanup();
+}

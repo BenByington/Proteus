@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-void setupEnvironment(char * loc)
+void setupEnvironment()
 {
     PI = 4.0 * atan2(1.0, 1.0);
     MPI_Comm_rank(MPI_COMM_WORLD, &grank);
@@ -16,8 +16,6 @@ void setupEnvironment(char * loc)
 
     initLogging();
     info("Comencing Environment Initialization\n",0);
-
-    loadPrefs(loc);
 
     if(n_io_nodes != gsize - hdiv*vdiv)
     {

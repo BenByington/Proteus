@@ -19,6 +19,8 @@
 #include "State.h"
 #include "Physics.h"
 
+int benchmark();
+int execute(char * propFile);
 
 
 /*
@@ -35,9 +37,18 @@ int main(int argc, char** argv)
             fprintf(stderr, "arg %d: %s\n",i, argv[i]);
         return -1;
     }
+    
+    
+    return execute(argv[1]);
+}
+
+int execute(char * propLoc)
+{
     srand(time(0));
 
-    setupEnvironment(argv[1]);
+    loadPrefs(propLoc);
+
+    setupEnvironment();
     info("Code Initialization Complete\n",0);
 
     testIO();
@@ -68,11 +79,11 @@ int main(int argc, char** argv)
     {
         finalizePhysics();
         finalizeState();
+        com_finalize();
     }
+    lab_finalize();
 
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
-    
-    return 0;
 }
 
