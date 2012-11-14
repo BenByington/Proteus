@@ -18,6 +18,8 @@
 #include "Numerics.h"
 #include "State.h"
 #include "Physics.h"
+#include "Properties.h"
+#include "LaborDivision.h"
 
 int benchmark();
 int execute(char * propFile);

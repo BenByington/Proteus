@@ -22,7 +22,7 @@
 #define FFT2 2
 
 void com_init(int measure);
-void comm_finalize();
+void com_finalize();
 
 void fftForward(p_field);
 void fftBackward(p_field);

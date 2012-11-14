@@ -1344,3 +1344,4 @@ void com_finalize()
 {
     fftw_cleanup();
 }
+
