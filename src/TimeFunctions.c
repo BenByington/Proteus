@@ -104,7 +104,7 @@ extern double getz(int i)
 
 inline double mSourceX(double x, double y, double z, double t)
 {
-    return 0;
+    return 0.5 * sin(2*PI*y) * sin(2*PI*z) * sin(2*PI*t*50);
 }
 
 inline double mSourceY(double x, double y, double z, double t)
@@ -120,7 +120,8 @@ inline double mSourceZ(double x, double y, double z, double t)
 /**
  * !!!MAKE SURE YOU PROGRAM IN A SOLENOIDAL FIELD!!!
  * If you don't, strange and unpredictable things may happen
- * when it is decomposed into P and T...
+ * when it is decomposed into P and T... Physics will not be broken, but what
+ * you get out will not be what you meant to put in.
  **/
 inline double bSourceX(double x, double y, double z, double t)
 {
