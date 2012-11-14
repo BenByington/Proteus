@@ -172,7 +172,7 @@ int benchmark(char * propLoc)
 
         hdiv++;
         vdiv++;
-        n_io_nodes = gsize - hdiv * vdiv;
+        n_io_nodes = vdiv;
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
