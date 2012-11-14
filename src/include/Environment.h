@@ -115,6 +115,7 @@ extern int tEquation;
 extern int momAdvection;
 extern int viscosity;
 extern int buoyancy;
+extern int magBuoy;
 extern int lorentz;
 extern int tDiff;
 extern int tempAdvection;
@@ -141,6 +142,7 @@ extern PRECISION Pr;
 extern PRECISION Ra;
 extern PRECISION Pm;
 extern PRECISION alpha;
+extern PRECISION magBuoyScale;
 
 //integration parameters
 extern int maxSteps;

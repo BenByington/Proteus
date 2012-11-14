@@ -337,6 +337,18 @@ void calcMomentum()
         plusEq(rhs->y->spectral, py);
         plusEq(rhs->z->spectral, pz);
     }
+    
+    if(magBuoy)
+    {
+        p_field B2 = temp1->x;
+        dotProduct(B->vec,B->vec,B2);
+        fftForward(B2);
+        for(i = 0; i < spectralCount; i++)
+        {
+            B2->spectral[i] *= magBuoyScale;
+        }
+        plusEq(rhs->z->spectral, B2->spectral);
+    }
 
     if(buoyancy)
     {

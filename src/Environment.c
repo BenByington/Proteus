@@ -125,6 +125,7 @@ int tEquation = 0;
 int momAdvection = 0;
 int viscosity = 0;
 int buoyancy = 0;
+int magBuoy = 0;
 int lorentz = 0;
 int tDiff = 0;
 int tempAdvection = 0;
@@ -149,6 +150,7 @@ PRECISION Pr = 0;
 PRECISION Ra = 0;
 PRECISION Pm = 0;
 PRECISION alpha = 1.0;
+PRECISION magBuoyScale = 1.0;
 
 int maxSteps = 0;
 PRECISION maxTime = 0;

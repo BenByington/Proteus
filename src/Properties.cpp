@@ -299,6 +299,7 @@ void parsePhysics(iostream & in)
     const string sMomAdvect("momAdvection");
     const string sViscosity("viscosity");
     const string sBuoyancy("buoyancy");
+    const string sMagBuoy("magBuoy");
     const string sLorentz("lorentz");
     const string sTDiff("tdiff");
     const string sTempAdvection("tempAdvection");
@@ -308,7 +309,8 @@ void parsePhysics(iostream & in)
     const string sRA("Ra");
     const string sPM("Pm");
     const string sAlpha("alpha");
-
+    const string sMagBuoyScale("magBuoyScale");
+    
     string line;
     string one;
     string two;
@@ -403,6 +405,18 @@ void parsePhysics(iostream & in)
             }
             debug("buoyancy flag: %d\n", buoyancy);
         }
+        else if((int)one.find(sMagBuoy) != -1)
+        {
+            if((int)two.find(on) != -1)
+                magBuoy = 1;
+            else if((int)two.find(off) != -1)
+                magBuoy = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            debug("magBuoy flag: %d\n", buoyancy);
+        }
         else if((int)one.find(sLorentz) != -1)
         {
             if((int)two.find(on) != -1)
@@ -482,6 +496,11 @@ void parsePhysics(iostream & in)
         {
             alpha = atof(two.c_str());
             debug("alpha set to %g\n", alpha);
+        }
+        else if((int)one.find(sMagBuoyScale) != -1)
+        {
+            magBuoyScale = atof(two.c_str());
+            debug("magBuoyScale set to %g\n", alpha);
         }
         else
         {
