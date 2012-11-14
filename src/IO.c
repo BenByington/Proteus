@@ -421,6 +421,53 @@ void performOutput()
             MPI_Reduce(local+11, piScalarData+11, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
             MPI_Reduce(local+12, piScalarData+12, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
 
+            if(magEquation)
+            {
+                datax = B->vec->x->spatial;
+                datay = B->vec->y->spatial;
+                dataz = B->vec->z->spatial;
+
+                local[13] = datax[0];
+                local[14] = datax[0];
+                local[15] = datax[0];
+                local[16] = datay[0];
+                local[17] = datay[0];
+                local[18] = datay[0];
+                local[19] = dataz[0];
+                local[20] = dataz[0];
+                local[21] = dataz[0];
+                temp = pow(datax[0],2) + pow(datay[0],2) + pow(dataz[0],2);
+                local[22] = temp;
+                local[23] = temp;
+                for(i = 1; i < spatialCount; i++)
+                {
+                    local[13] = fmin(local[2], datax[i]);
+                    local[14] = fmax(local[3], datax[i]);
+                    local[15] += datax[i];
+                    local[16] = fmin(local[5], datay[i]);
+                    local[17] = fmax(local[6], datay[i]);
+                    local[18] += datay[i];
+                    local[19] = fmin(local[8], dataz[i]);
+                    local[20] = fmax(local[9], dataz[i]);
+                    local[21] += dataz[i];
+                    temp = pow(datax[i],2) + pow(datay[i],2) + pow(dataz[i],2);
+                    local[22] += temp;
+                    local[23] = fmax(temp, local[12]);
+                }
+
+                MPI_Reduce(local+13, piScalarData+13, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
+                MPI_Reduce(local+14, piScalarData+14, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+                MPI_Reduce(local+15, piScalarData+15, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+                MPI_Reduce(local+16, piScalarData+16, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
+                MPI_Reduce(local+17, piScalarData+17, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+                MPI_Reduce(local+18, piScalarData+18, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+                MPI_Reduce(local+19, piScalarData+19, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
+                MPI_Reduce(local+20, piScalarData+20, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+                MPI_Reduce(local+21, piScalarData+21, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+                MPI_Reduce(local+22, piScalarData+22, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+                MPI_Reduce(local+23, piScalarData+23, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+            }
+
             if(crank == 0)
             {
                 scalarCount++;
