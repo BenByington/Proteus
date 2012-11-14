@@ -19,8 +19,7 @@ PRECISION * scalarData;
 PRECISION * piScalarData;
 int numScalar;
 
-char infoTime[] = "Time: %g\n";
-char infoIter[] = "Iteration: %d\n";
+char infostr[] = "Time: %g\nIteration: %d\n";
 
 void testIO()
 {
@@ -529,8 +528,7 @@ void performOutput()
             sprintf(name, "Spatial/%08d/info",iteration);
             FILE * info;
             info = fopen(name, "w");
-            fprintf(info, infoTime, elapsedTime);
-            fprintf(info, infoIter, iteration);
+            fprintf(info, infostr, elapsedTime, iteration);
             fclose(info);
         }
         MPI_Barrier(MPI_COMM_WORLD);
