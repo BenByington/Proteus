@@ -924,6 +924,8 @@ void readCheckpoint()
             in = fopen(name,"r");
             fread(T->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
+
+            fftBackward(T);
         }
 
 
