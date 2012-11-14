@@ -616,7 +616,7 @@ void writeCheckpoint()
 
             sprintf(name,"Checkpoint/utorf2%d",crank);
             out = fopen(name,"w");
-            fwrite(u->sol->poloidal->force2, sizeof(complex double), spectralCount, out);
+            fwrite(u->sol->toroidal->force2, sizeof(complex double), spectralCount, out);
             fclose(out);
 
             sprintf(name,"Checkpoint/umx%d",crank);
@@ -684,7 +684,7 @@ void writeCheckpoint()
 
             sprintf(name,"Checkpoint/btorf2%d",crank);
             out = fopen(name,"w");
-            fwrite(B->sol->poloidal->force2, sizeof(complex double), spectralCount, out);
+            fwrite(B->sol->toroidal->force2, sizeof(complex double), spectralCount, out);
             fclose(out);
 
             sprintf(name,"Checkpoint/bmx%d",crank);
@@ -791,7 +791,7 @@ void readCheckpoint()
 
             sprintf(name,"Checkpoint/utorf2%d",crank);
             in = fopen(name,"r");
-            fread(u->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
+            fread(u->sol->toroidal->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint/umx%d",crank);
@@ -864,7 +864,7 @@ void readCheckpoint()
 
             sprintf(name,"Checkpoint/btorf2%d",crank);
             in = fopen(name,"r");
-            fread(B->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
+            fread(B->sol->toroidal->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint/bmx%d",crank);
