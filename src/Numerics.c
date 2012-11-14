@@ -557,7 +557,7 @@ extern void partialX(complex double * in, complex double * out, int arithmetic)
             {
                 for(k = 0; k < ndkz; k++)
                 {
-                    out[i] = dk*in[i];
+                    out[index] = dk*in[index];
                     index++;
                 }
             }
@@ -572,7 +572,7 @@ extern void partialX(complex double * in, complex double * out, int arithmetic)
             {
                 for(k = 0; k < ndkz; k++)
                 {
-                    out[i] += dk*in[i];
+                    out[index] += dk*in[index];
                     index++;
                 }
             }
@@ -587,14 +587,16 @@ extern void partialX(complex double * in, complex double * out, int arithmetic)
             {
                 for(k = 0; k < ndkz; k++)
                 {
-                    out[i] -= dk*in[i];
+                    out[index] -= dk*in[index];
                     index++;
                 }
             }
         }
     }
     else
+    {
         error("Invalid arithmetic argument %d!!\n", arithmetic);
+    }
 }
 
 extern void partialY(complex double * in, complex double * out, int arithmetic)
@@ -612,7 +614,7 @@ extern void partialY(complex double * in, complex double * out, int arithmetic)
                 dk = dyFactor(j);
                 for(k = 0; k < ndkz; k++)
                 {
-                    out[i] = dk*in[i];
+                    out[index] = dk*in[index];
                     index++;
                 }
             }
@@ -627,7 +629,7 @@ extern void partialY(complex double * in, complex double * out, int arithmetic)
                 dk = dyFactor(j);
                 for(k = 0; k < ndkz; k++)
                 {
-                    out[i] += dk*in[i];
+                    out[index] += dk*in[index];
                     index++;
                 }
             }
@@ -642,15 +644,16 @@ extern void partialY(complex double * in, complex double * out, int arithmetic)
                 dk = dyFactor(j);
                 for(k = 0; k < ndkz; k++)
                 {
-                    out[i] -= dk*in[i];
+                    out[index] -= dk*in[index];
                     index++;
                 }
             }
         }
     }
     else
+    {
         error("Invalid arithmetic argument %d!!\n", arithmetic);
-
+    }
 }
 
 extern void partialZ(complex double * in, complex double * out, int arithmetic)
@@ -668,7 +671,7 @@ extern void partialZ(complex double * in, complex double * out, int arithmetic)
                 for(k = 0; k < ndkz; k++)
                 {
                     dk = dzFactor(k);
-                    out[i] = dk*in[i];
+                    out[index] = dk*in[index];
                     index++;
                 }
             }
@@ -683,7 +686,7 @@ extern void partialZ(complex double * in, complex double * out, int arithmetic)
                 for(k = 0; k < ndkz; k++)
                 {
                     dk = dzFactor(k);
-                    out[i] += dk*in[i];
+                    out[index] += dk*in[index];
                     index++;
                 }
             }
@@ -698,14 +701,16 @@ extern void partialZ(complex double * in, complex double * out, int arithmetic)
                 for(k = 0; k < ndkz; k++)
                 {
                     dk = dzFactor(k);
-                    out[i] -= dk*in[i];
+                    out[index] -= dk*in[index];
                     index++;
                 }
             }
         }
     }
     else
+    {
         error("Invalid arithmetic argument %d!!\n", arithmetic);
+    }
 }
 
 extern void multiply(double * one, double * two, double * out)
