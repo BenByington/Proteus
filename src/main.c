@@ -131,13 +131,17 @@ int benchmark(char * propLoc)
     if(compute_node)
     {
         gettimeofday(&start,NULL);
-        fftForward(B->vec->x);
-        fftBackward(B->vec->x);
-        gettimeofday(&stop, NULL);
+        int i;
+        for(i = 0, i < 100, i++)
+        {
+            fftForward(B->vec->x);
+            fftBackward(B->vec->x);
+            gettimeofday(&stop, NULL);
+        }
         dstart = start.tv_sec+(start.tv_usec/1000000.0);
         dstop = stop.tv_sec + (stop.tv_usec/1000000.0);
 
-        fprintf(stderr, "Time in seconds for one full FFT cycle: %f\n", dstart - dstop);
+        fprintf(stderr, "Time in seconds for one full FFT cycle: %f\n", dstop - dstart);
     }
 
     MPI_Barrier(MPI_COMM_WORLD);
