@@ -3,7 +3,7 @@
 LIBS =  -L/cse/grads/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
 -I/cse/grads/bbyingto/fftw/include
 
-cc = mpicc 
+cc = mpicc -std=c99
 CC = mpic++
 
 FASTSSE= -O3
