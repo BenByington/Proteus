@@ -514,6 +514,7 @@ void parseForcings(iostream & in)
     while(!getline(in, line).eof())
     {
         trace("Reading line %s\n", line.c_str());
+
         index = line.find_first_of('=');
         if((int)line.find_first_of("[") != -1)
             return;
@@ -531,7 +532,7 @@ void parseForcings(iostream & in)
 
             debug("Forcing file is = %s\n", forceFile);
         }
-        else if((int)one.find(sMagForcingFile))
+        else if((int)one.find(sMagForcingFile) != -1)
         {
             int len = two.length()+1;
             magForceFile = (char*)malloc(len);
