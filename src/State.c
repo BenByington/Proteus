@@ -135,52 +135,72 @@ void startSpatial()
 
     if(compute_node)
     {
-        readSpatial(B->vec->x, 0);
-        fftForward(B->vec->x);
+        if(magEquation)
+        {
+            readSpatial(B->vec->x, 0);
+            fftForward(B->vec->x);
 
-        readSpatial(B->vec->y, 0);
-        fftForward(B->vec->y);
+            readSpatial(B->vec->y, 0);
+            fftForward(B->vec->y);
 
-        readSpatial(B->vec->z, 0);
-        fftForward(B->vec->z);
+            readSpatial(B->vec->z, 0);
+            fftForward(B->vec->z);
+            
+            decomposeSolenoidal(B->sol, B->vec,0);
+        }
 
-        readSpatial(u->vec->x, 0);
-        fftForward(u->vec->x);
+        if(momEquation)
+        {
+            readSpatial(u->vec->x, 0);
+            fftForward(u->vec->x);
 
-        readSpatial(u->vec->y, 0);
-        fftForward(u->vec->y);
+            readSpatial(u->vec->y, 0);
+            fftForward(u->vec->y);
 
-        readSpatial(u->vec->z, 0);
-        fftForward(u->vec->z);
+            readSpatial(u->vec->z, 0);
+            fftForward(u->vec->z);
+            
+            decomposeSolenoidal(u->sol, u->vec,0);
+        }
 
-        readSpatial(T, 0);
-        fftForward(T);
-
-        decomposeSolenoidal(B->sol, B->vec,0);
-        decomposeSolenoidal(u->sol, u->vec,0);
+        if(tEquation)
+        {
+            readSpatial(T, 0);
+            fftForward(T);
+        }
+        
     }
     else
     {
-        sprintf(name,"%s/Bx",startDir);
-        readSpatial(0, name);
+        if(magEquation)
+        {
+            sprintf(name,"%s/Bx",startDir);
+            readSpatial(0, name);
 
-        sprintf(name,"%s/By",startDir);
-        readSpatial(0, name);
+            sprintf(name,"%s/By",startDir);
+            readSpatial(0, name);
 
-        sprintf(name,"%s/Bz",startDir);
-        readSpatial(0, name);
+            sprintf(name,"%s/Bz",startDir);
+            readSpatial(0, name);
+        }
 
-        sprintf(name,"%s/u",startDir);
-        readSpatial(0, name);
+        if(momEquation)
+        {
+            sprintf(name,"%s/u",startDir);
+            readSpatial(0, name);
 
-        sprintf(name,"%s/v",startDir);
-        readSpatial(0, name);
+            sprintf(name,"%s/v",startDir);
+            readSpatial(0, name);
 
-        sprintf(name,"%s/w",startDir);
-        readSpatial(0, name);
+            sprintf(name,"%s/w",startDir);
+            readSpatial(0, name);
+        }
 
-        sprintf(name,"%s/T",startDir);
-        readSpatial(0, name);
+        if(tEquation)
+        {
+            sprintf(name,"%s/T",startDir);
+            readSpatial(0, name);
+        }
     }
 
 }
