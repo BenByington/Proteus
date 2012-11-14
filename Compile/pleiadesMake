@@ -13,6 +13,7 @@ FASTSSE= -O3
 #CCFLAGS =  -g  -I./src
 
 SRC = ../src
+INCL = ../src/include
 
 OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
