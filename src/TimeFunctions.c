@@ -130,8 +130,14 @@ inline double bSourceX(double x, double y, double z, double t)
 
 inline double bSourceY(double x, double y, double z, double t)
 {
-    //return  0.5*tanh(30 *(x-0.2))*tanh(30*(0.2-x))*tanh(30 *(z-0.2))*tanh(30*(0.2-z)) + 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
-    return sin(2*PI*x);
+    //stupid hyperbolics are murderously slow...  Use sparingly!
+    if(x > .16 && x < .24 && z > .16 && z < .24)
+        return  0.5*tanh(30 *(x-0.2))*tanh(30*(0.2-x))*tanh(30 *(z-0.2))*tanh(30*(0.2-z)) + 0.5;
+    else if(x > .76 && x < .84 && z > .76 && z < .84)
+        return 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
+    else
+        return 0;
+    //return sin(2*PI*x);
 }
 
 inline double bSourceZ(double x, double y, double z, double t)
