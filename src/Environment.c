@@ -124,6 +124,8 @@ int tDiff = 0;
 int tempAdvection = 0;
 int magDiff = 0;
 int magAdvect = 0;
+int kinematic = 0;
+int magTimeForcing = 0;
 
 double Re = 0;
 double Ra = 0;

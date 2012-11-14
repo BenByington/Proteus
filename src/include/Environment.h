@@ -116,6 +116,8 @@ extern int tDiff;
 extern int tempAdvection;
 extern int magDiff;
 extern int magAdvect;
+extern int kinematic;
+extern int magTimeForcing;
 
 //phsyics parameters
 extern double Re;

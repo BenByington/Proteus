@@ -117,6 +117,11 @@ inline double mSourceZ(double x, double y, double z, double t)
     return 0;
 }
 
+/**
+ * !!!MAKE SURE YOU PROGRAM IN A SOLENOIDAL FIELD!!!
+ * If you don't, strange and unpredictable things may happen
+ * when it is decomposed into P and T...
+ **/
 inline double bSourceX(double x, double y, double z, double t)
 {
     return 0;

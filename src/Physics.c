@@ -239,12 +239,12 @@ void calcMomentum()
     {
         fillTimeField(temp1, MOMENTUM);
 
-        complex double * xfield;
-        complex double * yfield;
-        complex double * zfield;
-        complex double * xforce;
-        complex double * yforce;
-        complex double * zforce;
+        complex double * xfield = rhs->x->spectral;
+        complex double * yfield = rhs->y->spectral;
+        complex double * zfield = rhs->z->spectral;
+        complex double * xforce = temp1->x->spectral;
+        complex double * yforce = temp1->y->spectral;
+        complex double * zforce = temp1->z->spectral;
 
         int i;
         for(i = 0; i < spectralCount; i++)
@@ -384,6 +384,11 @@ void calcMag()
         memset(rhs->z->spectral, 0, spectralCount * sizeof(complex double));
     }
 
+    if(kinematic)
+    {
+        fillTimeField(u->vec, KINEMATIC);
+    }
+
     if(magAdvect)
     {
         p_vector uxb = temp1;
@@ -398,6 +403,25 @@ void calcMag()
         plusEq(rhs->x->spectral, cuxb->x->spectral);
         plusEq(rhs->y->spectral, cuxb->y->spectral);
         plusEq(rhs->z->spectral, cuxb->z->spectral);
+    }
+
+    if(magTimeForcing)
+    {
+        fillTimeField(temp1, MAGNETIC);
+
+        complex double * xfield = rhs->x->spectral;
+        complex double * yfield = rhs->y->spectral;
+        complex double * zfield = rhs->z->spectral;
+        complex double * xforce = temp1->x->spectral;
+        complex double * yforce = temp1->y->spectral;
+        complex double * zforce = temp1->z->spectral;
+        int i;
+        for(i = 0; i < spectralCount; i++)
+        {
+            xfield[i] += xforce[i];
+            yfield[i] += yforce[i];
+            zfield[i] += zforce[i];
+        }
     }
 
     decomposeSolenoidal(B->sol, rhs, 1);

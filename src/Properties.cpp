@@ -275,6 +275,8 @@ void parsePhysics(iostream & in)
     const string sTempAdvection("tempAdvection");
     const string sMagDiff("magdiff");
     const string sMagAdvect("magAdvect");
+    const string sKinematic("kinematic");
+    const string sMagTimeForcing("magTimeForcing");
     const string RE("Re");
     const string RA("Ra");
     const string PRM("Prm");
@@ -466,6 +468,30 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
             trace("Magnetic \"Advection\" flag: %d\n", magAdvect);
+        }
+        else if((int)one.find(sKinematic) != -1)
+        {
+            if((int)two.find(on) != -1)
+                kinematic = 1;
+            else if((int)two.find(off) != -1)
+                kinematic = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            trace("Kinematic problem flag: %d\n", kinematic);
+        }
+        else if((int)one.find(sMagTimeForcing) != -1)
+        {
+            if((int)two.find(on) != -1)
+                magTimeForcing = 1;
+            else if((int)two.find(off) != -1)
+                magTimeForcing = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            trace("Magnetic time forcing flag: %d\n", magAdvect);
         }
         else if((int)one.find(RE) != -1)
         {
