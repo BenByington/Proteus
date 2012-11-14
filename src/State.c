@@ -47,7 +47,7 @@ void initState()
             fwrite(&idumb, sizeof(int), 1, out);
             fclose(out);
 
-            out = fopen("Checkpoint2/state", "w");
+            out = fopen("Checkpoint1/state", "w");
             fwrite(&ddumb, sizeof(double), 1, out);
             fwrite(&ddumb, sizeof(double), 1, out);
             fwrite(&ddumb, sizeof(double), 1, out);

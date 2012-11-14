@@ -530,7 +530,7 @@ void parseIntegration(iostream & in)
 {
     const string sSafety("safetyFactor");
     const string sMaxSteps("maxSteps");
-    const string sMaxTime("masTime");
+    const string sMaxTime("maxTime");
 
     string line;
     string one;
