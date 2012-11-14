@@ -336,7 +336,7 @@ void performOutput()
         if(iteration % statusRate == 0)
         {
             status = fopen("status", "a");
-            fprintf(status, "Iteration %d:\n dt = %g\tElapsed Time = %g\n", iteration, dt, elapsedTime);
+            fprintf(status, "Iteration %d:\n dt = %g\tElapsed Time = %g\nMax Vel: %g %g %g", iteration, dt, elapsedTime, maxVel[0], maxVel[1], maxVel[2]);
             fclose(status);
         }
     }
