@@ -164,6 +164,24 @@ void startSpatial()
 {
     char name[100];
 
+    if(grank == 0)
+    {
+        sprintf(name,"%s/info",startDir);
+        FILE * info;
+        info = fopen(name, "r");
+        if(info)
+        {
+            fscanf(info, infostr, &elapsedTime);
+            fclose(info);
+        }
+        else
+        {
+            elapsedTime = 0;
+        }
+    }
+
+    MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
+
     if(compute_node)
     {
         if(magEquation)

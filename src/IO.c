@@ -19,8 +19,6 @@ PRECISION * scalarData;
 PRECISION * piScalarData;
 int numScalar;
 
-char infostr[] = "Time: %g\n";
-
 void testIO()
 {
     int i,j,k;

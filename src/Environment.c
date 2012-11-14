@@ -157,3 +157,5 @@ PRECISION dt1 = 0;
 PRECISION dt2 = 0;
 PRECISION elapsedTime = 0;
 
+char infostr[] = "Time: %g\n";
+

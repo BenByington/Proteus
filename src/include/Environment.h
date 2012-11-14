@@ -150,5 +150,7 @@ extern PRECISION dt1;
 extern PRECISION dt2;
 extern PRECISION elapsedTime;
 
+extern char infostr[];
+
 #endif	/* _ENVIRONMENT_H */
 
