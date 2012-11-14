@@ -102,6 +102,7 @@ extern int spatialRate;
 extern int scalarRate;
 extern int scalarPerF;
 extern int checkRate;
+extern int checkDir;
 
 //physics terms
 extern int momEquation;

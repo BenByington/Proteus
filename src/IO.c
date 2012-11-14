@@ -349,10 +349,6 @@ void initIO()
             fclose(status);
         }
 
-        mkdir("Spatial", S_IRWXU);
-        mkdir("Scalars", S_IRWXU);
-        mkdir("Checkpoint", S_IRWXU);
-
         scalarCount = 0;
 
         scalarData = malloc(numScalar * scalarPerF * sizeof(double));
@@ -585,255 +581,309 @@ void performOutput()
 
     if(iteration % checkRate == 0)
     {
-        writeCheckpoint();
+        if(compute_node)
+            writeCheckpoint();
     }
 }
 
 void writeCheckpoint()
 {
-    if(compute_node)
+    FILE * out;
+    char name[100];
+
+    trace("Writing to Checkpoint%d\n", checkDir);
+
+    if(momEquation)
     {
-        FILE * out;
-        char name[100];
+        sprintf(name,"Checkpoint%d/upol%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->poloidal->spectral, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-        if(momEquation)
-        {
-            sprintf(name,"Checkpoint/upol%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->poloidal->spectral, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/upolf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->poloidal->force1, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/upolf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->poloidal->force1, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/upolf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->poloidal->force2, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/upolf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->poloidal->force2, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/utor%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->toroidal->spectral, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/utor%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->toroidal->spectral, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/utorf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->toroidal->force1, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/utorf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->toroidal->force1, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/utorf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->toroidal->force2, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/utorf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->toroidal->force2, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umx%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->mean_x, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/umx%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->mean_x, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umxf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->mean_xf1, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/umxf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->mean_xf1, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umxf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->mean_xf2, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/umxf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->mean_xf2, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umy%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->mean_y, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/umy%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->mean_y, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umyf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->mean_yf1, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/umyf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->mean_yf1, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umyf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(u->sol->mean_yf2, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/umyf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(u->sol->mean_yf2, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/umz%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(&(u->sol->mean_z), sizeof(complex double), 1, out);
+        fclose(out);
+    }
 
-            sprintf(name,"Checkpoint/umz%d",crank);
-            out = fopen(name,"w");
-            fwrite(&(u->sol->mean_z), sizeof(complex double), 1, out);
-            fclose(out);
-        }
+    if(magEquation)
+    {
+        sprintf(name,"Checkpoint%d/bpol%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->poloidal->spectral, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-        if(magEquation)
-        {
-            sprintf(name,"Checkpoint/bpol%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->poloidal->spectral, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bpolf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->poloidal->force1, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bpolf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->poloidal->force1, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bpolf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->poloidal->force2, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bpolf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->poloidal->force2, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/btor%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->toroidal->spectral, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/btor%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->toroidal->spectral, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/btorf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->toroidal->force1, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/btorf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->toroidal->force1, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/btorf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->toroidal->force2, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/btorf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->toroidal->force2, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmx%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->mean_x, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bmx%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->mean_x, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmxf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->mean_xf1, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bmxf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->mean_xf1, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmxf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->mean_xf2, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bmxf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->mean_xf2, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmy%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->mean_y, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bmy%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->mean_y, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmyf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->mean_yf1, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bmyf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->mean_yf1, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmyf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(B->sol->mean_yf2, sizeof(complex double), ndkz, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/bmyf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(B->sol->mean_yf2, sizeof(complex double), ndkz, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/bmz%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(&(B->sol->mean_z), sizeof(complex double), 1, out);
+        fclose(out);
+    }
 
-            sprintf(name,"Checkpoint/bmz%d",crank);
-            out = fopen(name,"w");
-            fwrite(&(B->sol->mean_z), sizeof(complex double), 1, out);
-            fclose(out);
-        }
+    if(tEquation)
+    {
+        sprintf(name,"Checkpoint%d/T%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(T->spectral, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-        if(tEquation)
-        {
-            sprintf(name,"Checkpoint/T%d",crank);
-            out = fopen(name,"w");
-            fwrite(T->spectral, sizeof(complex double), spectralCount, out);
-            fclose(out);
+        sprintf(name,"Checkpoint%d/Tf1%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(T->force1, sizeof(complex double), spectralCount, out);
+        fclose(out);
 
-            sprintf(name,"Checkpoint/Tf1%d",crank);
-            out = fopen(name,"w");
-            fwrite(T->force1, sizeof(complex double), spectralCount, out);
-            fclose(out);
-
-            sprintf(name,"Checkpoint/Tf2%d",crank);
-            out = fopen(name,"w");
-            fwrite(T->force2, sizeof(complex double), spectralCount, out);
-            fclose(out);
-        }
-
-
+        sprintf(name,"Checkpoint%d/Tf2%d", checkDir, crank);
+        out = fopen(name,"w");
+        fwrite(T->force2, sizeof(complex double), spectralCount, out);
+        fclose(out);
     }
     
+    //finish all the important data.  Then update the state file so we know
+    //things are completed
+    MPI_Barrier(ccomm);
+
     if(crank == 0)
     {
-        FILE * out = fopen("Checkpoint/state", "w");
-        fwrite(&iteration, sizeof(int), 1, out);
+        sprintf(name, "Checkpoint%d/state", checkDir);
+        FILE * out = fopen(name, "w");
         fwrite(&elapsedTime, sizeof(double), 1, out);
         fwrite(&dt, sizeof(double), 1, out);
         fwrite(&dt1, sizeof(double), 1, out);
+        fwrite(&iteration, sizeof(int), 1, out);
         fclose(out);
     }
+
+    //Switch which directory we write to next
+    if(checkDir == 0)
+        checkDir = 1;
+    else
+        checkDir = 0;
 }
 
 void readCheckpoint()
 {
+    if(grank == 0)
+    {
+        double dElapsed;
+        double dDt;
+        double dDt1;
+        int dIteration;
+
+        FILE * out = fopen("Checkpoint0/state", "r");
+        fread(&dElapsed, sizeof(double), 1, out);
+        fread(&dDt, sizeof(double), 1, out);
+        fread(&dDt1, sizeof(double), 1, out);
+        fread(&dIteration, sizeof(int), 1, out);
+        fclose(out);
+
+        out = fopen("Checkpoint1/state", "r");
+        fread(&elapsedTime, sizeof(double), 1, out);
+        fread(&dt, sizeof(double), 1, out);
+        fread(&dt1, sizeof(double), 1, out);
+        fread(&iteration, sizeof(int), 1, out);
+        fclose(out);
+
+        if(iteration > dIteration)
+        {
+            checkDir = 1;
+        }
+        else
+        {
+            checkDir = 0;
+            iteration = dIteration;
+            elapsedTime = dElapsed;
+            dt = dDt;
+            dt1 = dDt1;
+        }
+
+    }
+
+    MPI_Bcast(&iteration, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&elapsedTime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&dt1, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&checkDir, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
+
+
     if(compute_node)
     {
         FILE * in;
         char name[100];
 
+        trace("Reading from Checkpoint%d", checkDir);
+
         if(momEquation)
         {
-            sprintf(name,"Checkpoint/upol%d",crank);
+            sprintf(name,"Checkpoint%d/upol%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->poloidal->spectral, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/upolf1%d",crank);
+            sprintf(name,"Checkpoint%d/upolf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->poloidal->force1, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/upolf2%d",crank);
+            sprintf(name,"Checkpoint%d/upolf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/utor%d",crank);
+            sprintf(name,"Checkpoint%d/utor%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->toroidal->spectral, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/utorf1%d",crank);
+            sprintf(name,"Checkpoint%d/utorf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->toroidal->force1, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/utorf2%d",crank);
+            sprintf(name,"Checkpoint%d/utorf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->toroidal->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umx%d",crank);
+            sprintf(name,"Checkpoint%d/umx%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->mean_x, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umxf1%d",crank);
+            sprintf(name,"Checkpoint%d/umxf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->mean_xf1, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umxf2%d",crank);
+            sprintf(name,"Checkpoint%d/umxf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->mean_xf2, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umy%d",crank);
+            sprintf(name,"Checkpoint%d/umy%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->mean_y, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umyf1%d",crank);
+            sprintf(name,"Checkpoint%d/umyf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->mean_yf1, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umyf2%d",crank);
+            sprintf(name,"Checkpoint%d/umyf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(u->sol->mean_yf2, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/umz%d",crank);
+            sprintf(name,"Checkpoint%d/umz%d", checkDir, crank);
             in = fopen(name,"r");
             fread(&(u->sol->mean_z), sizeof(complex double), 1, in);
             fclose(in);
@@ -846,67 +896,67 @@ void readCheckpoint()
 
         if(magEquation)
         {
-            sprintf(name,"Checkpoint/bpol%d",crank);
+            sprintf(name,"Checkpoint%d/bpol%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->poloidal->spectral, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bpolf1%d",crank);
+            sprintf(name,"Checkpoint%d/bpolf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->poloidal->force1, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bpolf2%d",crank);
+            sprintf(name,"Checkpoint%d/bpolf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->poloidal->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/btor%d",crank);
+            sprintf(name,"Checkpoint%d/btor%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->toroidal->spectral, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/btorf1%d",crank);
+            sprintf(name,"Checkpoint%d/btorf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->toroidal->force1, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/btorf2%d",crank);
+            sprintf(name,"Checkpoint%d/btorf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->toroidal->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmx%d",crank);
+            sprintf(name,"Checkpoint%d/bmx%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->mean_x, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmxf1%d",crank);
+            sprintf(name,"Checkpoint%d/bmxf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->mean_xf1, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmxf2%d",crank);
+            sprintf(name,"Checkpoint%d/bmxf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->mean_xf2, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmy%d",crank);
+            sprintf(name,"Checkpoint%d/bmy%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->mean_y, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmyf1%d",crank);
+            sprintf(name,"Checkpoint%d/bmyf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->mean_yf1, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmyf2%d",crank);
+            sprintf(name,"Checkpoint%d/bmyf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(B->sol->mean_yf2, sizeof(complex double), ndkz, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/bmz%d",crank);
+            sprintf(name,"Checkpoint%d/bmz%d", checkDir, crank);
             in = fopen(name,"r");
             fread(&(B->sol->mean_z), sizeof(complex double), 1, in);
             fclose(in);
@@ -919,17 +969,17 @@ void readCheckpoint()
 
         if(tEquation)
         {
-            sprintf(name,"Checkpoint/T%d",crank);
+            sprintf(name,"Checkpoint%d/T%d", checkDir, crank);
             in = fopen(name,"r");
             fread(T->spectral, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/Tf1%d",crank);
+            sprintf(name,"Checkpoint%d/Tf1%d", checkDir, crank);
             in = fopen(name,"r");
             fread(T->force1, sizeof(complex double), spectralCount, in);
             fclose(in);
 
-            sprintf(name,"Checkpoint/Tf2%d",crank);
+            sprintf(name,"Checkpoint%d/Tf2%d", checkDir, crank);
             in = fopen(name,"r");
             fread(T->force2, sizeof(complex double), spectralCount, in);
             fclose(in);
@@ -937,21 +987,5 @@ void readCheckpoint()
             fftBackward(T);
         }
 
-
     }
-
-    if(grank == 0)
-    {
-        FILE * out = fopen("Checkpoint/state", "r");
-        fread(&iteration, sizeof(int), 1, out);
-        fread(&elapsedTime, sizeof(double), 1, out);
-        fread(&dt, sizeof(double), 1, out);
-        fread(&dt1, sizeof(double), 1, out);
-        fclose(out);
-    }
-
-    MPI_Bcast(&iteration, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&elapsedTime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&dt1, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }

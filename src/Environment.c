@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 void setupEnvironment(char * loc)
 {
@@ -27,6 +28,14 @@ void setupEnvironment(char * loc)
     lab_initGeometry();
     lab_initGroups();
     lab_initDistributions();
+
+    if(grank == 0)
+    {
+        mkdir("Spatial", S_IRWXU);
+        mkdir("Scalars", S_IRWXU);
+        mkdir("Checkpoint0", S_IRWXU);
+        mkdir("Checkpoint1", S_IRWXU);
+    }
 
     //TODO: Don't forget to turn measuring back on!
     if(compute_node)
@@ -110,6 +119,7 @@ int spatialRate = 1000;
 int scalarRate = 1000;
 int scalarPerF = 1;
 int checkRate = 1000;
+int checkDir = 0;
 
 int momStaticForcing = 0;
 int momTimeForcing = 0;

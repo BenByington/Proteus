@@ -26,23 +26,50 @@ void initState()
         allocateForce(T);
     }
 
-    if(startType == SCRATCH)
-    {
-        //no need for IO nodes in here
-        if(compute_node)
-            startScratch();
-    }
-    else if(startType == SPATIAL)
-    {
-        startSpatial();
-    }
-    else if(startType == CHECKPOINT)
+    if(startType == CHECKPOINT)
     {
         readCheckpoint();
     }
     else
     {
-        error("Unsupported start type requested: %d\n", startType);
+        //do some quick setup so future starts can be a checkpoint
+        if(grank == 0)
+        {
+            //dummy data so the file is the right size, but we can tell
+            //nothing has been computed yet and both Checkpoint directories
+            //are empty (or have invalid data)
+            FILE * out = fopen("Checkpoint0/state", "w");
+            int idumb = 0;
+            int ddumb = 0;
+            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&idumb, sizeof(int), 1, out);
+            fclose(out);
+
+            out = fopen("Checkpoint2/state", "w");
+            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&idumb, sizeof(int), 1, out);
+            fclose(out);
+        }
+
+
+        if(startType == SCRATCH)
+        {
+            //no need for IO nodes in here
+            if(compute_node)
+                startScratch();
+        }
+        else if(startType == SPATIAL)
+        {
+            startSpatial();
+        }
+        else
+        {
+            error("Unsupported start type requested: %d\n", startType);
+        }
     }
     
 

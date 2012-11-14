@@ -57,6 +57,7 @@ int main(int argc, char** argv)
         if(compute_node)
             iterate();
 
+        MPI_Bcast(&elapsedTime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         performOutput();
     }
 
