@@ -339,7 +339,7 @@ void initIO()
         fclose(status);
 
         mkdir("Spatial", S_IRWXU);
-        mkdir("Scalers", S_IRWXU);
+        mkdir("Scalars", S_IRWXU);
 
         scalarCount = 0;
 
@@ -429,7 +429,7 @@ void performOutput()
                 if(scalarCount >= scalarPerF)
                 {
                     char fileName[100];
-                    sprintf(fileName, "Scalar/%08d",iteration);
+                    sprintf(fileName, "Scalars/%08d",iteration);
 
                     FILE * out = fopen(fileName, "w");
                     fwrite(scalarData, sizeof(double), numScalar * scalarPerF, out);
