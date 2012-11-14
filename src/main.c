@@ -114,6 +114,10 @@ int benchmark(char * propLoc)
     
     loadPrefs(propLoc);
 
+    //make sure we don't start running to the file system for data
+    startType = SCRATCH;
+    momStaticForcing = 0;
+
     hdiv = 3;
     vdiv = 3;
     n_io_nodes = vdiv;
