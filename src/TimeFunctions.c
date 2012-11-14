@@ -107,45 +107,52 @@ extern double getz(int i)
  * applied to modified ABC flow
  * use epsilon = 1.0
  * Re = 100.0
- * Omega = 1.0 (vary this to change nonlinear dynamo properties)
+ * Omega = 2.5 (vary this to change nonlinear dynamo properties)
  **/
 
 inline double mSourceX(double x, double y, double z, double t)
 {
-  return 1.0*cos(1.0*t)*(cos(2.0*PI*z+sin(1.0*t))-sin(2.0*PI*y+sin(1.0*t)))+(sin(2.0*PI*z+sin(1.0*t))+cos(2.0*PI*y+sin(1.0*t)))/100.0;
+  return 2.5*cos(2.5*t)*(cos(2.0*PI*z+sin(2.5*t))-sin(2.0*PI*y+sin(2.5*t)))+(sin(2.0*PI*z+sin(2.5*t))+cos(2.0*PI*y+sin(2.5*t)))/100.0;
 }
 
 inline double mSourceY(double x, double y, double z, double t)
 {
-  return 1.0*cos(1.0*t)*(cos(2.0*PI*x+sin(1.0*t))-sin(2.0*PI*z+sin(1.0*t)))+(sin(2.0*PI*x+sin(1.0*t))+cos(2.0*PI*z+sin(1.0*t)))/100.0;
+  return 2.5*cos(2.5*t)*(cos(2.0*PI*x+sin(2.5*t))-sin(2.0*PI*z+sin(2.5*t)))+(sin(2.0*PI*x+sin(2.5*t))+cos(2.0*PI*z+sin(2.5*t)))/100.0;
 }
 
 inline double mSourceZ(double x, double y, double z, double t)
 {
-  return 1.0*cos(1.0*t)*(cos(2.0*PI*y+sin(1.0*t))-sin(2.0*PI*x+sin(1.0*t)))+(sin(2.0*PI*y+sin(1.0*t))+cos(2.0*PI*x+sin(1.0*t)))/100.0;
+  return 2.5*cos(2.5*t)*(cos(2.0*PI*y+sin(2.5*t))-sin(2.0*PI*x+sin(2.5*t)))+(sin(2.0*PI*y+sin(2.5*t))+cos(2.0*PI*x+sin(2.5*t)))/100.0;
 }
 
 
 /**
  * !!!MAKE SURE YOU PROGRAM IN A SOLENOIDAL FIELD!!!
- * If you don't, strange and unpredictable things may happen
- * when it is decomposed into P and T... Physics will not be broken, but what
- * you get out will not be what you meant to put in.
+ * Force induction equation in a similar manner to how
+ * the momentum equation is forced.
+ * Apply forcing func to B0sin(kz)sin(wt)[sin(ky),0,0]
+ *
+ * yields w*B0*sin(kz)*[sin(ky),0,0]*cos(wt)
+ * + 2*k*k*Pr*B0*sin(kz)*[sin(ky),0,0]*sin(wt)/Pm
+ *
+ * Must pick suitable values for B0, k, w
+ * Use Pr=0.01, Pm=1.0
+ * Try B0=0.2, k=1.0, w=1e-4
+ * should add field slower than decay rate
+ * and such that it wont decay too rapidly
  **/
 inline double bSourceX(double x, double y, double z, double t)
 {
-    return 0;
+  static double k = 1.0;
+  static double w = 1e-1;
+  static double b0 = 0.1;
+
+  return w*b0*sin(k*z)*sin(k*y)*cos(w*t)+2.0*k*k*0.01*b0*sin(k*z)*sin(k*y)*sin(w*t)/1.0;
 }
 
 inline double bSourceY(double x, double y, double z, double t)
 {
-    //stupid hyperbolics are murderously slow...  Use sparingly!
-    if(x > .16 && x < .24 && z > .16 && z < .24)
-        return  0.5*tanh(30 *(x-0.2))*tanh(30*(0.2-x))*tanh(30 *(z-0.2))*tanh(30*(0.2-z)) + 0.5;
-    else if(x > .76 && x < .84 && z > .76 && z < .84)
-        return 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
-    else
-        return 0;
+    return 0;
 }
 
 inline double bSourceZ(double x, double y, double z, double t)
