@@ -336,9 +336,18 @@ void initIO()
 
     if(crank == 0)
     {
-        status = fopen("status", "w");
-        fprintf(status, "Stupid message here and now to make me put a nice and informative one later\n\n");
-        fclose(status);
+        if(startType != CHECKPOINT)
+        {
+            status = fopen("status", "w");
+            fprintf(status, "Stupid message here and now to make me put a nice and informative one later\n\n");
+            fclose(status);
+        }
+        else
+        {
+            status = fopen("status", "a");
+            fprintf(status, "Restarting from most recent Checkpoint\n\n");
+            fclose(status);
+        }
 
         mkdir("Spatial", S_IRWXU);
         mkdir("Scalars", S_IRWXU);
