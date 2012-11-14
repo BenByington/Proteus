@@ -8,7 +8,6 @@
 ##########################################################
 
 cd $PBS_O_WORKDIR
-cp ~/IMHD/Compile/imhd ./
 
 mpirun -hostfile $PBS_NODEFILE -np 68 ./imhd config.cfg
 
