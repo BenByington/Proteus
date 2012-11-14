@@ -343,7 +343,7 @@ void calcMomentum()
         complex PRECISION * zfield = rhs->z->spectral;
         complex PRECISION * tfield = T->spectral;
 
-        PRECISION factor =  Ra / Pr;
+        PRECISION factor =  Ra * Pr;
         index = 0;
         for(i = 0; i < my_kx->width; i++)
         {
