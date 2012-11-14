@@ -532,7 +532,7 @@ void performOutput()
         }
         else
         {
-            if(momEquation)
+            if(momEquation || kinematic)
             {
                 sprintf(name, "Spatial/%08d/u", iteration);
                 trace("Writing to file %s\n", name);
