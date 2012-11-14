@@ -116,7 +116,7 @@ int benchmark(char * propLoc)
 
     hdiv = 3;
     vdiv = 3;
-    n_io_nodes = 1;
+    n_io_nodes = vdiv;
     while(hdiv * vdiv + n_io_nodes <= gsize)
     {
         setupEnvironment();
