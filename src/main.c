@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
+#include <time.h>
 
 #include "Field.h"
 #include "Communication.h"
@@ -31,7 +32,7 @@ int main(int argc, char** argv)
         int i;
         for(i = 0; i < argc; i++)
             fprintf(stderr, "arg %d: %s\n",i, argv[i]);
-        return;
+        return -1;
     }
     srand(time(0));
 
@@ -43,6 +44,7 @@ int main(int argc, char** argv)
         testPT();
 
     initState();
+    initIO();
     if(compute_node)
     {
         initPhysics();

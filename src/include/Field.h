@@ -58,13 +58,13 @@ p_vector newVector(int alloc);
 void deleteVector(p_vector * pv);
 
 p_componentVar newComponentVar();
-void deleteComonentVar(p_componentVar * pc);
+void deleteComponentVar(p_componentVar * pc);
 
 void allocateSpectral(field * f);
 void allocateSpatial(field * f);
 void allocateForce(p_field f);
-void eraseSpectal(field * f);
-void eraseSpatial(field * f);
+void eraseSpectral(p_field f);
+void eraseSpatial(p_field f);
 void eraseForce(p_field f);
 
 #endif	/* _FIELD_H */

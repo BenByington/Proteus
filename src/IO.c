@@ -12,6 +12,11 @@
 
 FILE * status = 0;
 
+int scalarCount;
+double * scalarData;
+double * piScalarData;
+int numScalar;
+
 void testIO()
 {
     int i,j,k;
@@ -316,22 +321,37 @@ void readSpatial(field * f, char * name)
     debug("Reading from file done\n",0);
 }
 
-void performOutput()
+void initIO()
 {
-    //only one processor controls the status file
     if(crank == 0)
     {
-        //Is this a first time in this method?
-        if(status == 0)
-        {
-            status = fopen("status", "w");
-            fprintf(status, "Stupid message here and now to make me put a nice and informative one later\n\n");
-            fclose(status);
+        status = fopen("status", "w");
+        fprintf(status, "Stupid message here and now to make me put a nice and informative one later\n\n");
+        fclose(status);
 
-            //This really should go elsewhere...
-            mkdir("Spatial", S_IRWXU);
+        mkdir("Spatial", S_IRWXU);
+        mkdir("Scalers", S_IRWXU);
+
+        scalarCount = 0;
+        if(lorentz)
+        {
+            numScalar = 24;
+        }
+        else
+        {
+            numScalar = 13;
         }
 
+        scalarData = malloc(numScalar * scalarPerF * sizeof(double));
+        piScalarData = scalarData;
+    }
+}
+
+void performOutput()
+{
+
+    if(crank == 0)
+    {
         //update the status file?
         if(iteration % statusRate == 0)
         {
@@ -341,6 +361,49 @@ void performOutput()
         }
     }
 
+    if(compute_node)
+    {
+        if(iteration % scalarRate == 0)
+        {
+            double local[numScalar];
+            int i;
+
+            double * datax = u->vec->x->spatial;
+            double * datay = u->vec->y->spatial;
+            double * dataz = u->vec->z->spatial;
+            double temp;
+
+            local[0] = iteration;
+            local[1] = elapsedTime;
+            local[2] = datax[0];
+            local[3] = datax[0];
+            local[4] = datax[0];
+            local[5] = datay[0];
+            local[6] = datay[0];
+            local[7] = datay[0];
+            local[8] = dataz[0];
+            local[9] = dataz[0];
+            local[10] = dataz[0];
+            temp = pow(datax[0],2) + pow(datay[0],2) + pow(dataz[0],2);
+            local[11] = temp;
+            local[12] = temp;
+            for(i = 1; i < spatialCount; i++)
+            {
+                local[2] = fmin(local[2], datax[i]);
+                local[3] = fmax(local[3], datax[i]);
+                local[4] += datax[i];
+                local[5] = fmin(local[5], datay[i]);
+                local[6] = fmax(local[6], datay[i]);
+                local[7] += datay[i];
+                local[8] = fmin(local[8], dataz[i]);
+                local[9] = fmax(local[9], dataz[i]);
+                local[10] += dataz[i];
+                temp = pow(datax[i],2) + pow(datay[i],2) + pow(dataz[i],2);
+                local[11] += temp;
+                local[12] = fmax(temp, local[12]);
+            }
+        }
+    }
     //Time for spatial file output?
     if(iteration % spatialRate == 0)
     {

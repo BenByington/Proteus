@@ -3,6 +3,8 @@
 #include "Environment.h"
 #include "IO.h"
 #include "Numerics.h"
+#include "Communication.h"
+#include "Field.h"
 
 #include <string.h>
 #include <stdlib.h>

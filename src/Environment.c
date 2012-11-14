@@ -2,6 +2,7 @@
 #include "LaborDivision.h"
 #include "Communication.h"
 #include "Log.h"
+#include "Properties.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -106,6 +107,8 @@ char * startDir = 0;
 int n_io_nodes;
 int statusRate = 100;
 int spatialRate = 1000;
+int scalarRate = 1000;
+int scalarPerF = 1;
 
 int forcing = 0;
 int momEquation = 0;

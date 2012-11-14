@@ -98,6 +98,8 @@ extern char * startDir;
 extern int n_io_nodes;
 extern int statusRate;
 extern int spatialRate;
+extern int scalarRate;
+extern int scalarPerF;
 
 //physics terms
 extern int momEquation;

@@ -14,7 +14,7 @@ inline complex double dyFactor(int i);
 inline complex double dzFactor(int i);
 
 void decomposeSolenoidal(p_solenoid s, p_vector v, int force);
-void decomposeCurlSolenoid(p_solenoid s, p_vector v, int force);
+void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force);
 void recomposeSolenoidal(p_solenoid s, p_vector v);
 
 inline void curl(p_vector in, p_vector out);

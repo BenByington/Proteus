@@ -163,6 +163,8 @@ void parseIO(iostream & in)
     const string nip("N_IO_PROCS");
     const string statusr("statusRate");
     const string spatialr("spatialRate");
+    const string scalarr("scalarRate");
+    const string scalarpf("ScalarPerF");
 
     string line;
     string one;
@@ -196,6 +198,16 @@ void parseIO(iostream & in)
         {
             spatialRate = atoi(two.c_str());
             trace("spatialRate = %d\n", spatialRate);
+        }
+        else if((int)one.find(scalarr) != -1)
+        {
+            scalarRate = atoi(two.c_str());
+            trace("scalarRate = %d\n", scalarRate);
+        }
+        else if((int)one.find(scalarpf) != -1)
+        {
+            scalarPerF = atoi(two.c_str());
+            trace("scalarPerF = %d\n", scalarPerF);
         }
         else
         {
