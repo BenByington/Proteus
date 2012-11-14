@@ -402,6 +402,33 @@ void performOutput()
                 local[11] += temp;
                 local[12] = fmax(temp, local[12]);
             }
+
+            if(crank == 0)
+            {
+                piScalarData[0] = local[0];
+                piScalarData[1] = local[1];
+            }
+            MPI_Reduce(local+2, piScalarData+2, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
+            MPI_Reduce(local+3, piScalarData+3, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+            MPI_Reduce(local+4, piScalarData+4, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+            MPI_Reduce(local+5, piScalarData+5, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
+            MPI_Reduce(local+6, piScalarData+6, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+            MPI_Reduce(local+7, piScalarData+7, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+            MPI_Reduce(local+8, piScalarData+8, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
+            MPI_Reduce(local+9, piScalarData+9, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+            MPI_Reduce(local+10, piScalarData+10, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+            MPI_Reduce(local+11, piScalarData+11, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
+            MPI_Reduce(local+12, piScalarData+12, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
+
+            if(crank == 0)
+            {
+                int i;
+                for(i = 0; i < 13; i++)
+                {
+                    fprintf(stderr, "%g ", piScalarData[i]);
+                }
+                fprintf(stderr, "\n\n");
+            }
         }
     }
     //Time for spatial file output?
