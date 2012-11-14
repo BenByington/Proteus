@@ -29,24 +29,25 @@
 #define KINEMATIC 2
 
 #include "Field.h"
+#include "precision.h"
 
 void fillTimeField(p_vector, int func);
 
-inline double getx(int i);
-inline double gety(int j);
-inline double getz(int j);
+inline PRECISION getx(int i);
+inline PRECISION gety(int j);
+inline PRECISION getz(int j);
 
-inline double mSourceX(double x, double y, double z, double t);
-inline double mSourceY(double x, double y, double z, double t);
-inline double mSourceZ(double x, double y, double z, double t);
+inline PRECISION mSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
+inline PRECISION mSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
+inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
 
-inline double bSourceX(double x, double y, double z, double t);
-inline double bSourceY(double x, double y, double z, double t);
-inline double bSourceZ(double x, double y, double z, double t);
+inline PRECISION bSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
+inline PRECISION bSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
+inline PRECISION bSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
 
-inline double kinematicX(double x, double y, double z, double t);
-inline double kinematicY(double x, double y, double z, double t);
-inline double kinematicZ(double x, double y, double z, double t);
+inline PRECISION kinematicX(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
+inline PRECISION kinematicY(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
+inline PRECISION kinematicZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t);
 
 #endif	/* _TIMEFUNCTIONS_H */
 

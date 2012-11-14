@@ -8,6 +8,7 @@
 #ifndef _FIELD_H
 #define	_FIELD_H
 
+#include "precision.h"
 #include <complex.h>
 
 #define SPEC 1
@@ -15,26 +16,26 @@
 
 typedef struct
 {
-    double * spatial;
-    complex double * spectral;
-    complex double * force1;
-    complex double * force2;
-    complex double * force3;
+    PRECISION * spatial;
+    complex PRECISION * spectral;
+    complex PRECISION * force1;
+    complex PRECISION * force2;
+    complex PRECISION * force3;
 }*p_field,field;
 
 typedef struct
 {
     p_field poloidal;
     p_field toroidal;
-    complex double * mean_x;
-    complex double * mean_y;
-    complex double * mean_xf1;
-    complex double * mean_yf1;
-    complex double * mean_xf2;
-    complex double * mean_yf2;
-    complex double * mean_xf3;
-    complex double * mean_yf3;
-    complex double mean_z;
+    complex PRECISION * mean_x;
+    complex PRECISION * mean_y;
+    complex PRECISION * mean_xf1;
+    complex PRECISION * mean_yf1;
+    complex PRECISION * mean_xf2;
+    complex PRECISION * mean_yf2;
+    complex PRECISION * mean_xf3;
+    complex PRECISION * mean_yf3;
+    complex PRECISION mean_z;
 }*p_solenoid, solenoid;
 
 typedef struct

@@ -44,7 +44,7 @@ void setupEnvironment()
     MPI_Barrier(MPI_COMM_WORLD);
 }
 
-double PI;
+PRECISION PI;
 
 MPI_Comm hcomm;
 MPI_Comm vcomm;
@@ -72,12 +72,12 @@ int iosize = -1;
 int nx;
 int ny;
 int nz;
-double xmx;
-double ymx;
-double zmx;
-double dx;
-double dy;
-double dz;
+PRECISION xmx;
+PRECISION ymx;
+PRECISION zmx;
+PRECISION dx;
+PRECISION dy;
+PRECISION dz;
 int nkx;
 int nky;
 int nkz;
@@ -136,17 +136,17 @@ int magAdvect = 0;
 int kinematic = 0;
 int magTimeForcing = 0;
 
-double Pr = 0;
-double Ra = 0;
-double Pm = 0;
-double alpha = 1.0;
+PRECISION Pr = 0;
+PRECISION Ra = 0;
+PRECISION Pm = 0;
+PRECISION alpha = 1.0;
 
 int maxSteps = 0;
-double maxTime = 0;
+PRECISION maxTime = 0;
 int iteration = 0;
-double safetyFactor = 0;
-double dt = 0;
-double dt1 = 0;
-double dt2 = 0;
-double elapsedTime = 0;
+PRECISION safetyFactor = 0;
+PRECISION dt = 0;
+PRECISION dt1 = 0;
+PRECISION dt2 = 0;
+PRECISION elapsedTime = 0;
 

@@ -67,13 +67,13 @@ void calcNewTimestep()
     }
     if(tEquation && tDiff)
     {
-        double temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2);
+        PRECISION temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2);
         if(temp < dt)
             dt = temp;
     }
     if(magEquation && magDiff)
     {
-        double temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Pm / Pr;
+        PRECISION temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Pm / Pr;
         if(temp < dt)
             dt = temp;
     }
@@ -84,9 +84,9 @@ void calcNewTimestep()
         maxVel[0] = 0;
         maxVel[1] = 0;
         maxVel[2] = 0;
-        double * x = u->vec->x->spatial;
-        double * y = u->vec->y->spatial;
-        double * z = u->vec->z->spatial;
+        PRECISION * x = u->vec->x->spatial;
+        PRECISION * y = u->vec->y->spatial;
+        PRECISION * z = u->vec->z->spatial;
         for(i = 0; i < spatialCount; i++)
         {
             if(fabs(x[i]) > maxVel[0])
@@ -97,9 +97,9 @@ void calcNewTimestep()
                 maxVel[2] = fabs(z[i]);
         }
 
-        MPI_Allreduce(MPI_IN_PLACE, maxVel, 1, MPI_DOUBLE, MPI_MAX, ccomm);
-        MPI_Allreduce(MPI_IN_PLACE, maxVel+1, 1, MPI_DOUBLE, MPI_MAX, ccomm);
-        MPI_Allreduce(MPI_IN_PLACE, maxVel+2, 1, MPI_DOUBLE, MPI_MAX, ccomm);
+        MPI_Allreduce(MPI_IN_PLACE, maxVel, 1, MPI_PRECISION, MPI_MAX, ccomm);
+        MPI_Allreduce(MPI_IN_PLACE, maxVel+1, 1, MPI_PRECISION, MPI_MAX, ccomm);
+        MPI_Allreduce(MPI_IN_PLACE, maxVel+2, 1, MPI_PRECISION, MPI_MAX, ccomm);
 
         trace("Max VeL %g %g %g\n", maxVel[0], maxVel[1], maxVel[2]);
         
@@ -128,7 +128,7 @@ void calcForces()
     debug("Calculating forces\n",0);
 
     //cycle the force pointers
-    complex double * temp;
+    complex PRECISION * temp;
     if(momEquation)
     {
         temp = u->sol->poloidal->force3;
@@ -211,16 +211,16 @@ void calcMomentum()
     else
     {
         //make sure we don't start with garbage
-        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex double));
-        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex double));
-        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex double));
+        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
+        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
+        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
     }
 
     //static forcing is currently only in the u direction and a function of y and z
     if(momStaticForcing)
     {
-        complex double * xfield = rhs->x->spectral;
-        complex double * ffield = forceField->spectral;
+        complex PRECISION * xfield = rhs->x->spectral;
+        complex PRECISION * ffield = forceField->spectral;
         index = 0;
         for(i = 0; i < my_kx->width; i++)
         {
@@ -239,12 +239,12 @@ void calcMomentum()
     {
         fillTimeField(temp1, MOMENTUM);
 
-        complex double * xfield = rhs->x->spectral;
-        complex double * yfield = rhs->y->spectral;
-        complex double * zfield = rhs->z->spectral;
-        complex double * xforce = temp1->x->spectral;
-        complex double * yforce = temp1->y->spectral;
-        complex double * zforce = temp1->z->spectral;
+        complex PRECISION * xfield = rhs->x->spectral;
+        complex PRECISION * yfield = rhs->y->spectral;
+        complex PRECISION * zfield = rhs->z->spectral;
+        complex PRECISION * xforce = temp1->x->spectral;
+        complex PRECISION * yforce = temp1->y->spectral;
+        complex PRECISION * zforce = temp1->z->spectral;
 
         int i;
         for(i = 0; i < spectralCount; i++)
@@ -322,9 +322,9 @@ void calcMomentum()
         partialY(tense->spectral, lor->z->spectral, 1);
 
         //TODO Find a routine to change to include this factor
-        complex double * px = lor->x->spectral;
-        complex double * py = lor->y->spectral;
-        complex double * pz = lor->z->spectral;
+        complex PRECISION * px = lor->x->spectral;
+        complex PRECISION * py = lor->y->spectral;
+        complex PRECISION * pz = lor->z->spectral;
         int i;
         for(i = 0; i < spectralCount; i++)
         {
@@ -340,10 +340,10 @@ void calcMomentum()
 
     if(buoyancy)
     {
-        complex double * zfield = rhs->z->spectral;
-        complex double * tfield = T->spectral;
+        complex PRECISION * zfield = rhs->z->spectral;
+        complex PRECISION * tfield = T->spectral;
 
-        double factor =  Ra / Pr;
+        PRECISION factor =  Ra / Pr;
         index = 0;
         for(i = 0; i < my_kx->width; i++)
         {
@@ -379,9 +379,9 @@ void calcMag()
     else
     {
         //make sure we don't start with garbage
-        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex double));
-        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex double));
-        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex double));
+        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
+        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
+        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
     }
 
     if(kinematic)
@@ -421,14 +421,14 @@ void calcMag()
 
 void calcTemp()
 {
-    complex double * forces = T->force1;
+    complex PRECISION * forces = T->force1;
     if(tDiff)
     {
         laplacian(T->spectral, forces, 0, 1.0);
     }
     else
     {
-        memset(forces, 0, spectralCount * sizeof(complex double));
+        memset(forces, 0, spectralCount * sizeof(complex PRECISION));
     }
 
     if(tempAdvection)
@@ -489,8 +489,8 @@ void eulerStep()
 {
     int i;
     
-    complex double * func;
-    complex double * f1;
+    complex PRECISION * func;
+    complex PRECISION * f1;
 
     if(momEquation)
     {
@@ -569,12 +569,12 @@ void AB2Step()
 {
     int i;
 
-    complex double * func;
-    complex double * f1;
-    complex double * f2;
+    complex PRECISION * func;
+    complex PRECISION * f1;
+    complex PRECISION * f2;
 
-    double c0 = dt * (0.5 * dt / dt1 + 1);
-    double c1 = -0.5 * dt * dt / dt1;
+    PRECISION c0 = dt * (0.5 * dt / dt1 + 1);
+    PRECISION c1 = -0.5 * dt * dt / dt1;
 
     if(momEquation)
     {
@@ -662,14 +662,14 @@ void AB3Step()
 {
     int i;
 
-    complex double * func;
-    complex double * f1;
-    complex double * f2;
-    complex double * f3;
+    complex PRECISION * func;
+    complex PRECISION * f1;
+    complex PRECISION * f2;
+    complex PRECISION * f3;
 
-    double c0 =  dt + (dt/dt1)*(dt/(dt1+dt2))*(dt/3.0 + 0.5*(2*dt1+ dt2));
-    double c1 = -(dt/dt1)*(dt/(dt2))*(dt/3.0 + 0.5*(dt1+dt2));
-    double c2 = (dt/(dt1 + dt2))*(dt/(dt2))*(dt/3.0 + 0.5*dt1);
+    PRECISION c0 =  dt + (dt/dt1)*(dt/(dt1+dt2))*(dt/3.0 + 0.5*(2*dt1+ dt2));
+    PRECISION c1 = -(dt/dt1)*(dt/(dt2))*(dt/3.0 + 0.5*(dt1+dt2));
+    PRECISION c2 = (dt/(dt1 + dt2))*(dt/(dt2))*(dt/3.0 + 0.5*dt1);
 
     if(momEquation)
     {

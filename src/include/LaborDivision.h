@@ -8,6 +8,8 @@
 #ifndef _LABORDIVISION_H
 #define	_LABORDIVISION_H
 
+#include "precision.h"
+
 void lab_initGeometry();
 void lab_initGroups();
 void lab_initDistributions();

@@ -8,11 +8,13 @@
 #ifndef _ENVIRONMENT_H
 #define	_ENVIRONMENT_H
 
+#include "precision.h"
+
 #include <mpi.h>
 
 void setupEnvironment();
 
-extern double PI;
+extern PRECISION PI;
 
 typedef struct
 {
@@ -51,12 +53,12 @@ extern int iosize;
 extern int nx;
 extern int ny;
 extern int nz;
-extern double xmx;
-extern double ymx;
-extern double zmx;
-extern double dx;
-extern double dy;
-extern double dz;
+extern PRECISION xmx;
+extern PRECISION ymx;
+extern PRECISION zmx;
+extern PRECISION dx;
+extern PRECISION dy;
+extern PRECISION dz;
 extern int nkx;
 extern int nky;
 extern int nkz;
@@ -123,20 +125,20 @@ extern int kinematic;
 extern int magTimeForcing;
 
 //phsyics parameters
-extern double Pr;
-extern double Ra;
-extern double Pm;
-extern double alpha;
+extern PRECISION Pr;
+extern PRECISION Ra;
+extern PRECISION Pm;
+extern PRECISION alpha;
 
 //integration parameters
 extern int maxSteps;
-extern double maxTime;
+extern PRECISION maxTime;
 extern int iteration;
-extern double safetyFactor;
-extern double dt;
-extern double dt1;
-extern double dt2;
-extern double elapsedTime;
+extern PRECISION safetyFactor;
+extern PRECISION dt;
+extern PRECISION dt1;
+extern PRECISION dt2;
+extern PRECISION elapsedTime;
 
 #endif	/* _ENVIRONMENT_H */
 

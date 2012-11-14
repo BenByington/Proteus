@@ -41,16 +41,16 @@ void initState()
             FILE * out = fopen("Checkpoint0/state", "w");
             int idumb = 0;
             int ddumb = 0;
-            fwrite(&ddumb, sizeof(double), 1, out);
-            fwrite(&ddumb, sizeof(double), 1, out);
-            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&ddumb, sizeof(PRECISION), 1, out);
+            fwrite(&ddumb, sizeof(PRECISION), 1, out);
+            fwrite(&ddumb, sizeof(PRECISION), 1, out);
             fwrite(&idumb, sizeof(int), 1, out);
             fclose(out);
 
             out = fopen("Checkpoint1/state", "w");
-            fwrite(&ddumb, sizeof(double), 1, out);
-            fwrite(&ddumb, sizeof(double), 1, out);
-            fwrite(&ddumb, sizeof(double), 1, out);
+            fwrite(&ddumb, sizeof(PRECISION), 1, out);
+            fwrite(&ddumb, sizeof(PRECISION), 1, out);
+            fwrite(&ddumb, sizeof(PRECISION), 1, out);
             fwrite(&idumb, sizeof(int), 1, out);
             fclose(out);
         }
@@ -124,38 +124,38 @@ void startScratch()
 {
     info("Code is starting from scratch\n",0);
 
-    memset(T->spatial, 0, spatialCount * sizeof(double));
-    memset(T->spectral, 0, spectralCount * sizeof(complex double));
+    memset(T->spatial, 0, spatialCount * sizeof(PRECISION));
+    memset(T->spectral, 0, spectralCount * sizeof(complex PRECISION));
 
-    memset(B->vec->x->spatial, 0, spatialCount * sizeof(double));
-    memset(B->vec->y->spatial, 0, spatialCount * sizeof(double));
-    memset(B->vec->z->spatial, 0, spatialCount * sizeof(double));
+    memset(B->vec->x->spatial, 0, spatialCount * sizeof(PRECISION));
+    memset(B->vec->y->spatial, 0, spatialCount * sizeof(PRECISION));
+    memset(B->vec->z->spatial, 0, spatialCount * sizeof(PRECISION));
 
-    memset(B->vec->x->spectral, 0, spectralCount * sizeof(complex double));
-    memset(B->vec->y->spectral, 0, spectralCount * sizeof(complex double));
-    memset(B->vec->z->spectral, 0, spectralCount * sizeof(complex double));
+    memset(B->vec->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(B->vec->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(B->vec->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
 
-    memset(B->sol->poloidal->spectral, 0, spectralCount * sizeof(complex double));
-    memset(B->sol->toroidal->spectral, 0, spectralCount * sizeof(complex double));
+    memset(B->sol->poloidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(B->sol->toroidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
 
-    memset(B->sol->mean_x, 0, ndkz * sizeof(complex double));
-    memset(B->sol->mean_y, 0, ndkz * sizeof(complex double));
+    memset(B->sol->mean_x, 0, ndkz * sizeof(complex PRECISION));
+    memset(B->sol->mean_y, 0, ndkz * sizeof(complex PRECISION));
 
     B->sol->mean_z = 0;
 
-    memset(u->vec->x->spatial, 0, spatialCount * sizeof(double));
-    memset(u->vec->y->spatial, 0, spatialCount * sizeof(double));
-    memset(u->vec->z->spatial, 0, spatialCount * sizeof(double));
+    memset(u->vec->x->spatial, 0, spatialCount * sizeof(PRECISION));
+    memset(u->vec->y->spatial, 0, spatialCount * sizeof(PRECISION));
+    memset(u->vec->z->spatial, 0, spatialCount * sizeof(PRECISION));
 
-    memset(u->vec->x->spectral, 0, spectralCount * sizeof(complex double));
-    memset(u->vec->y->spectral, 0, spectralCount * sizeof(complex double));
-    memset(u->vec->z->spectral, 0, spectralCount * sizeof(complex double));
+    memset(u->vec->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(u->vec->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(u->vec->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
 
-    memset(u->sol->poloidal->spectral, 0, spectralCount * sizeof(complex double));
-    memset(u->sol->toroidal->spectral, 0, spectralCount * sizeof(complex double));
+    memset(u->sol->poloidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(u->sol->toroidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
 
-    memset(u->sol->mean_x, 0, ndkz * sizeof(complex double));
-    memset(u->sol->mean_y, 0, ndkz * sizeof(complex double));
+    memset(u->sol->mean_x, 0, ndkz * sizeof(complex PRECISION));
+    memset(u->sol->mean_y, 0, ndkz * sizeof(complex PRECISION));
 
     u->sol->mean_z = 0;
 }
@@ -240,6 +240,6 @@ p_componentVar B;
 p_componentVar u;
 p_field T;
 
-double maxVel[3];
+PRECISION maxVel[3];
 p_field forceField = 0;
 

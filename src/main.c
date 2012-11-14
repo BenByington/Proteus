@@ -70,7 +70,7 @@ int execute(char * propLoc)
         if(compute_node)
             iterate();
 
-        MPI_Bcast(&elapsedTime, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
         performOutput();
     }
 

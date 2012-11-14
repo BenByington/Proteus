@@ -12,8 +12,8 @@ void testPT()
 {
     int i,j,k,l;
     int index = 0;
-    double ampM = 3;
-    complex double dkx,dky,dkz;
+    PRECISION ampM = 3;
+    complex PRECISION dkx,dky,dkz;
     p_solenoid s = newSolenoid();
     p_vector v = newVector(SPEC);
     p_vector v2 = newVector(SPEC);
@@ -29,7 +29,7 @@ void testPT()
                 if(i + j + grank == 0)
                     v->z->spectral[index] = 0;
                 else
-                    v->z->spectral[index] = ampM * (((double)rand()) / RAND_MAX + I * ((double)rand()) / RAND_MAX);
+                    v->z->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
                 index++;
             }
         }
@@ -60,7 +60,7 @@ void testPT()
                 //we are free to chose everything else.
                 else
                 {
-                    v->y->spectral[index] = ampM * (((double)rand()) / RAND_MAX + I * ((double)rand()) / RAND_MAX);
+                    v->y->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
                 }
                 index++;
             }
@@ -86,7 +86,7 @@ void testPT()
                 //we can chose any field of y and z
                 else if(i + vrank == 0)
                 {
-                    v->x->spectral[index] = ampM * (((double)rand()) / RAND_MAX + I * ((double)rand()) / RAND_MAX);
+                    v->x->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
                 }
                 //everything else must cancle with other fields
                 else
@@ -112,7 +112,7 @@ void testPT()
         {
             for(k = 0; k < ndkz; k++)
             {
-                double diff = cabs(v2->z->spectral[index] - v->z->spectral[index]);
+                PRECISION diff = cabs(v2->z->spectral[index] - v->z->spectral[index]);
                 if(diff > 1e-10)
                     fprintf(stderr,"diffz: %d %d %d %d %g\n", grank, i + my_kx->min, j + my_ky->min, k, diff);
 
@@ -144,14 +144,14 @@ void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
 
     debug("Calculating Poloidal field\n",0);
 
-    complex double dkx,dky,dkz;
-    complex double * pz = v->z->spectral;
-    complex double * py = v->y->spectral;
-    complex double * px = v->x->spectral;
-    complex double * ppol;
-    complex double * ptor;
-    complex double * xmean;
-    complex double * ymean;
+    complex PRECISION dkx,dky,dkz;
+    complex PRECISION * pz = v->z->spectral;
+    complex PRECISION * py = v->y->spectral;
+    complex PRECISION * px = v->x->spectral;
+    complex PRECISION * ppol;
+    complex PRECISION * ptor;
+    complex PRECISION * xmean;
+    complex PRECISION * ymean;
 
     if(force)
     {
@@ -237,14 +237,14 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
 
     debug("Calculating Toroidal field\n",0);
 
-    complex double dkx,dky,dkz;
-    complex double * pz = v->z->spectral;
-    complex double * py = v->y->spectral;
-    complex double * px = v->x->spectral;
-    complex double * ppol;
-    complex double * ptor;
-    complex double * xmean;
-    complex double * ymean;
+    complex PRECISION dkx,dky,dkz;
+    complex PRECISION * pz = v->z->spectral;
+    complex PRECISION * py = v->y->spectral;
+    complex PRECISION * px = v->x->spectral;
+    complex PRECISION * ppol;
+    complex PRECISION * ptor;
+    complex PRECISION * xmean;
+    complex PRECISION * ymean;
 
     if(force)
     {
@@ -329,14 +329,14 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
 void recomposeSolenoidal(p_solenoid s, p_vector v)
 {
     int i,j,k;
-    complex double dkx,dky,dkz;
-    complex double * pz = v->z->spectral;
-    complex double * py = v->y->spectral;
-    complex double * px = v->x->spectral;
-    complex double * ppol = s->poloidal->spectral;
-    complex double * ptor = s->toroidal->spectral;
-    complex double * xmean = s->mean_x;
-    complex double * ymean = s->mean_y;
+    complex PRECISION dkx,dky,dkz;
+    complex PRECISION * pz = v->z->spectral;
+    complex PRECISION * py = v->y->spectral;
+    complex PRECISION * px = v->x->spectral;
+    complex PRECISION * ppol = s->poloidal->spectral;
+    complex PRECISION * ptor = s->toroidal->spectral;
+    complex PRECISION * xmean = s->mean_x;
+    complex PRECISION * ymean = s->mean_y;
 
     int index = 0;
     for(i = 0; i < my_kx->width; i++)
@@ -375,13 +375,13 @@ void recomposeSolenoidal(p_solenoid s, p_vector v)
 
 //TODO: Verify that it is safe to have both in and out reference the same
 //structure when in wont be needed any longer
-extern void laplacian(complex double * in, complex double * out, int add, double factor)
+extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
 {
     trace("Starting Laplacian\n",0);
     
     int i,j,k;
     int index = 0;
-    complex double dkx,dky,dkz;
+    complex PRECISION dkx,dky,dkz;
 
     for(i = 0; i < my_kx->width; i++)
     {
@@ -408,16 +408,16 @@ extern void laplacian(complex double * in, complex double * out, int add, double
 extern void curl(p_vector in, p_vector out)
 {
     int i,j,k;
-    complex double dkx, dky, dkz;
+    complex PRECISION dkx, dky, dkz;
     int index = 0;
 
-    complex double * xin = in->x->spectral;
-    complex double * yin = in->y->spectral;
-    complex double * zin = in->z->spectral;
+    complex PRECISION * xin = in->x->spectral;
+    complex PRECISION * yin = in->y->spectral;
+    complex PRECISION * zin = in->z->spectral;
 
-    complex double * xout = out->x->spectral;
-    complex double * yout = out->y->spectral;
-    complex double * zout = out->z->spectral;
+    complex PRECISION * xout = out->x->spectral;
+    complex PRECISION * yout = out->y->spectral;
+    complex PRECISION * zout = out->z->spectral;
 
     for(i = 0; i < my_kx->width; i++)
     {
@@ -441,12 +441,12 @@ extern void curl(p_vector in, p_vector out)
 extern void gradient(p_field in, p_vector out)
 {
     int i,j,k;
-    complex double dkx, dky, dkz;
+    complex PRECISION dkx, dky, dkz;
 
-    complex double * pin = in->spectral;
-    complex double * outx = out->x->spectral;
-    complex double * outy = out->y->spectral;
-    complex double * outz = out->z->spectral;
+    complex PRECISION * pin = in->spectral;
+    complex PRECISION * outx = out->x->spectral;
+    complex PRECISION * outy = out->y->spectral;
+    complex PRECISION * outz = out->z->spectral;
 
     int index = 0;
     for(i = 0; i < my_kx->width; i++)
@@ -473,13 +473,13 @@ extern void dotProduct(p_vector one, p_vector two, p_field out)
 {
     int i;
 
-    double * onex = one->x->spatial;
-    double * oney = one->y->spatial;
-    double * onez = one->z->spatial;
-    double * twox = two->x->spatial;
-    double * twoy = two->y->spatial;
-    double * twoz = two->z->spatial;
-    double * pout = out->spatial;
+    PRECISION * onex = one->x->spatial;
+    PRECISION * oney = one->y->spatial;
+    PRECISION * onez = one->z->spatial;
+    PRECISION * twox = two->x->spatial;
+    PRECISION * twoy = two->y->spatial;
+    PRECISION * twoz = two->z->spatial;
+    PRECISION * pout = out->spatial;
 
     for(i = 0; i < spatialCount; i++)
     {
@@ -493,15 +493,15 @@ extern void crossProduct(p_vector one, p_vector two, p_vector out)
 {
     int i;
 
-    double * onex = one->x->spatial;
-    double * oney = one->y->spatial;
-    double * onez = one->z->spatial;
-    double * twox = two->x->spatial;
-    double * twoy = two->y->spatial;
-    double * twoz = two->z->spatial;
-    double * outx = out->x->spatial;
-    double * outy = out->y->spatial;
-    double * outz = out->z->spatial;
+    PRECISION * onex = one->x->spatial;
+    PRECISION * oney = one->y->spatial;
+    PRECISION * onez = one->z->spatial;
+    PRECISION * twox = two->x->spatial;
+    PRECISION * twoy = two->y->spatial;
+    PRECISION * twoz = two->z->spatial;
+    PRECISION * outx = out->x->spatial;
+    PRECISION * outy = out->y->spatial;
+    PRECISION * outz = out->z->spatial;
 
     for(i = 0; i < spatialCount; i++)
     {
@@ -514,13 +514,13 @@ extern void crossProduct(p_vector one, p_vector two, p_vector out)
 extern void divergence(p_vector in, p_field out)
 {
     int i,j,k;
-    complex double dkx,dky,dkz;
+    complex PRECISION dkx,dky,dkz;
     int index = 0;
 
-    complex double * o = out->spectral;
-    complex double * x = in->x->spectral;
-    complex double * y = in->y->spectral;
-    complex double * z = in->z->spectral;
+    complex PRECISION * o = out->spectral;
+    complex PRECISION * x = in->x->spectral;
+    complex PRECISION * y = in->y->spectral;
+    complex PRECISION * z = in->z->spectral;
     for(i = 0; i < my_kx->width; i++)
     {
         dkx = dxFactor(i);
@@ -542,11 +542,11 @@ extern void divergence(p_vector in, p_field out)
 
 }
 
-extern void partialX(complex double * in, complex double * out, int arithmetic)
+extern void partialX(complex PRECISION * in, complex PRECISION * out, int arithmetic)
 {
     int i,j,k;
     int index = 0;
-    complex double dk;
+    complex PRECISION dk;
 
     if(arithmetic == 0)
     {
@@ -599,11 +599,11 @@ extern void partialX(complex double * in, complex double * out, int arithmetic)
     }
 }
 
-extern void partialY(complex double * in, complex double * out, int arithmetic)
+extern void partialY(complex PRECISION * in, complex PRECISION * out, int arithmetic)
 {
     int i,j,k;
     int index = 0;
-    complex double dk;
+    complex PRECISION dk;
 
     if(arithmetic == 0)
     {
@@ -656,11 +656,11 @@ extern void partialY(complex double * in, complex double * out, int arithmetic)
     }
 }
 
-extern void partialZ(complex double * in, complex double * out, int arithmetic)
+extern void partialZ(complex PRECISION * in, complex PRECISION * out, int arithmetic)
 {
     int i,j,k;
     int index = 0;
-    complex double dk;
+    complex PRECISION dk;
 
     if(arithmetic == 0)
     {
@@ -713,7 +713,7 @@ extern void partialZ(complex double * in, complex double * out, int arithmetic)
     }
 }
 
-extern void multiply(double * one, double * two, double * out)
+extern void multiply(PRECISION * one, PRECISION * two, PRECISION * out)
 {
     int i;
     for(i = 0; i < spatialCount; i++)
@@ -722,7 +722,7 @@ extern void multiply(double * one, double * two, double * out)
     }
 }
 
-extern void plusEq(complex double * one, complex double * two)
+extern void plusEq(complex PRECISION * one, complex PRECISION * two)
 {
     int i;
     for(i = 0; i < spectralCount; i++)
@@ -731,7 +731,7 @@ extern void plusEq(complex double * one, complex double * two)
     }
 }
 
-extern void minusEq(complex double * one, complex double * two)
+extern void minusEq(complex PRECISION * one, complex PRECISION * two)
 {
 
     int i;
@@ -742,7 +742,7 @@ extern void minusEq(complex double * one, complex double * two)
 }
 
 #include "LogInfo.h"
-extern complex double dxFactor(int i)
+extern complex PRECISION dxFactor(int i)
 {
     int k = i + my_kx->min;
     if(k >= dealias_kx.min)
@@ -755,16 +755,16 @@ extern complex double dxFactor(int i)
     return I * 2 * PI * k / xmx;
 }
 
-extern complex double dyFactor(int i)
+extern complex PRECISION dyFactor(int i)
 {
     int k = i + my_ky->min;
-    complex double ret = I * 2 * PI * k / ymx;
+    complex PRECISION ret = I * 2 * PI * k / ymx;
     trace("ky index %d was found to be wave mode %d, %g\n", i, k, __imag__ ret );
 
     return ret;
 }
 
-extern complex double dzFactor(int i)
+extern complex PRECISION dzFactor(int i)
 {
     int k = i;
     if(k >= dealias_kz.min)

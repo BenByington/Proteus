@@ -8,6 +8,7 @@
 #ifndef _LOG_H
 #define	_LOG_H
 
+#include "precision.h"
 #include <stdio.h>
 #include <time.h>
 

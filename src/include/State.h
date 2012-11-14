@@ -6,6 +6,7 @@
  */
 
 #include "Field.h"
+#include "precision.h"
 
 #ifndef _STATE_H
 #define	_STATE_H

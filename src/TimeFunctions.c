@@ -9,7 +9,7 @@ void fillTimeField(p_vector vec, int func)
 {
     int i,j,k;
     int index = 0;
-    double x, y, z;
+    PRECISION x, y, z;
     if(func == MOMENTUM)
     {
         debug("Doing time dependant forcing of momentum equation\n",0);
@@ -87,19 +87,19 @@ void fillTimeField(p_vector vec, int func)
     fftForward(vec->z);
 }
 
-extern double getx(int i)
+extern PRECISION getx(int i)
 {
-    return (double) (i + my_x->min) / (double) nx;
+    return (PRECISION) (i + my_x->min) / (PRECISION) nx;
 }
 
-extern double gety(int i)
+extern PRECISION gety(int i)
 {
-    return (double) i  / (double) ny;
+    return (PRECISION) i  / (PRECISION) ny;
 }
 
-extern double getz(int i)
+extern PRECISION getz(int i)
 {
-    return (double) (i + my_z->min) / (double) nz;
+    return (PRECISION) (i + my_z->min) / (PRECISION) nz;
 }
 
 /**
@@ -110,17 +110,17 @@ extern double getz(int i)
  * Omega = 2.5 (vary this to change nonlinear dynamo properties)
  **/
 
-inline double mSourceX(double x, double y, double z, double t)
+inline PRECISION mSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
   return 1.0*cos(1.0*t)*(cos(2.0*PI*z+sin(1.0*t))-sin(2.0*PI*y+sin(1.0*t)))+(sin(2.0*PI*z+sin(1.0*t))+cos(2.0*PI*y+sin(1.0*t)))/100.0;
 }
 
-inline double mSourceY(double x, double y, double z, double t)
+inline PRECISION mSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
   return 1.0*cos(1.0*t)*(cos(2.0*PI*x+sin(1.0*t))-sin(2.0*PI*z+sin(1.0*t)))+(sin(2.0*PI*x+sin(1.0*t))+cos(2.0*PI*z+sin(1.0*t)))/100.0;
 }
 
-inline double mSourceZ(double x, double y, double z, double t)
+inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
   return 1.0*cos(1.0*t)*(cos(2.0*PI*y+sin(1.0*t))-sin(2.0*PI*x+sin(1.0*t)))+(sin(2.0*PI*y+sin(1.0*t))+cos(2.0*PI*x+sin(1.0*t)))/100.0;
 }
@@ -141,36 +141,36 @@ inline double mSourceZ(double x, double y, double z, double t)
  * should add field slower than decay rate
  * and such that it wont decay too rapidly
  **/
-inline double bSourceX(double x, double y, double z, double t)
+inline PRECISION bSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  static double k = 1.0;
-  static double w = 1e-2;
-  static double b0 = 0.1;
+  static PRECISION k = 1.0;
+  static PRECISION w = 1e-2;
+  static PRECISION b0 = 0.1;
 
   return w*b0*sin(2*PI*k*z)*sin(2*PI*k*y)*cos(w*t)+2.0*k*k*0.01*b0*sin(2*PI*k*z)*sin(2*PI*k*y)*sin(w*t)/1.0;
 }
 
-inline double bSourceY(double x, double y, double z, double t)
+inline PRECISION bSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
     return 0;
 }
 
-inline double bSourceZ(double x, double y, double z, double t)
+inline PRECISION bSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
     return 0;
 }
 
-inline double kinematicX(double x, double y, double z, double t)
+inline PRECISION kinematicX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
     return sin(2.0*PI*z+1.0*sin(1.0*t)) + cos(2.0*PI*y+1.0*sin(1.0*t));
 }
 
-inline double kinematicY(double x, double y, double z, double t)
+inline PRECISION kinematicY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
   return sin(2.0*PI*x+1.0*sin(1.0*t)) + cos(2.0*PI*z+1.0*sin(1.0*t));
 }
 
-inline double kinematicZ(double x, double y, double z, double t)
+inline PRECISION kinematicZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
 
   return sin(2*PI*y+1.0*sin(1.0*t)) + cos(2.0*PI*x+1.0*sin(1.0*t));

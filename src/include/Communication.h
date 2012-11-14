@@ -13,6 +13,7 @@
 #define	_COMMUNICATION_H
 
 #include "Field.h"
+#include "precision.h"
 
 #include <mpi.h>
 #include <math.h>
