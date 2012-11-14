@@ -142,8 +142,8 @@ int benchmark(char * propLoc)
             {
                 fftForward(B->vec->x);
                 fftBackward(B->vec->x);
-                gettimeofday(&stop, NULL);
             }
+            gettimeofday(&stop, NULL);
             dstart = start.tv_sec+(start.tv_usec/1000000.0);
             dstop = stop.tv_sec + (stop.tv_usec/1000000.0);
 
