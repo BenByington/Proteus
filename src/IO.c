@@ -331,7 +331,7 @@ void initIO()
     {
         numScalar = 13;
     }
-    
+
     if(crank == 0)
     {
         status = fopen("status", "w");
@@ -423,12 +423,21 @@ void performOutput()
 
             if(crank == 0)
             {
-                int i;
-                for(i = 0; i < 13; i++)
+                scalarCount++;
+                piScalarData += numScalar;
+
+                if(scalarCount >= scalarPerF)
                 {
-                    fprintf(stderr, "%g ", piScalarData[i]);
+                    char fileName[100];
+                    sprintf(fileName, "Scalar/%08d",iteration);
+
+                    FILE * out = fopen(fileName, "w");
+                    fwrite(scalarData, sizeof(double), numScalar * scalarPerF, out);
+                    fclose(out);
+
+                    scalarCount = 0;
+                    piScalarData = scalarData;
                 }
-                fprintf(stderr, "\n\n");
             }
         }
     }
