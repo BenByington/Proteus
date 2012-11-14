@@ -12,10 +12,11 @@ FASTSSE= -O3
 #CCFLAGS =  -g  -I./src
 
 SRC = ../src
+INCL = ../src/include
 
 OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
-        TimeFunctions.o
+        TimeFunctions.o FFTWrapper.o 
 
 imhd: $(OBJS) 
 	$(CC) $(CCFLAGS) -o imhd $(OBJS) $(LIBS) 
@@ -58,6 +59,9 @@ Properties.o: ${SRC}/Properties.cpp
 
 State.o: ${SRC}/State.c
 	$(cc) $(CCFLAGS) -c $(SRC)/State.c
+
+FFTWrapper.o:  ${SRC}/FFTWrapper.c
+	$(cc)  $(CCFLAGS) -c $(SRC)/FFTWrapper.c
 	
 Copmunication.o : $(INCL)/Communication.h
 Communication.o : $(INCL)/FFTWrapper.h
