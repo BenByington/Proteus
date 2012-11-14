@@ -61,23 +61,23 @@ void calcNewTimestep()
     dt = 0.01;  //just a trial.  This should be overwritten by at least one
                 //of the following cases.
 
-    if(viscosity)
+    if(momEquation && viscosity)
     {
         dt = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) / Pr;
     }
-    if(tDiff)
+    if(tEquation && tDiff)
     {
         double temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2);
         if(temp < dt)
             dt = temp;
     }
-    if(magDiff)
+    if(magEquation && magDiff)
     {
         double temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Pm / Pr;
         if(temp < dt)
             dt = temp;
     }
-    if(momAdvection || tempAdvection || magAdvect)
+    if((momEquation && momAdvection) || (tEquation && tempAdvection) || (magEquation && magAdvect))
     {
         int i;
         //get maxV for stability condition.
