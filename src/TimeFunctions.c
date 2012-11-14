@@ -112,17 +112,23 @@ extern PRECISION getz(int i)
 
 inline PRECISION mSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  return 1.0*cos(1.0*t)*(cos(2.0*PI*z+sin(1.0*t))-sin(2.0*PI*y+sin(1.0*t)))+(sin(2.0*PI*z+sin(1.0*t))+cos(2.0*PI*y+sin(1.0*t)))/100.0;
+  PRECISION om = 2.5;
+  return
+  om*cos(om*t)*(cos(2.0*PI*z+sin(om*t))-sin(2.0*PI*y+sin(om*t)))+(sin(2.0*PI*z+sin(om*t))+cos(2.0*PI*y+sin(om*t)))/100.0;
 }
 
 inline PRECISION mSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  return 1.0*cos(1.0*t)*(cos(2.0*PI*x+sin(1.0*t))-sin(2.0*PI*z+sin(1.0*t)))+(sin(2.0*PI*x+sin(1.0*t))+cos(2.0*PI*z+sin(1.0*t)))/100.0;
+  PRECISION om = 2.5;
+  return
+  om*cos(om*t)*(cos(2.0*PI*x+sin(om*t))-sin(2.0*PI*z+sin(om*t)))+(sin(2.0*PI*x+sin(om*t))+cos(2.0*PI*z+sin(om*t)))/100.0;
 }
 
 inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  return 1.0*cos(1.0*t)*(cos(2.0*PI*y+sin(1.0*t))-sin(2.0*PI*x+sin(1.0*t)))+(sin(2.0*PI*y+sin(1.0*t))+cos(2.0*PI*x+sin(1.0*t)))/100.0;
+  PRECISION om = 2.5;
+  return
+  om*cos(om*t)*(cos(2.0*PI*y+sin(om*t))-sin(2.0*PI*x+sin(om*t)))+(sin(2.0*PI*y+sin(om*t))+cos(2.0*PI*x+sin(om*t)))/100.0;
 }
 
 
