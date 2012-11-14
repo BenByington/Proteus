@@ -741,9 +741,10 @@ void writeCheckpoint()
 
 
     }
-    else if(iorank == 0)
+    
+    if(crank == 0)
     {
-        FILE * out = fopen("state", "w");
+        FILE * out = fopen("Checkpoint/state", "w");
         fwrite(&iteration, sizeof(int), 1, out);
         fwrite(&elapsedTime, sizeof(double), 1, out);
         fwrite(&dt, sizeof(double), 1, out);
