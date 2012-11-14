@@ -1,0 +1,66 @@
+.SUFFIXES: .c .o .cpp
+
+LIBS =  -L/home/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
+-I/home/bbyingto/fftw/include
+
+cc = mpicc 
+CC = mpic++
+
+FASTSSE= -O3
+
+ CCFLAGS = $(FASTSSE)  -I../src/include
+# Debug flags
+#CCFLAGS =  -g  -I./src
+
+SRC = ../src
+
+OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
+	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
+        TimeFunctions.o
+
+imhd: all
+	rm *.o
+
+all: $(OBJS) 
+	$(CC) $(CCFLAGS) -o imhd $(OBJS) $(LIBS) 
+
+TimeFunctions.o: ${SRC}/TimeFunctions.c
+	$(cc) $(CCFLAGS) -c $(SRC)/TimeFunctions.c
+
+Communication.o: ${SRC}/Communication.c
+	$(cc) $(CCFLAGS) -c $(SRC)/Communication.c
+
+clean:
+	rm -f *.o *.mod imhd
+
+Numerics.o: ${SRC}/Numerics.c
+	$(cc) $(CCFLAGS) -c $(SRC)/Numerics.c
+
+Environment.o: ${SRC}/Environment.c
+	$(cc) $(CCFLAGS) -c $(SRC)/Environment.c
+
+Field.o: ${SRC}/Field.c
+	$(cc) $(CCFLAGS) -c $(SRC)/Field.c
+
+IO.o: ${SRC}/IO.c
+	$(cc) $(CCFLAGS) -c $(SRC)/IO.c
+
+LaborDivision.o: ${SRC}/LaborDivision.c
+	$(cc) $(CCFLAGS) -c $(SRC)/LaborDivision.c
+
+Log.o: ${SRC}/Log.c
+	$(cc) $(CCFLAGS) -c $(SRC)/Log.c
+
+main.o: ${SRC}/main.c
+	$(cc) $(CCFLAGS) -c $(SRC)/main.c
+
+Physics.o: ${SRC}/Physics.c
+	$(cc) $(CCFLAGS) -c $(SRC)/Physics.c
+
+Properties.o: ${SRC}/Properties.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Properties.cpp
+
+State.o: ${SRC}/State.c
+	$(cc) $(CCFLAGS) -c $(SRC)/State.c
+	
+
