@@ -114,8 +114,8 @@ int benchmark(char * propLoc)
     
     loadPrefs(propLoc);
 
-    hdiv = 3;
-    vdiv = 3;
+    hdiv = 4;
+    vdiv = 4;
     n_io_nodes = vdiv;
     while(hdiv * vdiv + n_io_nodes <= gsize)
     {
