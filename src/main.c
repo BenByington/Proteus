@@ -112,58 +112,71 @@ int benchmark(char * propLoc)
     struct timeval start;
     struct timeval stop;
 
+    int contDiv = 1;
+    int contSize = 1;
     
     loadPrefs(propLoc);
 
-
-    info("Code Initialization Complete\n",0);
-    setupEnvironment();
-
-    initState();
-    initIO();
-    if(compute_node)
+    hdiv = 3;
+    vdiv = 3;
+    n_io_nodes = gsize - hdiv * vdiv;
+    while(n_io_nodes > 0)
     {
-        initPhysics();
-    }
+        setupEnvironment();
 
-    MPI_Barrier(MPI_COMM_WORLD);
-    
-    if(compute_node)
-    {
-        gettimeofday(&start,NULL);
-        int i;
-        for(i = 0; i < 100; i++)
-        {
-            fftForward(B->vec->x);
-            fftBackward(B->vec->x);
-            gettimeofday(&stop, NULL);
-        }
-        dstart = start.tv_sec+(start.tv_usec/1000000.0);
-        dstop = stop.tv_sec + (stop.tv_usec/1000000.0);
-
-        fprintf(stderr, "Time in seconds for one full FFT cycle: %f\n", dstop - dstart);
-    }
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    /*while((iteration < maxSteps) && (elapsedTime < maxTime))
-    {
-        iteration++;
-        debug("Working on step %d\n", iteration);
+        initState();
+        initIO();
         if(compute_node)
-            iterate();
+        {
+            initPhysics();
+        }
 
-        MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
-        performOutput();
-    }*/
+        MPI_Barrier(MPI_COMM_WORLD);
 
-    if(compute_node)
-    {
-        finalizePhysics();
-        finalizeState();
-        com_finalize();
+        if(compute_node)
+        {
+            gettimeofday(&start,NULL);
+            int i;
+            for(i = 0; i < 100; i++)
+            {
+                fftForward(B->vec->x);
+                fftBackward(B->vec->x);
+                gettimeofday(&stop, NULL);
+            }
+            dstart = start.tv_sec+(start.tv_usec/1000000.0);
+            dstop = stop.tv_sec + (stop.tv_usec/1000000.0);
+
+            if(grank == 0)
+            {
+                fprintf(stderr, "hdiv: %d, vdiv: %d, time: %f\n", hdiv, vdiv, dstop - dstart);
+            }
+        }
+
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        /*while((iteration < maxSteps) && (elapsedTime < maxTime))
+        {
+            iteration++;
+            debug("Working on step %d\n", iteration);
+            if(compute_node)
+                iterate();
+
+            MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
+            performOutput();
+        }*/
+
+        if(compute_node)
+        {
+            finalizePhysics();
+            finalizeState();
+            com_finalize();
+        }
+        lab_finalize();
+
+        hdiv++;
+        vdiv++;
+        n_io_nodes = gsize - hdiv * vdiv;
     }
-    lab_finalize();
 
     MPI_Barrier(MPI_COMM_WORLD);
 
