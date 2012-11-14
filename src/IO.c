@@ -586,6 +586,8 @@ void performOutput()
     }
 }
 
+#include "LogTrace.h"
+
 void writeCheckpoint()
 {
     FILE * out;
