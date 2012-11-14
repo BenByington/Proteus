@@ -138,8 +138,8 @@ inline PRECISION mSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 
 inline PRECISION mSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-    static PRECISION temp1 = 0;
-    static PRECISION temp2 = 0;
+    PRECISION temp1 = 0;
+    PRECISION temp2 = 0;
 
     temp1 = cos(x + momEps*sin(momOmega*t)) - sin(z + momEps*sin(momOmega*t));
     temp2 = sin(x + momEps*sin(momOmega*t)) + cos(z + momEps*sin(momOmega*t));
@@ -149,8 +149,8 @@ inline PRECISION mSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 
 inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-    static PRECISION temp1 = 0;
-    static PRECISION temp2 = 0;
+    PRECISION temp1 = 0;
+    PRECISION temp2 = 0;
 
     temp1 = cos(y + momEps*sin(momOmega*t)) - sin(x + momEps*sin(momOmega*t));
     temp2 = sin(y + momEps*sin(momOmega*t)) + cos(x + momEps*sin(momOmega*t));
@@ -184,8 +184,8 @@ inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
  **/
 inline PRECISION bSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  static PRECISION temp1 = 0;
-  static PRECISION temp2 = 0;
+  PRECISION temp1 = 0;
+  PRECISION temp2 = 0;
 
   //temp1 = magW*magB0*sin(magK*z)*cos(magW*t)*sin(magK*y);
   //temp2 = 2.*magK*magK*magB0*sin(magK*z)*sin(magW*t)*sin(magK*y);

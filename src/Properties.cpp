@@ -12,6 +12,8 @@
 #include <fstream>
 #include <string>
 #include <ctype.h>
+#include <cstdlib>
+#include <algorithm>
 
 using namespace std;
 
