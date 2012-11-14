@@ -392,21 +392,12 @@ void calcMag()
     if(magAdvect)
     {
         p_vector uxb = temp1;
-        p_vector force = temp2;
         p_vector cuxb = temp2;
 
         crossProduct(u->vec, B->vec, uxb);
         fftForward(uxb->x);
         fftForward(uxb->y);
         fftForward(uxb->z);
-
-        if(magTimeForcing)
-        {
-            fillTimeField(force, MAGNETIC);
-            plusEq(uxb->x->spectral, force->x->spectral);
-            plusEq(uxb->y->spectral, force->y->spectral);
-            plusEq(uxb->z->spectral, force->z->spectral);
-        }
 
         curl(uxb, cuxb);
 
@@ -415,24 +406,14 @@ void calcMag()
         plusEq(rhs->z->spectral, cuxb->z->spectral);
     }
 
-   /* if(magTimeForcing)
+    if(magTimeForcing)
     {
         fillTimeField(temp1, MAGNETIC);
 
-        complex double * xfield = rhs->x->spectral;
-        complex double * yfield = rhs->y->spectral;
-        complex double * zfield = rhs->z->spectral;
-        complex double * xforce = temp1->x->spectral;
-        complex double * yforce = temp1->y->spectral;
-        complex double * zforce = temp1->z->spectral;
-        int i;
-        for(i = 0; i < spectralCount; i++)
-        {
-            xfield[i] += xforce[i];
-            yfield[i] += yforce[i];
-            zfield[i] += zforce[i];
-        }
-    }*/
+        plusEq(rhs->x->spectral, temp1->x->spectral);
+        plusEq(rhs->y->spectral, temp1->y->spectral);
+        plusEq(rhs->z->spectral, temp1->z->spectral);
+    }
 
     decomposeSolenoidal(B->sol, rhs, 1);
     debug("Magnetic forces done\n",0);
