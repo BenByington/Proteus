@@ -116,13 +116,13 @@ int benchmark(char * propLoc)
 
     hdiv = 3;
     vdiv = 3;
-    n_io_nodes = gsize - hdiv * vdiv;
-    while(n_io_nodes > 0)
+    n_io_nodes = 1;
+    while(hdiv * vdiv + n_io_nodes <= gsize)
     {
         setupEnvironment();
 
         initState();
-        initIO();
+        //initIO();
         if(compute_node)
         {
             initPhysics();
