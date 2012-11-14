@@ -123,7 +123,9 @@ extern int magAdvect;
 
 //forcing terms
 extern int momStaticForcing;
+extern int magStaticForcing;
 extern char * forceFile;
+extern char * magForceFile;
 extern int kinematic;
 extern int momTimeForcing;
 extern int magTimeForcing;

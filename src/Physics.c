@@ -368,6 +368,8 @@ void calcMomentum()
 
 void calcMag()
 {
+    int i,j,k;
+    int index;
     debug("Calculating Magnetic forces\n",0);
 
     if(magDiff)
@@ -384,6 +386,25 @@ void calcMag()
         memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
     }
 
+    //static forcing is currently only in the x direction and a function of y and z
+    if(magStaticForcing)
+    {
+        complex PRECISION * xfield = rhs->x->spectral;
+        complex PRECISION * ffield = magForceField->spectral;
+        index = 0;
+        for(i = 0; i < my_kx->width; i++)
+        {
+            for(j = 0; j < my_ky->width; j++)
+            {
+                for(k = 0; k < ndkz; k++)
+                {
+                    xfield[index] += ffield[index];
+                    index++;
+                }
+            }
+        }
+    }
+    
     if(kinematic)
     {
         fillTimeField(u->vec, KINEMATIC);

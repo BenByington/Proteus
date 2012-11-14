@@ -493,8 +493,10 @@ void parsePhysics(iostream & in)
 void parseForcings(iostream & in)
 {
     const string sMomStaticForcing("momStaticForcing");
+    const string sMagStaticForcing("magStaticForcing");
     const string sMomTimeForcing("momTimeForcing");
     const string sForcingFile("forcingFile");
+    const string sMagForcingFile("magForcingFile");
     const string sMagTimeForcing("magTimeForcing");
     const string sKinematic("kinematic");
     const string sMomOmega("momOmega");
@@ -527,7 +529,15 @@ void parseForcings(iostream & in)
             forceFile = (char*)malloc(len);
             strcpy(forceFile, two.c_str());
 
-            debug("Forcing directory = %s\n", forceFile);
+            debug("Forcing file is = %s\n", forceFile);
+        }
+        else if((int)one.find(sMagForcingFile))
+        {
+            int len = two.length()+1;
+            magForceFile = (char*)malloc(len);
+            strcpy(forceFile, two.c_str());
+
+            debug("Magnetic Forcing file is = %s\n", magForceFile);
         }
         else if((int)one.find(sMomStaticForcing) != -1)
         {
@@ -541,6 +551,19 @@ void parseForcings(iostream & in)
             }
 
             debug("Momentum static forcing flag: %d\n", momStaticForcing);
+        }
+        else if((int)one.find(sMagStaticForcing) != -1)
+        {
+            if((int)two.find(on) != -1)
+                magStaticForcing = 1;
+            else if((int)two.find(off) != -1)
+                magStaticForcing = 0;
+            else
+            {
+                warn("unrecognized option %s for %s", two.c_str(), one.c_str());
+            }
+
+            debug("Magnetic static forcing flag: %d\n", momStaticForcing);
         }
         else if((int)one.find(sMomTimeForcing) != -1)
         {

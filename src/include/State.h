@@ -20,6 +20,7 @@ extern p_field T;
 
 extern PRECISION maxVel[3];
 extern p_field forceField;
+extern p_field magForceField;
 
 
 #endif	/* _STATE_H */

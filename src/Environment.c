@@ -133,7 +133,9 @@ int magAdvect = 0;
 
 //forcing terms
 int momStaticForcing = 0;
+int magStaticForcing = 0;
 char * forceFile = 0;
+char * magForceFile = 0;
 int kinematic = 0;
 int momTimeForcing = 0;
 int magTimeForcing = 0;

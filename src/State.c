@@ -96,8 +96,36 @@ void initState()
             if(compute_node)
             {
                 fftForward(forceField);
-                laplacian(forceField->spectral, forceField->spectral, 0, -1.0 / Pr);
+                laplacian(forceField->spectral, forceField->spectral, 0, -Pr);
                 eraseSpatial(forceField);
+            }
+        }
+    }
+    if(magStaticForcing)
+    {
+        if(!magDiff)
+        {
+            warn("Static magnetic forcing is currently designed to counteract the diffusion term.  Magnetic diffusion is disabled so forcing will be neglected for this run\n",0);
+            magStaticForcing = 0;
+        }
+        else
+        {
+            info("Loading forcing file: %s\n", magForceFile);
+
+            if(compute_node)
+            {
+                magForceField = (p_field)malloc(sizeof(field));
+                allocateSpatial(magForceField);
+                allocateSpectral(magForceField);
+            }
+
+            readSpatial(magForceField, magForceFile);
+
+            if(compute_node)
+            {
+                fftForward(magForceField);
+                laplacian(magForceField->spectral, magForceField->spectral, 0, -Pr / Pm);
+                eraseSpatial(magForceField);
             }
         }
     }
@@ -117,6 +145,12 @@ void finalizeState()
         eraseSpectral(forceField);
         free(forceField);
         forceField = 0;
+    }
+    if(magStaticForcing)
+    {
+        eraseSpectral(magForceField);
+        free(magForceField);
+        magForceField = 0;
     }
 }
 
@@ -260,4 +294,4 @@ p_field T;
 
 PRECISION maxVel[3];
 p_field forceField = 0;
-
+p_field magForceField = 0;
