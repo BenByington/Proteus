@@ -506,7 +506,7 @@ void parseForcings(iostream & in)
     string two;
     int index;
 
-    debug("Loading Physics Parameters\n",0)
+    debug("Loading Forcing Parameters\n",0)
     while(!getline(in, line).eof())
     {
         trace("Reading line %s\n", line.c_str());
