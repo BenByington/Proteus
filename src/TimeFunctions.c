@@ -176,14 +176,22 @@ inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
  * Try B0=0.2, k=1.0, w=1e-4
  * should add field slower than decay rate
  * and such that it wont decay too rapidly
+ *
+ *
+ * !!! possibly temporary change.  Removing the time dependence for the forcing
+ * Apply forcing func to B0sin(kz)[sin(ky),0,0]
+ *   yields 2*k*k*Pr*B0*sin(kz)*[sin(ky),0,0]/Pm
  **/
 inline PRECISION bSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
   static PRECISION temp1 = 0;
   static PRECISION temp2 = 0;
 
-  temp1 = magW*magB0*sin(magK*z)*cos(magW*t)*sin(magK*y);
-  temp2 = 2.*magK*magK*magB0*sin(magK*z)*sin(magW*t)*sin(magK*y);
+  //temp1 = magW*magB0*sin(magK*z)*cos(magW*t)*sin(magK*y);
+  //temp2 = 2.*magK*magK*magB0*sin(magK*z)*sin(magW*t)*sin(magK*y);
+
+  temp1 = 0;
+  temp2 = 2.*magK*magK*magB0*sin(magK*z)*sin(magK*y);
 
   return temp1 + temp2 * Pr / Pm;
 }
