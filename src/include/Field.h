@@ -8,7 +8,7 @@
 #ifndef _FIELD_H
 #define	_FIELD_H
 
-#include "precision.h"
+#include "Precision.h"
 #include <complex.h>
 
 #define SPEC 1

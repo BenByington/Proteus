@@ -8,7 +8,7 @@
 #ifndef _ENVIRONMENT_H
 #define	_ENVIRONMENT_H
 
-#include "precision.h"
+#include "Precision.h"
 
 #include <mpi.h>
 

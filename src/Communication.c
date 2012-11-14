@@ -7,6 +7,7 @@
 
 #include "Communication.h"
 #include "mpi.h"
+#include "FFTWrapper.h"
 
 #include <complex.h>
 #include <fftw3.h>
@@ -20,12 +21,12 @@
 
 int whichfft;
 
-fftw_plan planf1;
-fftw_plan planf2;
-fftw_plan planf3;
-fftw_plan planb1;
-fftw_plan planb2;
-fftw_plan planb3;
+FFT_PLAN planf1;
+FFT_PLAN planf2;
+FFT_PLAN planf3;
+FFT_PLAN planb1;
+FFT_PLAN planb2;
+FFT_PLAN planb3;
 
 void initfft1();
 void fft1_forward(PRECISION * in, complex PRECISION * out);
@@ -130,26 +131,26 @@ void initfft1()
     complex PRECISION * comp1;
     complex PRECISION * comp2;
 
-    real = (PRECISION*)fftw_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    comp1 = (complex PRECISION*)fftw_malloc(my_z->width * my_x->width * nky * sizeof(complex PRECISION));
-    planf1 = fftw_plan_many_dft_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, 1, nky, FFTW_MEASURE);
-    planb1 = fftw_plan_many_dft_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, 1, nky, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
-    fftw_free(real);
-    fftw_free(comp1);
+    real = (PRECISION*)fft_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
+    comp1 = (complex PRECISION*)fft_malloc(my_z->width * my_x->width * nky * sizeof(complex PRECISION));
+    planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, 1, nky, FFTW_MEASURE);
+    planb1 = fft_plan_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, 1, nky, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
+    fft_free(real);
+    fft_free(comp1);
 
-    comp1 = (complex PRECISION*)fftw_malloc(my_z->width * my_ky->width * nx * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fftw_malloc(my_z->width * my_ky->width * nkx * sizeof(complex PRECISION));
-    planf2 = fftw_plan_many_dft(1, &nx, my_z->width * my_ky->width, comp1, 0, 1, nx, comp2, 0, 1, nkx, FFTW_FORWARD, FFTW_MEASURE);
-    planb2 = fftw_plan_many_dft(1, &nx, my_z->width * my_ky->width, comp2, 0, 1, nkx, comp1, 0, 1, nx, FFTW_BACKWARD, FFTW_MEASURE);
-    fftw_free(comp1);
-    fftw_free(comp2);
+    comp1 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nx * sizeof(complex PRECISION));
+    comp2 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nkx * sizeof(complex PRECISION));
+    planf2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp1, 0, 1, nx, comp2, 0, 1, nkx, FFTW_FORWARD, FFTW_MEASURE);
+    planb2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp2, 0, 1, nkx, comp1, 0, 1, nx, FFTW_BACKWARD, FFTW_MEASURE);
+    fft_free(comp1);
+    fft_free(comp2);
 
-    comp1 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
-    planf3 = fftw_plan_many_dft(1, &nz, my_kx->width * my_ky->width, comp1, 0, 1, nz, comp2, 0, 1, nkz, FFTW_FORWARD, FFTW_MEASURE);
-    planb3 = fftw_plan_many_dft(1, &nz, my_kx->width * my_ky->width, comp2, 0, 1, nkz, comp1, 0, 1, nz, FFTW_BACKWARD, FFTW_MEASURE);
-    fftw_free(comp1);
-    fftw_free(comp2);
+    comp1 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
+    comp2 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    planf3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp1, 0, 1, nz, comp2, 0, 1, nkz, FFTW_FORWARD, FFTW_MEASURE);
+    planb3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp2, 0, 1, nkz, comp1, 0, 1, nz, FFTW_BACKWARD, FFTW_MEASURE);
+    fft_free(comp1);
+    fft_free(comp2);
 
     debug("Initialization done\n",0);
 }
@@ -163,27 +164,27 @@ void fft1_forward(PRECISION * in, complex PRECISION* out)
     int mySize2 = my_z->width * my_ky->width * nx;
     int mySize3 = my_kx->width * my_ky->width * nz;
 
-    complex PRECISION * comp = (complex PRECISION*)fftw_malloc(mySize1*sizeof(complex PRECISION));
-    fftw_execute_dft_r2c(planf1, in, comp);
+    complex PRECISION * comp = (complex PRECISION*)fft_malloc(mySize1*sizeof(complex PRECISION));
+    fft_execute_r2c(planf1, in, comp);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fftw_malloc(mySize2*sizeof(complex PRECISION));
+    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(mySize2*sizeof(complex PRECISION));
     fft1_tpf1(comp, comp2);
-    fftw_free(comp);
+    fft_free(comp);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fftw_malloc(mySize2*sizeof(complex PRECISION));
-    fftw_execute_dft(planf2, comp2, comp3);
-    fftw_free(comp2);
+    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(mySize2*sizeof(complex PRECISION));
+    fft_execute_c2c(planf2, comp2, comp3);
+    fft_free(comp2);
 
-    complex PRECISION * comp4 = (complex PRECISION*)fftw_malloc(mySize3*sizeof(complex PRECISION));
+    complex PRECISION * comp4 = (complex PRECISION*)fft_malloc(mySize3*sizeof(complex PRECISION));
     fft1_tpf2(comp3, comp4);
-    fftw_free(comp3);
+    fft_free(comp3);
 
-    complex PRECISION * comp5 = (complex PRECISION*)fftw_malloc(mySize3*sizeof(complex PRECISION));
-    fftw_execute_dft(planf3, comp4, comp5);
-    fftw_free(comp4);
+    complex PRECISION * comp5 = (complex PRECISION*)fft_malloc(mySize3*sizeof(complex PRECISION));
+    fft_execute_c2c(planf3, comp4, comp5);
+    fft_free(comp4);
 
     fft_tpf3(comp5, out);
-    fftw_free(comp5);
+    fft_free(comp5);
 
     int size = my_kx->width * my_ky->width * ndkz;
     PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);
@@ -419,27 +420,27 @@ void fft1_backward(complex PRECISION* in, PRECISION * out)
     int mySize2 = my_z->width * my_ky->width * nkx;
     int mySize3 = my_z->width * my_x->width * nky;
 
-    complex PRECISION * comp = (complex PRECISION*)fftw_malloc(mySize1 * sizeof(complex PRECISION));
+    complex PRECISION * comp = (complex PRECISION*)fft_malloc(mySize1 * sizeof(complex PRECISION));
     fft_tpb3(in, comp);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fftw_malloc(mySize1 * sizeof(complex PRECISION));
-    fftw_execute_dft(planb3, comp, comp2);
-    fftw_free(comp);
+    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(mySize1 * sizeof(complex PRECISION));
+    fft_execute_c2c(planb3, comp, comp2);
+    fft_free(comp);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fftw_malloc(mySize2 * sizeof(complex PRECISION));
+    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(mySize2 * sizeof(complex PRECISION));
     fft1_tpb2(comp2, comp3);
-    fftw_free(comp2);
+    fft_free(comp2);
 
-    complex PRECISION * comp4 = (complex PRECISION*)fftw_malloc(mySize2 * sizeof(complex PRECISION));
-    fftw_execute_dft(planb2, comp3, comp4);
-    fftw_free(comp3);
+    complex PRECISION * comp4 = (complex PRECISION*)fft_malloc(mySize2 * sizeof(complex PRECISION));
+    fft_execute_c2c(planb2, comp3, comp4);
+    fft_free(comp3);
 
-    complex PRECISION * comp5 = (complex PRECISION*)fftw_malloc(mySize3 * sizeof(complex PRECISION));
+    complex PRECISION * comp5 = (complex PRECISION*)fft_malloc(mySize3 * sizeof(complex PRECISION));
     fft1_tpb1(comp4, comp5);
-    fftw_free(comp4);
+    fft_free(comp4);
 
-    fftw_execute_dft_c2r(planb1, comp5, out);
-    fftw_free(comp5);
+    fft_execute_c2r(planb1, comp5, out);
+    fft_free(comp5);
     
 
     int i;
@@ -668,51 +669,51 @@ void initfft2()
     complex PRECISION * comp1;
     complex PRECISION * comp2;
 
-    real = (PRECISION*)fftw_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    comp1 = (complex PRECISION*)fftw_malloc(nky * my_z->width * my_x->width * sizeof(complex PRECISION));
-    planf1 = fftw_plan_many_dft_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, my_x->width * my_z->width, 1, FFTW_MEASURE);
-    planb1 = fftw_plan_many_dft_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, my_x->width * my_z->width, 1, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
-    fftw_free(real);
-    fftw_free(comp1);
+    real = (PRECISION*)fft_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
+    comp1 = (complex PRECISION*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex PRECISION));
+    planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, my_x->width * my_z->width, 1, FFTW_MEASURE);
+    planb1 = fft_plan_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, my_x->width * my_z->width, 1, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
+    fft_free(real);
+    fft_free(comp1);
 
-    comp1 = (complex PRECISION*)fftw_malloc(my_z->width * my_ky->width * nx * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fftw_malloc(my_z->width * my_ky->width * nkx * sizeof(complex PRECISION));
-    planf2 = fftw_plan_many_dft(1, &nx, my_z->width * my_ky->width, comp1, 0, 1, nx, comp2, 0, my_z->width * my_ky->width, 1, FFTW_FORWARD, FFTW_MEASURE);
-    planb2 = fftw_plan_many_dft(1, &nx, my_z->width * my_ky->width, comp2, 0, my_z->width * my_ky->width, 1, comp1, 0, 1, nx, FFTW_BACKWARD, FFTW_MEASURE);
-    fftw_free(comp1);
-    fftw_free(comp2);
+    comp1 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nx * sizeof(complex PRECISION));
+    comp2 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nkx * sizeof(complex PRECISION));
+    planf2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp1, 0, 1, nx, comp2, 0, my_z->width * my_ky->width, 1, FFTW_FORWARD, FFTW_MEASURE);
+    planb2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp2, 0, my_z->width * my_ky->width, 1, comp1, 0, 1, nx, FFTW_BACKWARD, FFTW_MEASURE);
+    fft_free(comp1);
+    fft_free(comp2);
 
-    comp1 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
-    planf3 = fftw_plan_many_dft(1, &nz, my_kx->width * my_ky->width, comp1, 0, 1, nz, comp2, 0, 1, nkz, FFTW_FORWARD, FFTW_MEASURE);
-    planb3 = fftw_plan_many_dft(1, &nz, my_kx->width * my_ky->width, comp2, 0, 1, nkz, comp1, 0, 1, nz, FFTW_BACKWARD, FFTW_MEASURE);
-    fftw_free(comp1);
-    fftw_free(comp2);
+    comp1 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
+    comp2 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    planf3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp1, 0, 1, nz, comp2, 0, 1, nkz, FFTW_FORWARD, FFTW_MEASURE);
+    planb3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp2, 0, 1, nkz, comp1, 0, 1, nz, FFTW_BACKWARD, FFTW_MEASURE);
+    fft_free(comp1);
+    fft_free(comp2);
 }
 
 void fft2_forward(PRECISION* in, complex PRECISION* out)
 {
-    complex PRECISION * comp1 = (complex PRECISION*)fftw_malloc(nky * my_z->width * my_x->width * sizeof(complex PRECISION));
-    fftw_execute_dft_r2c(planf1, in, comp1);
+    complex PRECISION * comp1 = (complex PRECISION*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex PRECISION));
+    fft_execute_r2c(planf1, in, comp1);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fftw_malloc(my_ky->width * my_z->width * nx * sizeof(complex PRECISION));
+    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(my_ky->width * my_z->width * nx * sizeof(complex PRECISION));
     fft2_tpf1(comp1, comp2);
-    fftw_free(comp1);
+    fft_free(comp1);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fftw_malloc(nkx * my_ky->width * my_z->width * sizeof(complex PRECISION));
-    fftw_execute_dft(planf2, comp2, comp3);
-    fftw_free(comp2);
+    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(nkx * my_ky->width * my_z->width * sizeof(complex PRECISION));
+    fft_execute_c2c(planf2, comp2, comp3);
+    fft_free(comp2);
 
-    complex PRECISION* comp4 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
+    complex PRECISION* comp4 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
     fft2_tpf2(comp3, comp4);
-    fftw_free(comp3);
+    fft_free(comp3);
 
-    complex PRECISION * comp5 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
-    fftw_execute_dft(planf3, comp4, comp5);
-    fftw_free(comp4);
+    complex PRECISION * comp5 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    fft_execute_c2c(planf3, comp4, comp5);
+    fft_free(comp4);
 
     fft_tpf3(comp5, out);
-    fftw_free(comp5);
+    fft_free(comp5);
 
     int i;
     PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);
@@ -855,27 +856,27 @@ void fft2_tpf2(complex PRECISION* in, complex PRECISION* out)
 
 void fft2_backward(complex PRECISION* in, PRECISION* out)
 {
-    complex PRECISION * comp = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    complex PRECISION * comp = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
     fft_tpb3(in, comp);
 
-    complex PRECISION * comp1 = (complex PRECISION*)fftw_malloc(my_kx->width * my_ky->width * nkz*sizeof(complex PRECISION));
-    fftw_execute_dft(planb3, comp, comp1);
-    fftw_free(comp);
+    complex PRECISION * comp1 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz*sizeof(complex PRECISION));
+    fft_execute_c2c(planb3, comp, comp1);
+    fft_free(comp);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fftw_malloc(nkx * my_ky->width * my_z->width*sizeof(complex PRECISION));
+    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(nkx * my_ky->width * my_z->width*sizeof(complex PRECISION));
     fft2_tpb2(comp1, comp2);
-    fftw_free(comp1);
+    fft_free(comp1);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fftw_malloc(my_ky->width * my_z->width * nx*sizeof(complex PRECISION));
-    fftw_execute_dft(planb2, comp2, comp3);
-    fftw_free(comp2);
+    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(my_ky->width * my_z->width * nx*sizeof(complex PRECISION));
+    fft_execute_c2c(planb2, comp2, comp3);
+    fft_free(comp2);
     
-    complex PRECISION * comp4 = (complex PRECISION*)fftw_malloc(nky * my_z->width * my_x->width*sizeof(complex PRECISION));
+    complex PRECISION * comp4 = (complex PRECISION*)fft_malloc(nky * my_z->width * my_x->width*sizeof(complex PRECISION));
     fft2_tpb1(comp3, comp4);
-    fftw_free(comp3);
+    fft_free(comp3);
     
-    fftw_execute_dft_c2r(planb1, comp4, out);
-    fftw_free(comp4);
+    fft_execute_c2r(planb1, comp4, out);
+    fft_free(comp4);
 
     int i;
     PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);

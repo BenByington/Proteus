@@ -6,7 +6,7 @@
  */
 
 #include "Field.h"
-#include "precision.h"
+#include "Precision.h"
 
 #ifndef _STATE_H
 #define	_STATE_H
@@ -18,7 +18,7 @@ extern p_componentVar B;
 extern p_componentVar u;
 extern p_field T;
 
-extern double maxVel[3];
+extern PRECISION maxVel[3];
 extern p_field forceField;
 
 

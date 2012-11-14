@@ -29,7 +29,7 @@
 #define KINEMATIC 2
 
 #include "Field.h"
-#include "precision.h"
+#include "Precision.h"
 
 void fillTimeField(p_vector, int func);
 

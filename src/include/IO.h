@@ -8,7 +8,7 @@
 #ifndef _IO_H
 #define	_IO_H
 
-#include "precision.h"
+#include "Precision.h"
 #include <string.h>
 #include "Field.h"
 

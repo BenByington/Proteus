@@ -8,7 +8,7 @@
 #ifndef _PHYSICS_H
 #define	_PHYSICS_H
 
-#include "precision.h"
+#include "Precision.h"
 
 void iterate();
 

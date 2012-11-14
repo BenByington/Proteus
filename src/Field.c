@@ -7,32 +7,32 @@
 
 #include "Field.h"
 #include "Environment.h"
+#include "FFTWrapper.h"
 
-#include <fftw3.h>
 #include <stdlib.h>
 
 void allocateSpectral(p_field f)
 {
-    f->spectral = (complex PRECISION*)fftw_malloc(my_ky->width * my_kx->width * ndkz * sizeof(complex PRECISION));
+    f->spectral = (complex PRECISION*)fft_malloc(my_ky->width * my_kx->width * ndkz * sizeof(complex PRECISION));
 }
 
 void allocateSpatial(p_field f)
 {
-    f->spatial = (PRECISION*)fftw_malloc(my_x->width * my_z->width * ny * sizeof(PRECISION));
+    f->spatial = (PRECISION*)fft_malloc(my_x->width * my_z->width * ny * sizeof(PRECISION));
 }
 
 void allocateForce(p_field f)
 {
-    f->force1 = (complex PRECISION*)fftw_malloc(spectralCount * sizeof(complex PRECISION));
-    f->force2 = (complex PRECISION*)fftw_malloc(spectralCount * sizeof(complex PRECISION));
-    f->force3 = (complex PRECISION*)fftw_malloc(spectralCount * sizeof(complex PRECISION));
+    f->force1 = (complex PRECISION*)fft_malloc(spectralCount * sizeof(complex PRECISION));
+    f->force2 = (complex PRECISION*)fft_malloc(spectralCount * sizeof(complex PRECISION));
+    f->force3 = (complex PRECISION*)fft_malloc(spectralCount * sizeof(complex PRECISION));
 }
 
 void eraseSpatial(p_field f)
 {
     if(f->spatial)
     {
-        fftw_free(f->spatial);
+        fft_free(f->spatial);
         f->spatial = 0;
     }
 }
@@ -41,7 +41,7 @@ void eraseSpectral(p_field f)
 {
     if(f->spectral)
     {
-        fftw_free(f->spectral);
+        fft_free(f->spectral);
         f->spectral = 0;
     }
 }
@@ -50,19 +50,19 @@ void eraseForce(p_field f)
 {
     if(f->force1)
     {
-        fftw_free(f->force1);
+        fft_free(f->force1);
         f->force1 = 0;
     }
 
     if(f->force2)
     {
-        fftw_free(f->force2);
+        fft_free(f->force2);
         f->force2 = 0;
     }
 
     if(f->force3)
     {
-        fftw_free(f->force3);
+        fft_free(f->force3);
         f->force3 = 0;
     }
 }
