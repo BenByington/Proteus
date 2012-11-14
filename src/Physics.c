@@ -63,7 +63,7 @@ void calcNewTimestep()
 
     if(viscosity)
     {
-        dt = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Re;
+        dt = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) / Pr;
     }
     if(tDiff)
     {
@@ -73,7 +73,7 @@ void calcNewTimestep()
     }
     if(magDiff)
     {
-        double temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Re / Prm;
+        double temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Pm / Pr;
         if(temp < dt)
             dt = temp;
     }
@@ -204,9 +204,9 @@ void calcMomentum()
 
     if(viscosity)
     {
-        laplacian(u->vec->x->spectral, rhs->x->spectral, 0, 1/Re);
-        laplacian(u->vec->y->spectral, rhs->y->spectral, 0, 1/Re);
-        laplacian(u->vec->z->spectral, rhs->z->spectral, 0, 1/Re);
+        laplacian(u->vec->x->spectral, rhs->x->spectral, 0, Pr);
+        laplacian(u->vec->y->spectral, rhs->y->spectral, 0, Pr);
+        laplacian(u->vec->z->spectral, rhs->z->spectral, 0, Pr);
     }
     else
     {
@@ -343,7 +343,7 @@ void calcMomentum()
         complex double * zfield = rhs->z->spectral;
         complex double * tfield = T->spectral;
 
-        double factor =  Ra / Re;
+        double factor =  Ra / Pr;
         index = 0;
         for(i = 0; i < my_kx->width; i++)
         {
@@ -372,9 +372,9 @@ void calcMag()
 
     if(magDiff)
     {
-        laplacian(B->vec->x->spectral, rhs->x->spectral, 0, Prm/Re);
-        laplacian(B->vec->y->spectral, rhs->y->spectral, 0, Prm/Re);
-        laplacian(B->vec->z->spectral, rhs->z->spectral, 0, Prm/Re);
+        laplacian(B->vec->x->spectral, rhs->x->spectral, 0, Pr/Pm);
+        laplacian(B->vec->y->spectral, rhs->y->spectral, 0, Pr/Pm);
+        laplacian(B->vec->z->spectral, rhs->z->spectral, 0, Pr/Pm);
     }
     else
     {

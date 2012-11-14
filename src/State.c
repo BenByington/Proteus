@@ -65,7 +65,7 @@ void initState()
             if(compute_node)
             {
                 fftForward(forceField);
-                laplacian(forceField->spectral, forceField->spectral, 0, -1.0 / Re);
+                laplacian(forceField->spectral, forceField->spectral, 0, -1.0 / Pr);
                 eraseSpatial(forceField);
             }
         }

@@ -127,9 +127,9 @@ int magAdvect = 0;
 int kinematic = 0;
 int magTimeForcing = 0;
 
-double Re = 0;
+double Pr = 0;
 double Ra = 0;
-double Prm = 0;
+double Pm = 0;
 double alpha = 1.0;
 
 int nSteps = 0;

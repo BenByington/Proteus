@@ -120,9 +120,9 @@ extern int kinematic;
 extern int magTimeForcing;
 
 //phsyics parameters
-extern double Re;
+extern double Pr;
 extern double Ra;
-extern double Prm;
+extern double Pm;
 extern double alpha;
 
 //integration parameters
