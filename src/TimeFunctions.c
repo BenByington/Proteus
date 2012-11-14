@@ -112,17 +112,17 @@ extern double getz(int i)
 
 inline double mSourceX(double x, double y, double z, double t)
 {
-  return 1.0*cos(1.0*t)*(cos(z+sin(1.0*t))-sin(y+sin(1.0*t)))+(sin(z+sin(1.0*t))+cos(y+sin(1.0*t)))/100.0;
+  return 1.0*cos(1.0*t)*(cos(2.0*PI*z+sin(1.0*t))-sin(2.0*PI*y+sin(1.0*t)))+4.0*PI*PI*(sin(2.0*PI*z+sin(1.0*t))+cos(2.0*PI*y+sin(1.0*t)))/100.0;
 }
 
 inline double mSourceY(double x, double y, double z, double t)
 {
-  return 1.0*cos(1.0*t)*(cos(x+sin(1.0*t))-sin(z+sin(1.0*t)))+(sin(x+sin(1.0*t))+cos(z+sin(1.0*t)))/100.0;
+  return 1.0*cos(1.0*t)*(cos(2.0*PI*x+sin(1.0*t))-sin(2.0*PI*z+sin(1.0*t)))+4.0*PI*PI*(sin(2.0*PI*x+sin(1.0*t))+cos(2.0*PI*z+sin(1.0*t)))/100.0;
 }
 
 inline double mSourceZ(double x, double y, double z, double t)
 {
-  return 1.0*cos(1.0*t)*(cos(y+sin(1.0*t))-sin(x+sin(1.0*t)))+(sin(y+sin(1.0*t))+cos(x+sin(1.0*t)))/100.0;
+  return 1.0*cos(1.0*t)*(cos(2.0*PI*y+sin(1.0*t))-sin(2.0*PI*x+sin(1.0*t)))+4.0*PI*PI*(sin(2.0*PI*y+sin(1.0*t))+cos(2.0*PI*x+sin(1.0*t)))/100.0;
 }
 
 
