@@ -15,7 +15,7 @@ extern FILE * procFile;
 
 void initLogging();
 
-#include "LogTrace.h"
+#include "LogInfo.h"
 
 #endif	/* _LOG_H */
 
