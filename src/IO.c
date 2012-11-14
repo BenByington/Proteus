@@ -9,6 +9,8 @@
 #include "Environment.h"
 #include "Log.h"
 #include "State.h"
+#include "Numerics.h"
+#include "Communication.h"
 
 FILE * status = 0;
 
@@ -826,6 +828,11 @@ void readCheckpoint()
             in = fopen(name,"r");
             fread(&(u->sol->mean_z), sizeof(complex double), 1, in);
             fclose(in);
+
+            recomposeSolenoidal(u->sol, u->vec);
+            fftBackward(u->vec->x);
+            fftBackward(u->vec->y);
+            fftBackward(u->vec->z);
         }
 
         if(magEquation)
@@ -894,6 +901,11 @@ void readCheckpoint()
             in = fopen(name,"r");
             fread(&(B->sol->mean_z), sizeof(complex double), 1, in);
             fclose(in);
+
+            recomposeSolenoidal(B->sol, B->vec);
+            fftBackward(B->vec->x);
+            fftBackward(B->vec->y);
+            fftBackward(B->vec->z);
         }
 
         if(tEquation)
