@@ -9,6 +9,7 @@
 #define	_LOG_H
 
 #include <stdio.h>
+#include <time.h>
 
 extern FILE * procFile;
 

@@ -277,9 +277,9 @@ void parsePhysics(iostream & in)
     const string sMagAdvect("magAdvect");
     const string sKinematic("kinematic");
     const string sMagTimeForcing("magTimeForcing");
-    const string Pr("Pr");
-    const string RA("R");
-    const string PRM("Pm");
+    const string sPR("Pr");
+    const string sRA("R");
+    const string sPRM("Pm");
     const string sAlpha("alpha");
 
     string line;
@@ -493,17 +493,17 @@ void parsePhysics(iostream & in)
             }
             trace("Magnetic time forcing flag: %d\n", magTimeForcing);
         }
-        else if((int)one.find(Pr) != -1)
+        else if((int)one.find(sPR) != -1)
         {
             Pr = atof(two.c_str());
             trace("Re set to %g\n", Pr);
         }
-        else if((int)one.find(RA) != -1)
+        else if((int)one.find(sRA) != -1)
         {
             Pr = atof(two.c_str());
             trace("Pr set to %g\n", Pr);
         }
-        else if((int)one.find(PRM) != -1)
+        else if((int)one.find(sPRM) != -1)
         {
             Pm = atof(two.c_str());
             trace("Magnetic Pr set to %g\n", Pm);
