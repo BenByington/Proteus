@@ -308,7 +308,7 @@ void parsePhysics(iostream & in)
 
             trace("Forcing directory = %s\n", forceFile);
         }
-        if((int)one.find(sMomStaticForcing) != -1)
+        else if((int)one.find(sMomStaticForcing) != -1)
         {
             if((int)two.find(on) != -1)
                 momStaticForcing = 1;
@@ -321,7 +321,7 @@ void parsePhysics(iostream & in)
 
             trace("Momentum static forcing flag: %d\n", momStaticForcing);
         }
-        if((int)one.find(sMomTimeForcing) != -1)
+        else if((int)one.find(sMomTimeForcing) != -1)
         {
             if((int)two.find(on) != -1)
                 momTimeForcing = 1;
@@ -491,7 +491,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Magnetic time forcing flag: %d\n", magAdvect);
+            trace("Magnetic time forcing flag: %d\n", magTimeForcing);
         }
         else if((int)one.find(RE) != -1)
         {

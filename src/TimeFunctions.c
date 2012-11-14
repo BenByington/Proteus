@@ -12,7 +12,7 @@ void fillTimeField(p_vector vec, int func)
     double x, y, z;
     if(func == MOMENTUM)
     {
-        debug("Doing time dependant forcing of momentum equation",0);
+        debug("Doing time dependant forcing of momentum equation\n",0);
         for(i = 0; i < my_z->width; i++)
         {
             z = getz(i);
@@ -34,7 +34,7 @@ void fillTimeField(p_vector vec, int func)
     }
     else if(func == MAGNETIC)
     {
-        debug("Doing time dependant forcing of induction equation",0);
+        debug("Doing time dependant forcing of induction equation\n",0);
         for(i = 0; i < my_z->width; i++)
         {
             z = getz(i);
@@ -56,7 +56,7 @@ void fillTimeField(p_vector vec, int func)
     }
     else if(func == KINEMATIC)
     {
-        debug("Doing time dependant velocity for kinematic problem",0);
+        debug("Doing time dependant velocity for kinematic problem\n",0);
         for(i = 0; i < my_z->width; i++)
         {
             z = getz(i);
@@ -78,7 +78,7 @@ void fillTimeField(p_vector vec, int func)
     }
     else
     {
-        error("ABORTING: Invalid function identifier: %d", func);
+        error("ABORTING: Invalid function identifier: %d\n", func);
         return;
     }
 
@@ -130,7 +130,8 @@ inline double bSourceX(double x, double y, double z, double t)
 
 inline double bSourceY(double x, double y, double z, double t)
 {
-    return  0.5*tanh(30 *(x-0.2))*tanh(30*(0.2-x))*tanh(30 *(z-0.2))*tanh(30*(0.2-z)) + 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
+    //return  0.5*tanh(30 *(x-0.2))*tanh(30*(0.2-x))*tanh(30 *(z-0.2))*tanh(30*(0.2-z)) + 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
+    return sin(2*PI*x);
 }
 
 inline double bSourceZ(double x, double y, double z, double t)
