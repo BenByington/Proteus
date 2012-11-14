@@ -102,20 +102,29 @@ extern double getz(int i)
     return (double) (i + my_z->min) / (double) nz;
 }
 
+/**
+ * Forcing function, F (see Eq. 5 of Brummell et al. 1998)
+ * applied to modified ABC flow
+ * use epsilon = 1.0
+ * Re = 100.0
+ * Omega = 1.0 (vary this to change nonlinear dynamo properties)
+ **/
+
 inline double mSourceX(double x, double y, double z, double t)
 {
-    return 0.5 * sin(2*PI*y) * sin(2*PI*z) * sin(2*PI*t*50);
+  return 1.0*cos(1.0*t)*(cos(z+sin(1.0*t))-sin(y+sin(1.0*t)))+(sin(z+sin(1.0*t))+cos(y+sin(1.0*t)))/100.0;
 }
 
 inline double mSourceY(double x, double y, double z, double t)
 {
-    return 0;
+  return 1.0*cos(1.0*t)*(cos(x+sin(1.0*t))-sin(z+sin(1.0*t)))+(sin(x+sin(1.0*t))+cos(z+sin(1.0*t)))/100.0;
 }
 
 inline double mSourceZ(double x, double y, double z, double t)
 {
-    return 0;
+  return 1.0*cos(1.0*t)*(cos(y+sin(1.0*t))-sin(x+sin(1.0*t)))+(sin(y+sin(1.0*t))+cos(x+sin(1.0*t)))/100.0;
 }
+
 
 /**
  * !!!MAKE SURE YOU PROGRAM IN A SOLENOIDAL FIELD!!!
@@ -146,15 +155,16 @@ inline double bSourceZ(double x, double y, double z, double t)
 
 inline double kinematicX(double x, double y, double z, double t)
 {
-    return 0;
+    return sin(2.0*PI*z+1.0*sin(1.0*t)) + cos(2.0*PI*y+1.0*sin(1.0*t));
 }
 
 inline double kinematicY(double x, double y, double z, double t)
 {
-    return 0;
+  return sin(2.0*PI*x+1.0*sin(1.0*t)) + cos(2.0*PI*z+1.0*sin(1.0*t));
 }
 
 inline double kinematicZ(double x, double y, double z, double t)
 {
-    return sin(2*PI*y);
+
+  return sin(2*PI*y+1.0*sin(1.0*t)) + cos(2.0*PI*x+1.0*sin(1.0*t));
 }
