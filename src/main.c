@@ -30,6 +30,8 @@ int execute(char * propFile);
  */
 int main(int argc, char** argv)
 {
+    int status;
+
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &grank);
     MPI_Comm_size(MPI_COMM_WORLD, &gsize);
@@ -42,17 +44,26 @@ int main(int argc, char** argv)
             fprintf(stderr, "arg %d: %s\n",i, argv[i]);
         return -1;
     }
+
+    srand(time(0));
+
+    initLogging();
     
-    
-    return execute(argv[1]);
+    int i;
+    for(i = 0; i < 20; i++)
+    {
+        error("Doing run iteration %d\n", i);
+        status = execute(argv[1]);
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Finalize();
+
+    return status;
 }
 
 int execute(char * propLoc)
 {
-    srand(time(0));
-
-    initLogging();
-
     loadPrefs(propLoc);
 
 
@@ -92,6 +103,5 @@ int execute(char * propLoc)
     lab_finalize();
 
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Finalize();
 }
 
