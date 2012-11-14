@@ -26,7 +26,7 @@ void initState()
         allocateForce(T);
     }
 
-    if(startType == CHECKPOINT)
+    if(startFlag == CHECKPOINT)
     {
         readCheckpoint();
     }
@@ -56,19 +56,19 @@ void initState()
         }
 
 
-        if(startType == SCRATCH)
+        if(startFlag == SCRATCH)
         {
             //no need for IO nodes in here
             if(compute_node)
                 startScratch();
         }
-        else if(startType == SPATIAL)
+        else if(startFlag == SPATIAL)
         {
             startSpatial();
         }
         else
         {
-            error("Unsupported start type requested: %d\n", startType);
+            error("Unsupported start type requested: %d\n", startFlag);
         }
     }
     

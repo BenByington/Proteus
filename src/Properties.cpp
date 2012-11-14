@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <string>
+#include <ctype.h>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ using namespace std;
 #define IO "IO"
 #define INITIAL_CONDITIONS "InitialConditions"
 #define PHYSICS "Physics"
+#define FORCINGS "Forcings"
 #define INTEGRATION "Integration"
 
 const string on("on");
@@ -27,6 +29,7 @@ void parseProblemSize(iostream & in);
 void parseIO(iostream & in);
 void parseIC(iostream & in);
 void parsePhysics(iostream & in);
+void parseForcings(iostream & in);
 void parseIntegration(iostream & in);
 void init();
 
@@ -69,6 +72,10 @@ void loadPrefs(char * loc)
         else if(section == PHYSICS)
         {
             parsePhysics(input);
+        }
+        else if(section == FORCINGS)
+        {
+            parseForcings(input);
         }
         else if(section == INTEGRATION)
         {
@@ -247,8 +254,25 @@ void parseIC(iostream & in)
 
         if((int)one.find(st) != -1)
         {
-            startType = atoi(two.c_str());
-            debug("startType = %d\n", startType);
+            transform(two.begin(), two.end(), two.begin(), ::tolower);
+            trace("Lower case version of string: %s\n", two.c_str());
+            if(two.find(string("scratch")) != two.npos)
+            {
+                startFlag = SCRATCH;
+            }
+            else if(two.find(string("spatial")) != two.npos)
+            {
+                startFlag = SPATIAL;
+            }
+            else if(two.find(string("checkpoint")) != two.npos)
+            {
+                startFlag = CHECKPOINT;
+            }
+            else
+            {
+                error("Start Type %s is invalid\n", two.c_str());
+            }
+            debug("startFlag = %d\n", startFlag);
         }
         else if((int)one.find(sStartDir) != -1)
         {
@@ -272,17 +296,12 @@ void parsePhysics(iostream & in)
     const string sMagnetic("magneticEQ");
     const string sMomAdvect("momAdvection");
     const string sViscosity("viscosity");
-    const string sMomStaticForcing("momStaticForcing");
-    const string sMomTimeForcing("momTimeForcing");
-    const string sForcingFile("forcingFile");
     const string sBuoyancy("buoyancy");
     const string sLorentz("lorentz");
     const string sTDiff("tdiff");
     const string sTempAdvection("tempAdvection");
     const string sMagDiff("magdiff");
     const string sMagAdvect("magAdvect");
-    const string sKinematic("kinematic");
-    const string sMagTimeForcing("magTimeForcing");
     const string sPR("Pr");
     const string sRA("Ra");
     const string sPM("Pm");
@@ -306,41 +325,8 @@ void parsePhysics(iostream & in)
         one = line.substr(0, index);
         two = line.substr(index+1, line.size()-1);
 
-        if((int)one.find(sForcingFile) != -1)
-        {
-            int len = two.length()+1;
-            forceFile = (char*)malloc(len);
-            strcpy(forceFile, two.c_str());
-
-            debug("Forcing directory = %s\n", forceFile);
-        }
-        else if((int)one.find(sMomStaticForcing) != -1)
-        {
-            if((int)two.find(on) != -1)
-                momStaticForcing = 1;
-            else if((int)two.find(off) != -1)
-                momStaticForcing = 0;
-            else
-            {
-                warn("unrecognized option %s for %s", two.c_str(), one.c_str());
-            }
-
-            debug("Momentum static forcing flag: %d\n", momStaticForcing);
-        }
-        else if((int)one.find(sMomTimeForcing) != -1)
-        {
-            if((int)two.find(on) != -1)
-                momTimeForcing = 1;
-            else if((int)two.find(off) != -1)
-                momTimeForcing = 0;
-            else
-            {
-                warn("unrecognized option %s for %s", two.c_str(), one.c_str());
-            }
-
-            debug("Momentum time forcing flag: %d\n", momTimeForcing);
-        }
-        else if((int)one.find(sMomentum) != -1)
+        
+        if((int)one.find(sMomentum) != -1)
         {
             if((int)two.find(on) != -1)
                 momEquation = 1;
@@ -475,6 +461,98 @@ void parsePhysics(iostream & in)
             }
             debug("Magnetic \"Advection\" flag: %d\n", magAdvect);
         }
+        else if((int)one.find(sPR) != -1)
+        {
+            Pr = atof(two.c_str());
+            debug("Pr set to %g\n", Pr);
+        }
+        else if((int)one.find(sRA) != -1)
+        {
+            Ra = atof(two.c_str());
+            debug("Ra set to %g\n", Ra);
+        }
+        else if((int)one.find(sPM) != -1)
+        {
+            Pm = atof(two.c_str());
+            debug("Magnetic Pr set to %g\n", Pm);
+        }
+        else if((int)one.find(sAlpha) != -1)
+        {
+            alpha = atof(two.c_str());
+            debug("alpha set to %g\n", alpha);
+        }
+        else
+        {
+            warn("Found unknown value!!:  %s %s\n", one.c_str(), two.c_str());
+        }
+    }
+}
+
+void parseForcings(iostream & in)
+{
+    const string sMomStaticForcing("momStaticForcing");
+    const string sMomTimeForcing("momTimeForcing");
+    const string sForcingFile("forcingFile");
+    const string sMagTimeForcing("magTimeForcing");
+    const string sKinematic("kinematic");
+    const string sMomOmega("momOmega");
+    const string sMomEps("momEps");
+    const string sMagK("magK");
+    const string sMagW("magW");
+    const string sMagB0("magB0");
+
+    string line;
+    string one;
+    string two;
+    int index;
+
+    debug("Loading Physics Parameters\n",0)
+    while(!getline(in, line).eof())
+    {
+        trace("Reading line %s\n", line.c_str());
+        index = line.find_first_of('=');
+        if((int)line.find_first_of("[") != -1)
+            return;
+        if(index == -1)
+            continue;
+
+        one = line.substr(0, index);
+        two = line.substr(index+1, line.size()-1);
+
+        if((int)one.find(sForcingFile) != -1)
+        {
+            int len = two.length()+1;
+            forceFile = (char*)malloc(len);
+            strcpy(forceFile, two.c_str());
+
+            debug("Forcing directory = %s\n", forceFile);
+        }
+        else if((int)one.find(sMomStaticForcing) != -1)
+        {
+            if((int)two.find(on) != -1)
+                momStaticForcing = 1;
+            else if((int)two.find(off) != -1)
+                momStaticForcing = 0;
+            else
+            {
+                warn("unrecognized option %s for %s", two.c_str(), one.c_str());
+            }
+
+            debug("Momentum static forcing flag: %d\n", momStaticForcing);
+        }
+        else if((int)one.find(sMomTimeForcing) != -1)
+        {
+            if((int)two.find(on) != -1)
+                momTimeForcing = 1;
+            else if((int)two.find(off) != -1)
+                momTimeForcing = 0;
+            else
+            {
+                warn("unrecognized option %s for %s", two.c_str(), one.c_str());
+            }
+
+            debug("Momentum time forcing flag: %d\n", momTimeForcing);
+        }
         else if((int)one.find(sKinematic) != -1)
         {
             if((int)two.find(on) != -1)
@@ -499,25 +577,30 @@ void parsePhysics(iostream & in)
             }
             debug("Magnetic time forcing flag: %d\n", magTimeForcing);
         }
-        else if((int)one.find(sPR) != -1)
+        else if((int)one.find(sMomOmega) != -1)
         {
-            Pr = atof(two.c_str());
-            debug("Pr set to %g\n", Pr);
+            momOmega = atof(two.c_str());
+            debug("momOmega = %g\n", momOmega);
         }
-        else if((int)one.find(sRA) != -1)
+        else if((int)one.find(sMomEps) != -1)
         {
-            Ra = atof(two.c_str());
-            debug("Ra set to %g\n", Ra);
+            momEps = atof(two.c_str());
+            debug("momEps = %g\n", momEps);
         }
-        else if((int)one.find(sPM) != -1)
+        else if((int)one.find(sMagK) != -1)
         {
-            Pm = atof(two.c_str());
-            debug("Magnetic Pr set to %g\n", Pm);
+            magK = atof(two.c_str());
+            debug("magK = %g\n", magK);
         }
-        else if((int)one.find(sAlpha) != -1)
+        else if((int)one.find(sMagW) != -1)
         {
-            alpha = atof(two.c_str());
-            debug("alpha set to %g\n", alpha);
+            magW = atof(two.c_str());
+            debug("magW = %g\n", magW);
+        }
+        else if((int)one.find(sMagB0) != -1)
+        {
+            magB0 = atof(two.c_str());
+            debug("magB0 = %g\n", magB0);
         }
         else
         {

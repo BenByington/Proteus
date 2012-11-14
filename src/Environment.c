@@ -106,7 +106,8 @@ indexes * io_layers;
 int my_io_layer;
 int nz_layers;
 
-int startType;
+char * startType = 0;
+int startFlag = SCRATCH;
 char * startDir = 0;
 
 
@@ -118,8 +119,6 @@ int scalarPerF = 1;
 int checkRate = 1000;
 int checkDir = 0;
 
-int momStaticForcing = 0;
-int momTimeForcing = 0;
 int momEquation = 0;
 int magEquation = 0;
 int tEquation = 0;
@@ -127,13 +126,22 @@ int momAdvection = 0;
 int viscosity = 0;
 int buoyancy = 0;
 int lorentz = 0;
-char * forceFile = 0;
 int tDiff = 0;
 int tempAdvection = 0;
 int magDiff = 0;
 int magAdvect = 0;
+
+//forcing terms
+int momStaticForcing = 0;
+char * forceFile = 0;
 int kinematic = 0;
+int momTimeForcing = 0;
 int magTimeForcing = 0;
+PRECISION momOmega = 0;
+PRECISION momEps = 0;
+PRECISION magK = 0;
+PRECISION magW = 0;
+PRECISION magB0 = 0;
 
 PRECISION Pr = 0;
 PRECISION Ra = 0;

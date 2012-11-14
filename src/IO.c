@@ -336,7 +336,7 @@ void initIO()
 
     if(crank == 0)
     {
-        if(startType != CHECKPOINT)
+        if(startFlag != CHECKPOINT)
         {
             status = fopen("status", "w");
             fprintf(status, "Stupid message here and now to make me put a nice and informative one later\n\n");

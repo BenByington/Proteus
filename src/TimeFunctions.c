@@ -89,51 +89,81 @@ void fillTimeField(p_vector vec, int func)
 
 extern PRECISION getx(int i)
 {
-    return (PRECISION) (i + my_x->min) / (PRECISION) nx;
+    return 2 * PI * (PRECISION) (i + my_x->min) / (PRECISION) nx;
 }
 
 extern PRECISION gety(int i)
 {
-    return (PRECISION) i  / (PRECISION) ny;
+    return 2 * PI * (PRECISION) i  / (PRECISION) ny;
 }
 
 extern PRECISION getz(int i)
 {
-    return (PRECISION) (i + my_z->min) / (PRECISION) nz;
+    return 2 * PI * (PRECISION) (i + my_z->min) / (PRECISION) nz;
+}
+
+/*
+ * Kinematic flow field for the Brummel et al modified ABC flow
+ */
+inline PRECISION kinematicX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
+{
+    return sin(z + momEps*sin(momOmega*t)) + cos(y + momEps*sin(momOmega*t));
+}
+
+inline PRECISION kinematicY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
+{
+  return sin(x + momEps*sin(momOmega*t)) + cos(z + momEps*sin(momOmega*t));
+}
+
+inline PRECISION kinematicZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
+{
+
+  return sin(y + momEps*sin(momOmega*t)) + cos(x + momEps*sin(momOmega*t));
 }
 
 /**
- * Forcing function, F (see Eq. 5 of Brummell et al. 1998)
- * applied to modified ABC flow
- * use epsilon = 1.0
- * Re = 100.0
- * Omega = 2.5 (vary this to change nonlinear dynamo properties)
+ * Forcing function that should result in the modified ABC flow
  **/
 
 inline PRECISION mSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  PRECISION om = 2.5;
-  return
-  om*cos(om*t)*(cos(2.0*PI*z+sin(om*t))-sin(2.0*PI*y+sin(om*t)))+(sin(2.0*PI*z+sin(om*t))+cos(2.0*PI*y+sin(om*t)))/100.0;
+    PRECISION temp1 = 0;
+    PRECISION temp2 = 0;
+    
+    temp1 = cos(z + momEps*sin(momOmega*t)) - sin(y + momEps*sin(momOmega*t));
+    temp2 = sin(z + momEps*sin(momOmega*t)) + cos(y + momEps*sin(momOmega*t));
+    
+    return momEps*momOmega*cos(momOmega*t) * temp1 + temp2 * Pr;
 }
 
 inline PRECISION mSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  PRECISION om = 2.5;
-  return
-  om*cos(om*t)*(cos(2.0*PI*x+sin(om*t))-sin(2.0*PI*z+sin(om*t)))+(sin(2.0*PI*x+sin(om*t))+cos(2.0*PI*z+sin(om*t)))/100.0;
+    static PRECISION temp1 = 0;
+    static PRECISION temp2 = 0;
+
+    temp1 = cos(x + momEps*sin(momOmega*t)) - sin(z + momEps*sin(momOmega*t));
+    temp2 = sin(x + momEps*sin(momOmega*t)) + cos(z + momEps*sin(momOmega*t));
+
+    return momEps*momOmega*cos(momOmega*t) * temp1 + temp2 * Pr;
 }
 
 inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  PRECISION om = 2.5;
-  return
-  om*cos(om*t)*(cos(2.0*PI*y+sin(om*t))-sin(2.0*PI*x+sin(om*t)))+(sin(2.0*PI*y+sin(om*t))+cos(2.0*PI*x+sin(om*t)))/100.0;
+    static PRECISION temp1 = 0;
+    static PRECISION temp2 = 0;
+
+    temp1 = cos(y + momEps*sin(momOmega*t)) - sin(x + momEps*sin(momOmega*t));
+    temp2 = sin(y + momEps*sin(momOmega*t)) + cos(x + momEps*sin(momOmega*t));
+
+    return momEps*momOmega*cos(momOmega*t) * temp1 + temp2 * Pr;
 }
 
 
 /**
  * !!!MAKE SURE YOU PROGRAM IN A SOLENOIDAL FIELD!!!
+ * If you do not, it will be projected into one in a potentially
+ * unpredictable manor.
+ *
  * Force induction equation in a similar manner to how
  * the momentum equation is forced.
  * Apply forcing func to B0sin(kz)sin(wt)[sin(ky),0,0]
@@ -149,11 +179,13 @@ inline PRECISION mSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
  **/
 inline PRECISION bSourceX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
-  static PRECISION k = 1.0;
-  static PRECISION w = 1e-2;
-  static PRECISION b0 = 0.1;
+  static PRECISION temp1 = 0;
+  static PRECISION temp2 = 0;
 
-  return w*b0*sin(2*PI*k*z)*sin(2*PI*k*y)*cos(w*t)+2.0*k*k*0.01*b0*sin(2*PI*k*z)*sin(2*PI*k*y)*sin(w*t)/1.0;
+  temp1 = magW*magB0*sin(magK*z)*cos(magW*t)*sin(magK*y);
+  temp2 = 2.*magK*magK*magB0*sin(magK*z)*sin(magW*t)*sin(magK*y);
+
+  return temp1 + temp2 * Pr / Pm;
 }
 
 inline PRECISION bSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
@@ -164,20 +196,4 @@ inline PRECISION bSourceY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 inline PRECISION bSourceZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
 {
     return 0;
-}
-
-inline PRECISION kinematicX(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
-{
-    return sin(2.0*PI*z+1.0*sin(1.0*t)) + cos(2.0*PI*y+1.0*sin(1.0*t));
-}
-
-inline PRECISION kinematicY(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
-{
-  return sin(2.0*PI*x+1.0*sin(1.0*t)) + cos(2.0*PI*z+1.0*sin(1.0*t));
-}
-
-inline PRECISION kinematicZ(PRECISION x, PRECISION y, PRECISION z, PRECISION t)
-{
-
-  return sin(2*PI*y+1.0*sin(1.0*t)) + cos(2.0*PI*x+1.0*sin(1.0*t));
 }

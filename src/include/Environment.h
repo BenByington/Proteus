@@ -95,7 +95,8 @@ extern int nz_layers;
 #define SCRATCH 0
 #define SPATIAL 1
 #define CHECKPOINT 2
-extern int startType;
+extern char * startType;
+extern int startFlag;
 extern char * startDir;
 
 //IO configurations
@@ -114,16 +115,24 @@ extern int tEquation;
 extern int momAdvection;
 extern int viscosity;
 extern int buoyancy;
-extern int momStaticForcing;
-extern int momTimeForcing;
 extern int lorentz;
-extern char * forceFile;
 extern int tDiff;
 extern int tempAdvection;
 extern int magDiff;
 extern int magAdvect;
+
+//forcing terms
+extern int momStaticForcing;
+extern char * forceFile;
 extern int kinematic;
+extern int momTimeForcing;
 extern int magTimeForcing;
+extern PRECISION momOmega;
+extern PRECISION momEps;
+extern PRECISION magK;
+extern PRECISION magW;
+extern PRECISION magB0;
+
 
 //phsyics parameters
 extern PRECISION Pr;
