@@ -502,7 +502,7 @@ void performOutput()
 
         if(compute_node)
         {
-            if(momEquation)
+            if(momEquation || kinematic)
             {
                 trace("Outputing u\n",0);
                 writeSpatial(u->vec->x,0);
