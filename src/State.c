@@ -42,12 +42,12 @@ void initState()
     }
     
 
-    if(forcing)
+    if(momStaticForcing)
     {
         if(!viscosity)
         {
-            warn("Forcing is currently designed to counteract the diffusion term.  Diffusion is disabled so forcing will be neglected for this run\n",0);
-            forcing = 0;
+            warn("Static momentum forcing is currently designed to counteract the diffusion term.  Diffusion is disabled so forcing will be neglected for this run\n",0);
+            momStaticForcing = 0;
         }
         else
         {
@@ -81,7 +81,7 @@ void finalizeState()
     eraseForce(T);
     free(T);
 
-    if(forcing)
+    if(momStaticForcing)
     {
         eraseSpectral(forceField);
         free(forceField);

@@ -1,10 +1,11 @@
 #include "TimeFunctions.h"
 #include "Environment.h"
 #include "Log.h"
+#include "Communication.h"
 
 #include <math.h>
 
-void fillTimeField(p_field field, int func)
+void fillTimeField(p_vector vec, int func)
 {
     int i,j,k;
     int index = 0;
@@ -22,7 +23,9 @@ void fillTimeField(p_field field, int func)
                 {
                     y = gety(k);
 
-                    field->spatial[index] = mSource(x, y, z, elapsedTime);
+                    vec->x->spatial[index] = mSourceX(x, y, z, elapsedTime);
+                    vec->y->spatial[index] = mSourceY(x, y, z, elapsedTime);
+                    vec->z->spatial[index] = mSourceZ(x, y, z, elapsedTime);
 
                     index++;
                 }
@@ -42,7 +45,9 @@ void fillTimeField(p_field field, int func)
                 {
                     y = gety(k);
 
-                    field->spatial[index] = bSource(x, y, z, elapsedTime);
+                    vec->x->spatial[index] = bSourceX(x, y, z, elapsedTime);
+                    vec->y->spatial[index] = bSourceY(x, y, z, elapsedTime);
+                    vec->z->spatial[index] = bSourceZ(x, y, z, elapsedTime);
 
                     index++;
                 }
@@ -62,7 +67,9 @@ void fillTimeField(p_field field, int func)
                 {
                     y = gety(k);
 
-                    field->spatial[index] = kinematic(x, y, z, elapsedTime);
+                    vec->x->spatial[index] = kinematicX(x, y, z, elapsedTime);
+                    vec->y->spatial[index] = kinematicY(x, y, z, elapsedTime);
+                    vec->z->spatial[index] = kinematicZ(x, y, z, elapsedTime);
 
                     index++;
                 }
@@ -71,8 +78,13 @@ void fillTimeField(p_field field, int func)
     }
     else
     {
-        error("ABORTING: Invalid function identifier: %d", func)
+        error("ABORTING: Invalid function identifier: %d", func);
+        return;
     }
+
+    fftForward(vec->x);
+    fftForward(vec->y);
+    fftForward(vec->z);
 }
 
 extern double getx(int i)
@@ -90,17 +102,47 @@ extern double getz(int i)
     return (double) (i + my_z->min) / (double) nz;
 }
 
-inline double mSource(double x, double y, double z, double t)
+inline double mSourceX(double x, double y, double z, double t)
 {
     return 0;
 }
 
-inline double bSource(double x, double y, double z, double t)
+inline double mSourceY(double x, double y, double z, double t)
 {
     return 0;
 }
 
-inline double kinematic(double x, double y, double z, double t)
+inline double mSourceZ(double x, double y, double z, double t)
+{
+    return 0;
+}
+
+inline double bSourceX(double x, double y, double z, double t)
+{
+    return 0;
+}
+
+inline double bSourceY(double x, double y, double z, double t)
+{
+    return 0;
+}
+
+inline double bSourceZ(double x, double y, double z, double t)
+{
+    return 0;
+}
+
+inline double kinematicX(double x, double y, double z, double t)
+{
+    return 0;
+}
+
+inline double kinematicY(double x, double y, double z, double t)
+{
+    return 0;
+}
+
+inline double kinematicZ(double x, double y, double z, double t)
 {
     return 0;
 }

@@ -110,7 +110,8 @@ int spatialRate = 1000;
 int scalarRate = 1000;
 int scalarPerF = 1;
 
-int forcing = 0;
+int momStaticForcing = 0;
+int momTimeForcing = 0;
 int momEquation = 0;
 int magEquation = 0;
 int tEquation = 0;

@@ -30,15 +30,23 @@
 
 #include "Field.h"
 
-void fillTimeField(p_field, int func);
+void fillTimeField(p_vector, int func);
 
 inline double getx(int i);
 inline double gety(int j);
 inline double getz(int j);
 
-inline double mSource(double x, double y, double z, double t);
-inline double bSource(double x, double y, double z, double t);
-inline double kinematic(double x, double y, double z, double t);
+inline double mSourceX(double x, double y, double z, double t);
+inline double mSourceY(double x, double y, double z, double t);
+inline double mSourceZ(double x, double y, double z, double t);
+
+inline double bSourceX(double x, double y, double z, double t);
+inline double bSourceY(double x, double y, double z, double t);
+inline double bSourceZ(double x, double y, double z, double t);
+
+inline double kinematicX(double x, double y, double z, double t);
+inline double kinematicY(double x, double y, double z, double t);
+inline double kinematicZ(double x, double y, double z, double t);
 
 #endif	/* _TIMEFUNCTIONS_H */
 

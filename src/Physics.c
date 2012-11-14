@@ -5,6 +5,7 @@
 #include "Communication.h"
 #include "Environment.h"
 #include "Field.h"
+#include "TimeFunctions.h"
 
 #include <string.h>
 #include <math.h>
@@ -215,8 +216,8 @@ void calcMomentum()
         memset(rhs->z->spectral, 0, spectralCount * sizeof(complex double));
     }
 
-    //forcing is currently only in the u direction and a function of y and z
-    if(forcing)
+    //static forcing is currently only in the u direction and a function of y and z
+    if(momStaticForcing)
     {
         complex double * xfield = rhs->x->spectral;
         complex double * ffield = forceField->spectral;
@@ -231,6 +232,26 @@ void calcMomentum()
                     index++;
                 }
             }
+        }
+    }
+
+    if(momTimeForcing)
+    {
+        fillTimeField(temp1, MOMENTUM);
+
+        complex double * xfield;
+        complex double * yfield;
+        complex double * zfield;
+        complex double * xforce;
+        complex double * yforce;
+        complex double * zforce;
+
+        int i;
+        for(i = 0; i < spectralCount; i++)
+        {
+            xfield[i] += xforce[i];
+            yfield[i] += yforce[i];
+            zfield[i] += zforce[i];
         }
     }
 
