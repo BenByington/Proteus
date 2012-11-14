@@ -122,7 +122,7 @@ int benchmark(char * propLoc)
         setupEnvironment();
 
         initState();
-        //initIO();
+        initIO();
         if(compute_node)
         {
             initPhysics();

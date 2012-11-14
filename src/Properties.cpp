@@ -563,7 +563,7 @@ void parseIntegration(iostream & in)
         else if((int)one.find(sMaxTime) != -1)
         {
             maxTime = atof(two.c_str());
-            debug("maxTime = %d\n", maxTime);
+            debug("maxTime = %f\n", maxTime);
         }
         else
         {
