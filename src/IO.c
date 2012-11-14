@@ -521,6 +521,7 @@ void performOutput()
             FILE * info;
             info = fopen(name, "w");
             fprintf(info, "Time: %g", elapsedTime);
+            fclose(info);
         }
         MPI_Barrier(MPI_COMM_WORLD);
 
