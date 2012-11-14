@@ -323,6 +323,15 @@ void readSpatial(field * f, char * name)
 
 void initIO()
 {
+    if(magEquation)
+    {
+        numScalar = 24;
+    }
+    else
+    {
+        numScalar = 13;
+    }
+    
     if(crank == 0)
     {
         status = fopen("status", "w");
@@ -333,14 +342,6 @@ void initIO()
         mkdir("Scalers", S_IRWXU);
 
         scalarCount = 0;
-        if(lorentz)
-        {
-            numScalar = 24;
-        }
-        else
-        {
-            numScalar = 13;
-        }
 
         scalarData = malloc(numScalar * scalarPerF * sizeof(double));
         piScalarData = scalarData;
