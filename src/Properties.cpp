@@ -102,7 +102,7 @@ void parseProblemSize(iostream & in)
     {
         trace("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
-        if(line.find_first_of("[") != -1)
+        if((int)line.find_first_of("[") != -1)
             return;
         if(index == -1)
             continue;
@@ -176,7 +176,7 @@ void parseIO(iostream & in)
     {
         trace("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
-        if(line.find_first_of("[") != -1)
+        if((int)line.find_first_of("[") != -1)
             return;
         if(index == -1)
             continue;
@@ -231,7 +231,7 @@ void parseIC(iostream & in)
     {
         trace("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
-        if(line.find_first_of("[") != -1)
+        if((int)line.find_first_of("[") != -1)
             return;
         if(index == -1)
             continue;
@@ -292,7 +292,7 @@ void parsePhysics(iostream & in)
     {
         trace("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
-        if(line.find_first_of("[") != -1)
+        if((int)line.find_first_of("[") != -1)
             return;
         if(index == -1)
             continue;
@@ -535,7 +535,7 @@ void parseIntegration(iostream & in)
     {
         trace("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
-        if(line.find_first_of("[") != -1)
+        if((int)line.find_first_of("[") != -1)
             return;
         if(index == -1)
             continue;
