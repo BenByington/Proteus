@@ -5,6 +5,7 @@
  * Created on February 12, 2010, 1:43 PM
  */
 
+#include <sys/time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
@@ -21,7 +22,7 @@
 #include "Properties.h"
 #include "LaborDivision.h"
 
-int benchmark();
+int benchmark(char * propFile);
 int execute(char * propFile);
 
 
@@ -36,9 +37,9 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &grank);
     MPI_Comm_size(MPI_COMM_WORLD, &gsize);
     
-    if(argc != 2)
+    if(argc < 2 || argc > 3)
     {
-        fprintf(stderr, "Exactly one command line parameter must be handed in, the location of the configuration file!!\n");
+        fprintf(stderr, "Usage: imhd <propFile> [benchmark]\n");
         int i;
         for(i = 0; i < argc; i++)
             fprintf(stderr, "arg %d: %s\n",i, argv[i]);
@@ -49,8 +50,10 @@ int main(int argc, char** argv)
 
     initLogging();
     
-
-    status = execute(argv[1]);
+    if(argc == 2)
+        status = execute(argv[1]);
+    else
+        status = benchmark(argv[1]);
 
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
@@ -98,5 +101,60 @@ int execute(char * propLoc)
     lab_finalize();
 
     MPI_Barrier(MPI_COMM_WORLD);
+
+    return 0;
 }
 
+int benchmark(char * propLoc)
+{
+    double dstart;
+    double dstop;
+    struct timeval start;
+    struct timeval stop;
+
+    
+    loadPrefs(propLoc);
+
+
+    info("Code Initialization Complete\n",0);
+    setupEnvironment();
+
+    initState();
+    initIO();
+    if(compute_node)
+    {
+        initPhysics();
+    }
+
+    gettimeofday(&start,NULL);
+    fftForward(B->vec->x);
+    fftBackward(B->vec->x);
+    gettimeofday(&stop, NULL);
+
+    dstart = start.tv_sec+(start.tv_usec/1000000.0);
+    dstop = stop.tv_sec + (stop.tv_usec/1000000.0);
+
+    fprintf(stderr, "Time in seconds for one full FFT cycle: %f\n", dstart - dstop);
+    /*while((iteration < maxSteps) && (elapsedTime < maxTime))
+    {
+        iteration++;
+        debug("Working on step %d\n", iteration);
+        if(compute_node)
+            iterate();
+
+        MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
+        performOutput();
+    }*/
+
+    if(compute_node)
+    {
+        finalizePhysics();
+        finalizeState();
+        com_finalize();
+    }
+    lab_finalize();
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    return 0;
+}
