@@ -18,6 +18,9 @@ void setupEnvironment()
         abort();
     }
 
+    iteration = 0;
+    elapsedTime = 0;
+    
     lab_initGeometry();
     lab_initGroups();
     lab_initDistributions();
