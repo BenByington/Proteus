@@ -137,7 +137,6 @@ inline double bSourceY(double x, double y, double z, double t)
         return 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
     else
         return 0;
-    //return sin(2*PI*x);
 }
 
 inline double bSourceZ(double x, double y, double z, double t)
@@ -157,5 +156,5 @@ inline double kinematicY(double x, double y, double z, double t)
 
 inline double kinematicZ(double x, double y, double z, double t)
 {
-    return 0;
+    return sin(2*PI*y);
 }

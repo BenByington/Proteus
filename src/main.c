@@ -60,15 +60,13 @@ int main(int argc, char** argv)
         performOutput();
     }
 
+    info("Run Complete: Cleaning and Exiting now\n",0);
     if(compute_node)
     {
         finalizePhysics();
         finalizeState();
     }
 
-
-
-    info("Run Complete: Cleaning and Exiting now\n",0);
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
     
