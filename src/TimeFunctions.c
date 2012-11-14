@@ -130,7 +130,7 @@ inline double bSourceX(double x, double y, double z, double t)
 
 inline double bSourceY(double x, double y, double z, double t)
 {
-    return 0;
+    return  0.5*tanh(30 *(x-0.2))*tanh(30*(0.2-x))*tanh(30 *(z-0.2))*tanh(30*(0.2-z)) + 0.5*tanh(30 *(x-0.8))*tanh(30*(0.8-x))*tanh(30 *(z-0.8))*tanh(30*(0.8-z)) + 0.5;
 }
 
 inline double bSourceZ(double x, double y, double z, double t)
