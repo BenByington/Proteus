@@ -222,6 +222,12 @@ void readSpatial(field * f, char * name)
     PRECISION * sndbuff = 0;
     PRECISION * rcvbuff = 0;
 
+    //check if there is an info file telling us our starting time
+    if(grank == 0)
+    {
+
+    }
+
     if(io_node)
     {
         sndbuff = (PRECISION *)malloc(nx * ny * nz_layers * sizeof(PRECISION));
@@ -521,6 +527,7 @@ void performOutput()
             FILE * info;
             info = fopen(name, "w");
             fprintf(info, "Time: %g", elapsedTime);
+            fprintf(info, "Iteration: %d", iteration);
             fclose(info);
         }
         MPI_Barrier(MPI_COMM_WORLD);
