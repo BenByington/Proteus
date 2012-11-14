@@ -369,7 +369,7 @@ void performOutput()
     {
         if(iteration % scalarRate == 0)
         {
-            double local[numScalar];
+            double * local = (double*)malloc(sizeof(double)*numScalar);
             int i;
 
             double * datax = u->vec->x->spatial;
@@ -444,18 +444,18 @@ void performOutput()
                 local[23] = temp;
                 for(i = 1; i < spatialCount; i++)
                 {
-                    local[13] = fmin(local[2], datax[i]);
-                    local[14] = fmax(local[3], datax[i]);
+                    local[13] = fmin(local[13], datax[i]);
+                    local[14] = fmax(local[14], datax[i]);
                     local[15] += datax[i];
-                    local[16] = fmin(local[5], datay[i]);
-                    local[17] = fmax(local[6], datay[i]);
+                    local[16] = fmin(local[16], datay[i]);
+                    local[17] = fmax(local[17], datay[i]);
                     local[18] += datay[i];
-                    local[19] = fmin(local[8], dataz[i]);
-                    local[20] = fmax(local[9], dataz[i]);
+                    local[19] = fmin(local[19], dataz[i]);
+                    local[20] = fmax(local[20], dataz[i]);
                     local[21] += dataz[i];
                     temp = pow(datax[i],2) + pow(datay[i],2) + pow(dataz[i],2);
                     local[22] += temp;
-                    local[23] = fmax(temp, local[12]);
+                    local[23] = fmax(temp, local[21]);
                 }
 
                 MPI_Reduce(local+13, piScalarData+13, 1, MPI_DOUBLE, MPI_MIN, 0, ccomm);
@@ -470,7 +470,7 @@ void performOutput()
                 MPI_Reduce(local+22, piScalarData+22, 1, MPI_DOUBLE, MPI_SUM, 0, ccomm);
                 MPI_Reduce(local+23, piScalarData+23, 1, MPI_DOUBLE, MPI_MAX, 0, ccomm);
             }
-
+            free(local);
             if(crank == 0)
             {
                 scalarCount++;
