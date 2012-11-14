@@ -12,9 +12,9 @@ void setupEnvironment()
 {
     PI = 4.0 * atan2(1.0, 1.0);
 
-    if(n_io_nodes != gsize - hdiv*vdiv)
+    if(n_io_nodes > gsize - hdiv*vdiv)
     {
-        error("ERROR!  Wrong number of processors requested!  n_io_nodes = %d.  The code will now crash gracelessly\n", n_io_nodes);
+        error("ERROR!  Too many io nodes requested!  n_io_nodes = %d.  The code will now crash gracelessly\n", n_io_nodes);
         abort();
     }
 
