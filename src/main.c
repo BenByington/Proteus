@@ -132,7 +132,7 @@ int benchmark(char * propLoc)
     {
         gettimeofday(&start,NULL);
         int i;
-        for(i = 0, i < 100, i++)
+        for(i = 0; i < 100; i++)
         {
             fftForward(B->vec->x);
             fftBackward(B->vec->x);
