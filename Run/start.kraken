@@ -10,6 +10,7 @@
 ##########################################################
 
 cd $PBS_O_WORKDIR
+cp ~/IMHD/Compile/imhd ./
 
 aprun -n 20 ./imhd config.cfg
 
