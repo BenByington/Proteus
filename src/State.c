@@ -171,7 +171,7 @@ void startSpatial()
         info = fopen(name, "r");
         if(info)
         {
-            fscanf(info, infostr, &elapsedTime);
+            fscanf(info, infostri, &elapsedTime);
             fclose(info);
         }
         else

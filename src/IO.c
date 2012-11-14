@@ -526,7 +526,7 @@ void performOutput()
             sprintf(name, "Spatial/%08d/info",iteration);
             FILE * info;
             info = fopen(name, "w");
-            fprintf(info, infostr, elapsedTime);
+            fprintf(info, infostro, elapsedTime);
             fclose(info);
         }
         MPI_Barrier(MPI_COMM_WORLD);
