@@ -31,6 +31,9 @@ int execute(char * propFile);
 int main(int argc, char** argv)
 {
     MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &grank);
+    MPI_Comm_size(MPI_COMM_WORLD, &gsize);
+    
     if(argc != 2)
     {
         fprintf(stderr, "Exactly one command line parameter must be handed in, the location of the configuration file!!\n");

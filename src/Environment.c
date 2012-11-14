@@ -11,8 +11,6 @@
 void setupEnvironment()
 {
     PI = 4.0 * atan2(1.0, 1.0);
-    MPI_Comm_rank(MPI_COMM_WORLD, &grank);
-    MPI_Comm_size(MPI_COMM_WORLD, &gsize);
 
     if(n_io_nodes != gsize - hdiv*vdiv)
     {
