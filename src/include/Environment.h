@@ -128,7 +128,8 @@ extern double Pm;
 extern double alpha;
 
 //integration parameters
-extern int nSteps;
+extern int maxSteps;
+extern double maxTime;
 extern int iteration;
 extern double safetyFactor;
 extern double dt;

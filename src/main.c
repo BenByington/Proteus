@@ -50,7 +50,7 @@ int main(int argc, char** argv)
         initPhysics();
     }
 
-    while(iteration < nSteps)
+    while((iteration < maxSteps) && (elapsedTime < maxTime))
     {
         iteration++;
         debug("Working on step %d\n", iteration);

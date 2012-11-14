@@ -133,7 +133,8 @@ double Ra = 0;
 double Pm = 0;
 double alpha = 1.0;
 
-int nSteps = 0;
+int maxSteps = 0;
+double maxTime = 0;
 int iteration = 0;
 double safetyFactor = 0;
 double dt = 0;

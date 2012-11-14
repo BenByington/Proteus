@@ -345,7 +345,7 @@ void initIO()
         else
         {
             status = fopen("status", "a");
-            fprintf(status, "Restarting from most recent Checkpoint\n\n");
+            fprintf(status, "\nRestarting from most recent Checkpoint\n\n");
             fclose(status);
         }
 

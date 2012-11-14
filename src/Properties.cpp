@@ -113,42 +113,42 @@ void parseProblemSize(iostream & in)
         if((int)one.find(snx) != -1)
         {
             nx = atoi(two.c_str());
-            trace("nx = %d\n", nx);
+            debug("nx = %d\n", nx);
         }
         else if((int)one.find(sny) != -1)
         {
             ny = atoi(two.c_str());
-            trace("ny = %d\n", ny);
+            debug("ny = %d\n", ny);
         }
         else if((int)one.find(snz) != -1)
         {
             nz = atoi(two.c_str());
-            trace("nz = %d\n", nz);
+            debug("nz = %d\n", nz);
         }
         else if((int)one.find(sxmx) != -1)
         {
             xmx = atof(two.c_str());
-            trace("xmx = %g\n", xmx);
+            debug("xmx = %g\n", xmx);
         }
         else if((int)one.find(symx) != -1)
         {
             ymx = atof(two.c_str());
-            trace("ymx = %g\n", ymx);
+            debug("ymx = %g\n", ymx);
         }
         else if((int)one.find(szmx) != -1)
         {
             zmx = atof(two.c_str());
-            trace("zmx = %g\n", zmx);
+            debug("zmx = %g\n", zmx);
         }
         else if((int)one.find(shdiv) != -1)
         {
             hdiv = atoi(two.c_str());
-            trace("hdiv = %d\n", hdiv);
+            debug("hdiv = %d\n", hdiv);
         }
         else if((int)one.find(svdiv) != -1)
         {
             vdiv = atoi(two.c_str());
-            trace("vdiv = %d\n", vdiv);
+            debug("vdiv = %d\n", vdiv);
         }
         else
         {
@@ -188,32 +188,32 @@ void parseIO(iostream & in)
         if((int)one.find(nip) != -1)
         {
             n_io_nodes = atoi(two.c_str());
-            trace("n_io_nodes = %d\n", n_io_nodes);
+            debug("n_io_nodes = %d\n", n_io_nodes);
         }
         else if((int)one.find(statusr) != -1)
         {
             statusRate = atoi(two.c_str());
-            trace("statusRate = %d\n", statusRate);
+            debug("statusRate = %d\n", statusRate);
         }
         else if((int)one.find(spatialr) != -1)
         {
             spatialRate = atoi(two.c_str());
-            trace("spatialRate = %d\n", spatialRate);
+            debug("spatialRate = %d\n", spatialRate);
         }
         else if((int)one.find(scalarr) != -1)
         {
             scalarRate = atoi(two.c_str());
-            trace("scalarRate = %d\n", scalarRate);
+            debug("scalarRate = %d\n", scalarRate);
         }
         else if((int)one.find(scalarpf) != -1)
         {
             scalarPerF = atoi(two.c_str());
-            trace("scalarPerF = %d\n", scalarPerF);
+            debug("scalarPerF = %d\n", scalarPerF);
         }
         else if((int)one.find(sCheckRate) != -1)
         {
             checkRate = atoi(two.c_str());
-            trace("checkpoint frequency = %d\n", checkRate);
+            debug("checkpoint frequency = %d\n", checkRate);
         }
         else
         {
@@ -248,7 +248,7 @@ void parseIC(iostream & in)
         if((int)one.find(st) != -1)
         {
             startType = atoi(two.c_str());
-            trace("startType = %d\n", startType);
+            debug("startType = %d\n", startType);
         }
         else if((int)one.find(sStartDir) != -1)
         {
@@ -256,7 +256,7 @@ void parseIC(iostream & in)
             startDir = (char*)malloc(len);
             strcpy(startDir, two.c_str());
 
-            trace("Start Directory is %s\n", startDir);
+            debug("Start Directory is %s\n", startDir);
         }
         else
         {
@@ -312,7 +312,7 @@ void parsePhysics(iostream & in)
             forceFile = (char*)malloc(len);
             strcpy(forceFile, two.c_str());
 
-            trace("Forcing directory = %s\n", forceFile);
+            debug("Forcing directory = %s\n", forceFile);
         }
         else if((int)one.find(sMomStaticForcing) != -1)
         {
@@ -325,7 +325,7 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
 
-            trace("Momentum static forcing flag: %d\n", momStaticForcing);
+            debug("Momentum static forcing flag: %d\n", momStaticForcing);
         }
         else if((int)one.find(sMomTimeForcing) != -1)
         {
@@ -338,7 +338,7 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
 
-            trace("Momentum time forcing flag: %d\n", momTimeForcing);
+            debug("Momentum time forcing flag: %d\n", momTimeForcing);
         }
         else if((int)one.find(sMomentum) != -1)
         {
@@ -351,7 +351,7 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
 
-            trace("Momentum equation flag: %d\n", momEquation);
+            debug("Momentum equation flag: %d\n", momEquation);
         }
         else if((int)one.find(sTemperature) != -1)
         {
@@ -364,7 +364,7 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
 
-            trace("Temperature equation flag: %d\n", tEquation);
+            debug("Temperature equation flag: %d\n", tEquation);
         }
         else if((int)one.find(sMagnetic) != -1)
         {
@@ -377,7 +377,7 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
 
-            trace("Magnetic equation flag: %d\n", magEquation);
+            debug("Magnetic equation flag: %d\n", magEquation);
         }
         else if((int)one.find(sViscosity) != -1)
         {
@@ -389,7 +389,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
-            trace("viscosity term flag: %d\n", viscosity);
+            debug("viscosity term flag: %d\n", viscosity);
         }
         else if((int)one.find(sMomAdvect) != -1)
         {
@@ -401,7 +401,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s", two.c_str(), one.c_str());
             }
-            trace("momentum advection flag: %d\n", momAdvection);
+            debug("momentum advection flag: %d\n", momAdvection);
         }
         else if((int)one.find(sBuoyancy) != -1)
         {
@@ -413,7 +413,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("buoyancy flag: %d\n", buoyancy);
+            debug("buoyancy flag: %d\n", buoyancy);
         }
         else if((int)one.find(sLorentz) != -1)
         {
@@ -425,7 +425,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("lorentz flag: %d\n", lorentz);
+            debug("lorentz flag: %d\n", lorentz);
         }
         else if((int)one.find(sTDiff) != -1)
         {
@@ -437,7 +437,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Temperature Diffusion flag: %d\n", tDiff);
+            debug("Temperature Diffusion flag: %d\n", tDiff);
         }
         else if((int)one.find(sTempAdvection) != -1)
         {
@@ -449,7 +449,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Temperature Advection flag: %d\n", tempAdvection);
+            debug("Temperature Advection flag: %d\n", tempAdvection);
         }
         else if((int)one.find(sMagDiff) != -1)
         {
@@ -461,7 +461,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Magnetic Diffusion flag: %d\n", magDiff);
+            debug("Magnetic Diffusion flag: %d\n", magDiff);
         }
         else if((int)one.find(sMagAdvect) != -1)
         {
@@ -473,7 +473,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Magnetic \"Advection\" flag: %d\n", magAdvect);
+            debug("Magnetic \"Advection\" flag: %d\n", magAdvect);
         }
         else if((int)one.find(sKinematic) != -1)
         {
@@ -485,7 +485,7 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Kinematic problem flag: %d\n", kinematic);
+            debug("Kinematic problem flag: %d\n", kinematic);
         }
         else if((int)one.find(sMagTimeForcing) != -1)
         {
@@ -497,27 +497,27 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            trace("Magnetic time forcing flag: %d\n", magTimeForcing);
+            debug("Magnetic time forcing flag: %d\n", magTimeForcing);
         }
         else if((int)one.find(sPR) != -1)
         {
             Pr = atof(two.c_str());
-            trace("Pr set to %g\n", Pr);
+            debug("Pr set to %g\n", Pr);
         }
         else if((int)one.find(sRA) != -1)
         {
             Ra = atof(two.c_str());
-            trace("Ra set to %g\n", Ra);
+            debug("Ra set to %g\n", Ra);
         }
         else if((int)one.find(sPM) != -1)
         {
             Pm = atof(two.c_str());
-            trace("Magnetic Pr set to %g\n", Pm);
+            debug("Magnetic Pr set to %g\n", Pm);
         }
         else if((int)one.find(sAlpha) != -1)
         {
             alpha = atof(two.c_str());
-            trace("alpha set to %g\n", alpha);
+            debug("alpha set to %g\n", alpha);
         }
         else
         {
@@ -529,7 +529,8 @@ void parsePhysics(iostream & in)
 void parseIntegration(iostream & in)
 {
     const string sSafety("safetyFactor");
-    const string sNSteps("nSteps");
+    const string sMaxSteps("maxSteps");
+    const string sMaxTime("masTime");
 
     string line;
     string one;
@@ -539,7 +540,7 @@ void parseIntegration(iostream & in)
     debug("Loading Integration Parameters\n",0)
     while(!getline(in, line).eof())
     {
-        trace("Reading line %s\n", line.c_str());
+        debug("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
         if((int)line.find_first_of("[") != -1)
             return;
@@ -552,12 +553,17 @@ void parseIntegration(iostream & in)
         if((int)one.find(sSafety) != -1)
         {
             safetyFactor = atof(two.c_str());
-            trace("Safety factor = %g\n", safetyFactor);
+            debug("Safety factor = %g\n", safetyFactor);
         }
-        else if((int)one.find(sNSteps) != 1)
+        else if((int)one.find(sMaxSteps) != -1)
         {
-            nSteps = atoi(two.c_str());
-            trace("nSteps = %d\n", nSteps);
+            maxSteps = atoi(two.c_str());
+            debug("maxSteps = %d\n", maxSteps);
+        }
+        else if((int)one.find(sMaxTime) != -1)
+        {
+            maxTime = atof(two.c_str());
+            debug("maxTime = %d\n", maxTime);
         }
         else
         {
