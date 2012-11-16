@@ -527,7 +527,7 @@ extern void divergence(p_vector in, p_field out)
         for(j = 0; j < my_ky->width; j++)
         {
             dky = dyFactor(j);
-            for(k = 0; k < ndkx; k++)
+            for(k = 0; k < ndkz; k++)
             {
                 dkz = dzFactor(k);
 
