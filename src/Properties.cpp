@@ -303,6 +303,7 @@ void parsePhysics(iostream & in)
     const string sLorentz("lorentz");
     const string sTDiff("tdiff");
     const string sTempAdvection("tempAdvection");
+    const string sTempBackground("tempBackground");
     const string sMagDiff("magdiff");
     const string sMagAdvect("magAdvect");
     const string sPR("Pr");
@@ -452,6 +453,18 @@ void parsePhysics(iostream & in)
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
             debug("Temperature Advection flag: %d\n", tempAdvection);
+        }
+        else if((int)one.find(sTempBackground) != -1)
+        {
+            if((int)two.find(on) != -1)
+                tempBackground = 1;
+            else if((int)two.find(off) != -1)
+                tempBackground = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            debug("Temperature Background flag: %d\n", tempAdvection);
         }
         else if((int)one.find(sMagDiff) != -1)
         {

@@ -466,8 +466,11 @@ void calcTemp()
 
     if(tempAdvection)
     {
-        //advect the background profile
-        plusEq(forces, u->vec->z->spectral);
+        //advect the background profile (as long as it is enabled)
+        if(tempBackground)
+        {
+            plusEq(forces, u->vec->z->spectral);
+        }
 
         //advect the perturbations
         p_vector flux = temp1;

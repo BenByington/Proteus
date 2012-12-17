@@ -129,6 +129,7 @@ int magBuoy = 0;
 int lorentz = 0;
 int tDiff = 0;
 int tempAdvection = 0;
+int tempBackground = 1; //this controls an if statement nested in an if reliant on the tempAdvection flag.  We want to default them to act together, as this is the norm.
 int magDiff = 0;
 int magAdvect = 0;
 

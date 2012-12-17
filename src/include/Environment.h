@@ -119,6 +119,7 @@ extern int magBuoy;
 extern int lorentz;
 extern int tDiff;
 extern int tempAdvection;
+extern int tempBackground;
 extern int magDiff;
 extern int magAdvect;
 
