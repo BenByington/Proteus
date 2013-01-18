@@ -804,6 +804,10 @@ void readCheckpoint()
         int dIteration;
 
         FILE * out = fopen("Checkpoint0/state", "r");
+        if(out == 0)
+        {
+            error("Failed to open Checpoint0 state file!  Crashing gracelessly...",0);
+        }
         fread(&dElapsed, sizeof(PRECISION), 1, out);
         fread(&dDt, sizeof(PRECISION), 1, out);
         fread(&dDt1, sizeof(PRECISION), 1, out);
@@ -811,6 +815,10 @@ void readCheckpoint()
         fclose(out);
 
         out = fopen("Checkpoint1/state", "r");
+        if(out == 0)
+        {
+            error("Failed to open Checpoint0 state file!  Crashing gracelessly...",0);
+        }
         fread(&elapsedTime, sizeof(PRECISION), 1, out);
         fread(&dt, sizeof(PRECISION), 1, out);
         fread(&dt1, sizeof(PRECISION), 1, out);
