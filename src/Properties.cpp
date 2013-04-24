@@ -10,7 +10,7 @@
 #include "Log.h"
 
 #include <fstream>
-#include <string>
+#include <string.h>
 #include <ctype.h>
 #include <cstdlib>
 #include <algorithm>
