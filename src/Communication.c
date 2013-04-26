@@ -68,11 +68,11 @@ void com_init(int measure)
         initfft1();
         if(test)
         {   
-            info("Testing fft1\n",0);
+            info("Testing fft1\n");
             testfft1();
         }
 
-        debug("Timing fft1\n",0);
+        debug("Timing fft1\n");
         start = clock();
         repeatfft1(100);
         stop = clock();
@@ -82,11 +82,11 @@ void com_init(int measure)
         initfft2();
         if(test)
         {
-            info("Testing fft2\n",0);
+            info("Testing fft2\n");
             testfft2();
         }
 
-        debug("Timing fft2\n",0);
+        debug("Timing fft2\n");
         start = clock();
         repeatfft2(100);
         stop = clock();
@@ -126,7 +126,7 @@ void com_init(int measure)
  */
 void initfft1()
 {
-    debug("Initializing fft1...\n",0);
+    debug("Initializing fft1...\n");
     PRECISION * real;
     complex PRECISION * comp1;
     complex PRECISION * comp2;
@@ -152,14 +152,14 @@ void initfft1()
     fft_free(comp1);
     fft_free(comp2);
 
-    debug("Initialization done\n",0);
+    debug("Initialization done\n");
 }
 
 void fft1_forward(PRECISION * in, complex PRECISION* out)
 {
     int i;
 
-    trace("Begin fftw1 forward transform\n",0);
+    trace("Begin fftw1 forward transform\n");
     int mySize1 = my_z->width * my_x->width * nky;
     int mySize2 = my_z->width * my_ky->width * nx;
     int mySize3 = my_kx->width * my_ky->width * nz;
@@ -191,14 +191,14 @@ void fft1_forward(PRECISION * in, complex PRECISION* out)
     for(i = 0; i < size; i++)
         out[i] /= factor;
 
-    trace("Forward fftw competed\n",0);
+    trace("Forward fftw competed\n");
 }
 
 void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
 {
     int i,j,k;
     int maxSize1 = max_z->width * max_x->width * max_ky->width;
-    trace("Starting first transpose for forward fft1\n",0);
+    trace("Starting first transpose for forward fft1\n");
     //in is complex PRECISION[my_z->width][my_x->width][nky]
     //sndbuff and rcvbuff is complex PRECISION[hsize][maxz->width][maxx->width][maxky->width]
     complex PRECISION * sndbuff = (complex PRECISION*)malloc(maxSize1 * hsize * sizeof(complex PRECISION));
@@ -207,7 +207,7 @@ void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
     complex PRECISION * piin = in;
     complex PRECISION * pisbuff = sndbuff;
 
-    trace("Packing arrays for MPI all-to-all\n",0);
+    trace("Packing arrays for MPI all-to-all\n");
     //loop over each x and z to process contiguous 1D arrays
     for(i = 0; i < my_z->width; i++)
     {
@@ -235,10 +235,10 @@ void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
         }
     }
 
-    trace("Sending data over network\n",0);
+    trace("Sending data over network\n");
     MPI_Alltoall(sndbuff, 2 * maxSize1, MPI_PRECISION, rcvbuff, 2 * maxSize1, MPI_PRECISION, hcomm);
 
-    trace("Unpacking data from transfer\n",0);
+    trace("Unpacking data from transfer\n");
     //out is complex PRECISION[myz->width][my_ky->width][nx]
     //rcvbuff is complex PRECISION[hsize][maxz->width][maxx->width][maxky->width]
     //loop overy every element in out and set it to the correct value.  This will
@@ -275,7 +275,7 @@ void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
 
 void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
 {
-    trace("Starting second transpose for forward fft1\n",0);
+    trace("Starting second transpose for forward fft1\n");
     int i,j,k;
     int maxSize1 = max_z->width * max_kx->width * max_ky->width;
 
@@ -302,7 +302,7 @@ void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
         }
     }
 
-    trace("Packing arrays for MPI all-to-all\n",0);
+    trace("Packing arrays for MPI all-to-all\n");
     //loop over each y and z to process contiguous 1D arrays
     for(i = 0; i < my_z->width; i++)
     {
@@ -343,10 +343,10 @@ void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
         }
     }
 
-    trace("Sending data over network\n",0);
+    trace("Sending data over network\n");
     MPI_Alltoall(sndbuff, 2 * maxSize1, MPI_PRECISION, rcvbuff, 2 * maxSize1, MPI_PRECISION, vcomm);
 
-    trace("Unpacking data from transfer\n",0);
+    trace("Unpacking data from transfer\n");
     //out is complex PRECISION[my_kx->width][my_ky->width][nz]
     //rcvbuff is complex PRECISION[hsize][max_z->width][max_ky->width][max_kx->width]
     //loop overy every element in out and set it to the correct value.  This will
@@ -383,7 +383,7 @@ void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
 
 void fft_tpf3(complex PRECISION * in, complex PRECISION * out)
 {
-    trace("Performing final dealias for forward transform\n",0);
+    trace("Performing final dealias for forward transform\n");
     int i,j,k;
     //in is [my_kx][my_ky][nkz]
     //out is [my_kx][my_ky][ndkz]
@@ -415,7 +415,7 @@ void fft_tpf3(complex PRECISION * in, complex PRECISION * out)
 
 void fft1_backward(complex PRECISION* in, PRECISION * out)
 {
-    trace("Begin fft1 backwards transform\n",0);
+    trace("Begin fft1 backwards transform\n");
     int mySize1 = my_kx->width * my_ky->width * nz;
     int mySize2 = my_z->width * my_ky->width * nkx;
     int mySize3 = my_z->width * my_x->width * nky;
@@ -451,7 +451,7 @@ void fft1_backward(complex PRECISION* in, PRECISION * out)
         out[i] /= factor;
     }
 
-    trace("Inverse FFT completed\n",0);
+    trace("Inverse FFT completed\n");
 }
 
 void fft1_tpb1(complex PRECISION* in, complex PRECISION* out)

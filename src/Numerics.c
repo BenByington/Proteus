@@ -135,14 +135,14 @@ void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
     //TODO: do some code duplication that will allow us to avoid checking
     //for 0 wave modes every iteration of the loops
     int i,j,k;
-    debug("Beginning decomposition of solenoidal field\n",0);
+    debug("Beginning decomposition of solenoidal field\n");
 
     if(crank == 0)
     {
         s->mean_z = v->z->spectral[0];
     }
 
-    debug("Calculating Poloidal field\n",0);
+    debug("Calculating Poloidal field\n");
 
     complex PRECISION dkx,dky,dkz;
     complex PRECISION * pz = v->z->spectral;
@@ -188,7 +188,7 @@ void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
         }
     }
 
-    debug("Calculating Toroidal Field\n",0);
+    debug("Calculating Toroidal Field\n");
     index = 0;
     for(i = 0; i < my_kx->width; i++)
     {
@@ -228,14 +228,14 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
     //TODO: do some code duplication that will allow us to avoid checking
     //for 0 wave modes every iteration of the loops
     int i,j,k;
-    debug("Beginning decomposition of curled solenoidal field\n",0);
+    debug("Beginning decomposition of curled solenoidal field\n");
 
     if(crank == 0)
     {
         s->mean_z = 0;
     }
 
-    debug("Calculating Toroidal field\n",0);
+    debug("Calculating Toroidal field\n");
 
     complex PRECISION dkx,dky,dkz;
     complex PRECISION * pz = v->z->spectral;
@@ -281,7 +281,7 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
         }
     }
 
-    debug("Calculating Poloidal Field\n",0);
+    debug("Calculating Poloidal Field\n");
     index = 0;
     for(i = 0; i < my_kx->width; i++)
     {
@@ -377,7 +377,7 @@ void recomposeSolenoidal(p_solenoid s, p_vector v)
 //structure when in wont be needed any longer
 extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
 {
-    trace("Starting Laplacian\n",0);
+    trace("Starting Laplacian\n");
     
     int i,j,k;
     int index = 0;
@@ -402,7 +402,7 @@ extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, 
         }
     }
 
-    trace("Finished Laplacian\n",0);
+    trace("Finished Laplacian\n");
 }
 
 extern void curl(p_vector in, p_vector out)

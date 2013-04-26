@@ -12,7 +12,7 @@ void fillTimeField(p_vector vec, int func)
     PRECISION x, y, z;
     if(func == MOMENTUM)
     {
-        debug("Doing time dependant forcing of momentum equation\n",0);
+        debug("Doing time dependant forcing of momentum equation\n");
         for(i = 0; i < my_z->width; i++)
         {
             z = getz(i);
@@ -34,7 +34,7 @@ void fillTimeField(p_vector vec, int func)
     }
     else if(func == MAGNETIC)
     {
-        debug("Doing time dependant forcing of induction equation\n",0);
+        debug("Doing time dependant forcing of induction equation\n");
         for(i = 0; i < my_z->width; i++)
         {
             z = getz(i);
@@ -56,7 +56,7 @@ void fillTimeField(p_vector vec, int func)
     }
     else if(func == KINEMATIC)
     {
-        debug("Doing time dependant velocity for kinematic problem\n",0);
+        debug("Doing time dependant velocity for kinematic problem\n");
         for(i = 0; i < my_z->width; i++)
         {
             z = getz(i);

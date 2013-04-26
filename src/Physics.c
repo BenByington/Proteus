@@ -125,7 +125,7 @@ void calcNewTimestep()
 
 void calcForces()
 {
-    debug("Calculating forces\n",0);
+    debug("Calculating forces\n");
 
     //cycle the force pointers
     complex PRECISION * temp;
@@ -192,12 +192,12 @@ void calcForces()
     if(magEquation)
         calcMag();
 
-    debug("Forces done\n",0);
+    debug("Forces done\n");
 }
 
 void calcMomentum()
 {
-    debug("Calculating momentum forces\n",0);
+    debug("Calculating momentum forces\n");
 
     int i,j,k;
     int index;
@@ -375,14 +375,14 @@ void calcMomentum()
     curl(rhs, temp1);
 
     decomposeCurlSolenoidal(u->sol, temp1, 1);
-    debug("Momentum forces done\n",0);
+    debug("Momentum forces done\n");
 }
 
 void calcMag()
 {
     int i,j,k;
     int index;
-    debug("Calculating Magnetic forces\n",0);
+    debug("Calculating Magnetic forces\n");
 
     if(magDiff)
     {
@@ -449,7 +449,7 @@ void calcMag()
     }
 
     decomposeSolenoidal(B->sol, rhs, 1);
-    debug("Magnetic forces done\n",0);
+    debug("Magnetic forces done\n");
 }
 
 void calcTemp()

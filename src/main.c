@@ -66,7 +66,7 @@ int execute(char * propLoc)
     loadPrefs(propLoc);
 
 
-    info("Code Initialization Complete\n",0);
+    info("Code Initialization Complete\n");
     setupEnvironment();
 
     testIO();
@@ -91,7 +91,7 @@ int execute(char * propLoc)
         performOutput();
     }
 
-    info("Run Complete: Cleaning and Exiting now\n",0);
+    info("Run Complete: Cleaning and Exiting now\n");
     if(compute_node)
     {
         finalizePhysics();

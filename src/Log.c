@@ -19,10 +19,10 @@ void initLogging()
 
     procFile = fopen(name, "w");
 
-    trace("System wide tracing enabled\n",0);
-    debug("System wide debug enabled\n",0);
-    info("System wide info enabled\n",0);
-    warn("System wide warning enabled\n",0);
-    error("System wide error enabled\n",0);
+    trace("System wide tracing enabled\n");
+    debug("System wide debug enabled\n");
+    info("System wide info enabled\n");
+    warn("System wide warning enabled\n");
+    error("System wide error enabled\n");
 }
 

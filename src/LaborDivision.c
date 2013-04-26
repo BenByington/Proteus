@@ -14,7 +14,7 @@
 
 void lab_initGeometry()
 {
-    info("Initializing Problem Geometry\n",0);
+    info("Initializing Problem Geometry\n");
 
     dx = xmx / nx;
     dy = ymx / ny;
@@ -46,12 +46,12 @@ void lab_initGeometry()
     ndkz = nkz - dealias_kz.width;
     trace("Number of retained waves %d %d %d\n", ndkx, ndky, ndkz);
 
-    info("Problem Geometry Done\n",0);
+    info("Problem Geometry Done\n");
 }
 
 void lab_initGroups()
 {
-    info("Initializing Communication Groups\n",0);
+    info("Initializing Communication Groups\n");
 
     int i;
 
@@ -120,7 +120,7 @@ void lab_initGroups()
     
     if(compute_node)
     {
-        debug("Setting up hcomm and vcomm\n",0);
+        debug("Setting up hcomm and vcomm\n");
         //set up the groups for inernal transposes and such
         int row = grank / hdiv;
         int col = grank % hdiv;
@@ -139,19 +139,19 @@ void lab_initGroups()
         ztrip[0][2] = hdiv;                   //stride between elements of our column
         trace("tripplet for vertical group: %d %d %d\n", ztrip[0][0], ztrip[0][1], ztrip[0][2]);
 
-        trace("Creating slab groups\n",0);
+        trace("Creating slab groups\n");
         //create groups for our horizontal and vertical associations
         MPI_Group hgroup;
         MPI_Group vgroup;
         MPI_Group_range_incl(global, 1, ytrip, &hgroup);
         MPI_Group_range_incl(global, 1, ztrip, &vgroup);
 
-        trace("Creating communicators for groups\n",0);
+        trace("Creating communicators for groups\n");
         //get the communicators for our groups
         MPI_Comm_create(MPI_COMM_WORLD, hgroup, &hcomm);
         MPI_Comm_create(MPI_COMM_WORLD, vgroup, &vcomm);
 
-        trace("Getting rank and size for groups\n",0);
+        trace("Getting rank and size for groups\n");
         MPI_Comm_rank(hcomm, &hrank);
         MPI_Comm_rank(vcomm, &vrank);
         MPI_Comm_size(hcomm, &hsize);
@@ -165,7 +165,7 @@ void lab_initGroups()
     }
     else
     {
-        trace("Doing dummy call for slab group creation\n",0);
+        trace("Doing dummy call for slab group creation\n");
         //collective routine.  Our IO nodes need to at least check in!
         MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &hcomm);
         MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &vcomm);
@@ -174,7 +174,7 @@ void lab_initGroups()
     //prep computational comm
     if(compute_node)
     {
-        debug("Setting up compute nodes group\n",0);
+        debug("Setting up compute nodes group\n");
         int ctrip[1][3];
 
         ctrip[0][0] = 0;                 //start index of our row
@@ -182,21 +182,21 @@ void lab_initGroups()
         ctrip[0][2] = 1;                 //stride between elements of our row
         trace("Tripplet for compute node group: %d %d %d\n", ctrip[0][0], ctrip[0][1], ctrip[0][2]);
 
-        trace("Creating group\n",0);
+        trace("Creating group\n");
         MPI_Group cgroup;
         MPI_Group_range_incl(global, 1, ctrip, &cgroup);
 
-        trace("Getting communicator\n",0);
+        trace("Getting communicator\n");
         //get the communicators for our groups
         MPI_Comm_create(MPI_COMM_WORLD, cgroup, &ccomm);
 
-        trace("Getting rank of size\n",0);
+        trace("Getting rank of size\n");
         MPI_Comm_rank(ccomm, &crank);
         MPI_Comm_size(ccomm, &csize);
     }
     else
     {
-        trace("Dummy call for compute node group creation\n",0);
+        trace("Dummy call for compute node group creation\n");
         //collective routine.  Our IO nodes need to at least check in!
         MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &ccomm);
     }
@@ -204,7 +204,7 @@ void lab_initGroups()
 
     if(io_node)
     {
-        debug("Create group for parallel IO\n",0);
+        debug("Create group for parallel IO\n");
         int iotrip[1][3];
 
         iotrip[0][0] = vdiv * hdiv;                     //start index of our row
@@ -213,15 +213,15 @@ void lab_initGroups()
         trace("Tripplet for group creation: %d %d %d\n", iotrip[0][0], iotrip[0][1], iotrip[0][2]);
 
         //create groups for our horizontal and vertical associations
-        trace("Creating Group\n",0);
+        trace("Creating Group\n");
         MPI_Group fgroup;
         MPI_Group_range_incl(global, 1, iotrip, &fgroup);
 
-        trace("Getting communicator\n",0);
+        trace("Getting communicator\n");
         //get the communicators for our groups
         MPI_Comm_create(MPI_COMM_WORLD, fgroup, &fcomm);
 
-        trace("Getting rank and size\n",0);
+        trace("Getting rank and size\n");
         MPI_Comm_rank(fcomm, &frank);
         MPI_Comm_size(fcomm, &fsize);
 
@@ -231,14 +231,14 @@ void lab_initGroups()
     }
     else
     {
-        trace("Dummy call for parallel IO group creation\n",0);
+        trace("Dummy call for parallel IO group creation\n");
         //again the compute nodes need to check in for the collective operation
         MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &fcomm);
     }
 
     if(compute_node || io_node)
     {
-        debug("Creating group for moving data to IO nodes\n",0);
+        debug("Creating group for moving data to IO nodes\n");
         //create the comm group for consolidating data to IO nodes
         int iotrip[2][3];
 
@@ -251,33 +251,33 @@ void lab_initGroups()
         iotrip[1][2] = 1;                                    //stride between elements of our row
         trace("Tripplets for group: %d %d %d %d %d %d\n", iotrip[0][0], iotrip[0][1], iotrip[0][2], iotrip[1][0], iotrip[1][1], iotrip[1][2])
 
-        trace("Creating group\n",0);
+        trace("Creating group\n");
         //create groups for our horizontal and vertical associations
         MPI_Group iogroup;
         MPI_Group_range_incl(global, 2, iotrip, &iogroup);
 
-        trace("Creating Comm\n",0);
+        trace("Creating Comm\n");
         //get the communicators for our groups
         MPI_Comm_create(MPI_COMM_WORLD, iogroup, &iocomm);
 
-        trace("Getting rank and size\n",0);
+        trace("Getting rank and size\n");
         MPI_Comm_rank(iocomm, &iorank);
         MPI_Comm_size(iocomm, &iosize);
     }
     else
     {
-        trace("Dummy call for parallel IO group creation\n",0);
+        trace("Dummy call for parallel IO group creation\n");
         //again the compute nodes need to check in for the collective operation
         MPI_Comm_create(MPI_COMM_WORLD, MPI_GROUP_EMPTY, &iocomm);
     }
 
-    info("Communication Groups Done\n",0);
+    info("Communication Groups Done\n");
 
 }
 
 void lab_initDistributions()
 {
-    info("Initializing Work Distributions\n",0);
+    info("Initializing Work Distributions\n");
     int i;
     int d,r;
 
@@ -414,7 +414,7 @@ void lab_initDistributions()
         debug("Size of spectral array: %d\n", spectralCount);
     }
 
-    info("Work Distrubution Done\n",0);
+    info("Work Distrubution Done\n");
 }
 
 void lab_finalize()

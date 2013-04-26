@@ -15,7 +15,7 @@ void startSpatial();
 
 void initState()
 {
-    info("Setting up the initial conditions\n",0);
+    info("Setting up the initial conditions\n");
     if(compute_node)
     {
         B = newComponentVar();
@@ -77,7 +77,7 @@ void initState()
     {
         if(!viscosity)
         {
-            warn("Static momentum forcing is currently designed to counteract the diffusion term.  Diffusion is disabled so forcing will be neglected for this run\n",0);
+            warn("Static momentum forcing is currently designed to counteract the diffusion term.  Diffusion is disabled so forcing will be neglected for this run\n");
             momStaticForcing = 0;
         }
         else
@@ -105,7 +105,7 @@ void initState()
     {
         if(!magDiff)
         {
-            warn("Static magnetic forcing is currently designed to counteract the diffusion term.  Magnetic diffusion is disabled so forcing will be neglected for this run\n",0);
+            warn("Static magnetic forcing is currently designed to counteract the diffusion term.  Magnetic diffusion is disabled so forcing will be neglected for this run\n");
             magStaticForcing = 0;
         }
         else

@@ -25,13 +25,13 @@ void testIO()
     field * f = (field *)malloc(3 * sizeof(field));
     field * f2 = (field *)malloc(3 * sizeof(field));
 
-    info("Testing IO routines\n",0);
+    info("Testing IO routines\n");
     if(grank == 0)
         mkdir("Test", S_IRWXU);
 
     if(compute_node)
     {
-        trace("Creating data for test IO\n",0);
+        trace("Creating data for test IO\n");
         allocateSpatial(f);
         allocateSpatial(f+1);
         allocateSpatial(f+2);
@@ -55,19 +55,19 @@ void testIO()
 
     }
 
-    debug("Writing test IO data to files\n",0);
+    debug("Writing test IO data to files\n");
     writeSpatial(f, "Test/x");
     writeSpatial(f+1, "Test/y");
     writeSpatial(f+2, "Test/z");
 
-    debug("Reading test IO data from files\n",0);
+    debug("Reading test IO data from files\n");
     readSpatial(f2, "Test/x");
     readSpatial(f2+1, "Test/y");
     readSpatial(f2+2, "Test/z");
 
     if(compute_node)
     {
-        debug("Checking integrity of data\n",0);
+        debug("Checking integrity of data\n");
         for(i = 0; i < my_z->width; i++)
         {
             for(j = 0; j < my_x->width; j++)
@@ -103,7 +103,7 @@ void testIO()
     }
     free(f);
     free(f2);
-    info("IO Test complete\n",0);
+    info("IO Test complete\n");
 }
 
 void writeSpatial(field * f, char * name)
@@ -120,13 +120,13 @@ void writeSpatial(field * f, char * name)
     int displs[iosize+1];
     int rcvcounts[iosize];
 
-    debug("consolidating data to IO nodes\n",0);
+    debug("consolidating data to IO nodes\n");
     if(compute_node)
     {
         sndcnt = my_x->width * my_z->width * ny;
         trace("Sending %d PRECISIONs\n", sndcnt);
         MPI_Gatherv(f->spatial, sndcnt, MPI_PRECISION, 0, 0, 0, MPI_PRECISION, 0, iocomm);
-        debug("Write Spatial completed\n",0);
+        debug("Write Spatial completed\n");
         return;
     }
     else if(io_node)
@@ -155,7 +155,7 @@ void writeSpatial(field * f, char * name)
         MPI_Gatherv(0, 0, MPI_PRECISION, rcvbuff, rcvcounts, displs, MPI_PRECISION, 0, iocomm);
     }
 
-    debug("transposing data so it is properly contiguous\n",0);
+    debug("transposing data so it is properly contiguous\n");
     //rcvbuff is [l][h][vz][hx][y]
     //we want [lz][y][x]
     int indexr = 0;
@@ -186,11 +186,11 @@ void writeSpatial(field * f, char * name)
 
 
 
-    debug("Performing parallel file write\n",0);
+    debug("Performing parallel file write\n");
     //TODO: revisit MPI_MODE_SEQUENTIAL and MPI_INFO_NULL to make sure these are what we want
     MPI_File fh;
     MPI_File_open(fcomm, name, MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
-    debug("MPI File opened successfully\n",0);
+    debug("MPI File opened successfully\n");
     int disp = 0;
     for(i = 0; i < my_io_layer; i++)
     {
@@ -201,16 +201,16 @@ void writeSpatial(field * f, char * name)
     }
     disp *= nx * ny * sizeof(PRECISION);
     trace("Our view starts at element %d\n", disp);
-    trace("Setting view...\n",0);
+    trace("Setting view...\n");
     MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, "native", MPI_INFO_NULL);
-    trace("Writing to file...\n",0);
+    trace("Writing to file...\n");
     MPI_File_write(fh, sndbuff, nx * ny * nz_layers, MPI_PRECISION, MPI_STATUS_IGNORE );
     MPI_File_close(&fh);
 
     free(sndbuff);
     free(rcvbuff);
 
-    debug("Write Spatial completed\n",0);
+    debug("Write Spatial completed\n");
 
 }
 
@@ -237,7 +237,7 @@ void readSpatial(field * f, char * name)
         //do a mpi IO operation
         //TODO: revisit MPI_MODE_SEQUENTIAL and MPI_INFO_NULL to make sure these are what we want
         MPI_File fh;
-        debug("Reading file\n",0);
+        debug("Reading file\n");
         MPI_File_open(fcomm, name, MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
 
         int disp = 0;
@@ -250,15 +250,15 @@ void readSpatial(field * f, char * name)
         }
         disp *= nx * ny * sizeof(PRECISION);
         trace("Our file view starts at displacement %d\n", disp);
-        trace("Setting view\n",0);
+        trace("Setting view\n");
         MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, "native", MPI_INFO_NULL);
-        trace("Reading file\n",0);
+        trace("Reading file\n");
         MPI_File_read(fh, sndbuff, nx * ny * nz_layers, MPI_PRECISION, MPI_STATUS_IGNORE );
 
         MPI_File_close(&fh);
     
 
-        debug("transposing the data for scatter to compute nodes\n",0);
+        debug("transposing the data for scatter to compute nodes\n");
         //rcvbuff is [l][h][vz][hx][y]
         //sndbuff [l][vz][y][h][hx]
         int indexr = 0;
@@ -292,7 +292,7 @@ void readSpatial(field * f, char * name)
     int rcvcnt;
     int displs[iosize+1];
     int sndcounts[iosize];
-    debug("scattering data to the compute nodes\n",0);
+    debug("scattering data to the compute nodes\n");
     if(compute_node)
     {
         rcvcnt = my_x->width * my_z->width * ny;
@@ -326,7 +326,7 @@ void readSpatial(field * f, char * name)
         free(rcvbuff);
         free(sndbuff);
     }
-    debug("Reading from file done\n",0);
+    debug("Reading from file done\n");
 }
 
 void initIO()
@@ -535,29 +535,29 @@ void performOutput()
         {
             if(momEquation || kinematic)
             {
-                trace("Outputing u\n",0);
+                trace("Outputing u\n");
                 writeSpatial(u->vec->x,0);
 
-                trace("Outputing v\n",0);
+                trace("Outputing v\n");
                 writeSpatial(u->vec->y,0);
 
-                trace("Outputing w\n",0);
+                trace("Outputing w\n");
                 writeSpatial(u->vec->z,0);
             }
             if(tEquation)
             {
-                trace("Outputting T\n", 0);
+                trace("Outputting T\n");
                 writeSpatial(T, 0);
             }
             if(magEquation)
             {
-                trace("Outputing Bx\n",0);
+                trace("Outputing Bx\n");
                 writeSpatial(B->vec->x,0);
 
-                trace("Outputing By\n",0);
+                trace("Outputing By\n");
                 writeSpatial(B->vec->y,0);
 
-                trace("Outputing Bz\n",0);
+                trace("Outputing Bz\n");
                 writeSpatial(B->vec->z,0);
             }
         }
@@ -806,7 +806,7 @@ void readCheckpoint()
         FILE * out = fopen("Checkpoint0/state", "r");
         if(out == 0)
         {
-            error("Failed to open Checpoint0 state file!  Crashing gracelessly...",0);
+            error("Failed to open Checpoint0 state file!  Crashing gracelessly...");
         }
         fread(&dElapsed, sizeof(PRECISION), 1, out);
         fread(&dDt, sizeof(PRECISION), 1, out);
@@ -817,7 +817,7 @@ void readCheckpoint()
         out = fopen("Checkpoint1/state", "r");
         if(out == 0)
         {
-            error("Failed to open Checpoint0 state file!  Crashing gracelessly...",0);
+            error("Failed to open Checpoint0 state file!  Crashing gracelessly...");
         }
         fread(&elapsedTime, sizeof(PRECISION), 1, out);
         fread(&dt, sizeof(PRECISION), 1, out);
