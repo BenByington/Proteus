@@ -156,7 +156,7 @@ void finalizeState()
 
 void startScratch()
 {
-    info("Code is starting from scratch\n",0);
+    info("Code is starting from scratch\n");
 
     memset(T->spatial, 0, spatialCount * sizeof(PRECISION));
     memset(T->spectral, 0, spectralCount * sizeof(complex PRECISION));

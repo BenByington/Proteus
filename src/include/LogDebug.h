@@ -10,14 +10,14 @@
 #define trace(format, ...)
 
 #undef debug
-#define debug(format, ...) fprintf(procFile, "DEBUG: %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, __VA_ARGS__); fflush(procFile);
+#define debug(format, ...) fprintf(procFile, "DEBUG: %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ##__VA_ARGS__); fflush(procFile);
 
 #undef info
-#define info(format, ...) fprintf(procFile, "INFO:  %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, __VA_ARGS__); fflush(procFile);
+#define info(format, ...) fprintf(procFile, "INFO:  %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ##__VA_ARGS__); fflush(procFile);
 
 #undef warn
-#define warn(format, ...) fprintf(procFile, "WARN:  %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, __VA_ARGS__); fflush(procFile);
+#define warn(format, ...) fprintf(procFile, "WARN:  %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ##__VA_ARGS__); fflush(procFile);
 
 #undef error
-#define error(format, ...) fprintf(procFile, "ERROR: %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, __VA_ARGS__); fflush(procFile);
+#define error(format, ...) fprintf(procFile, "ERROR: %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ###__VA_ARGS__); fflush(procFile);
 
