@@ -19,5 +19,5 @@
 #define warn(format, ...) fprintf(procFile, "WARN:  %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ##__VA_ARGS__); fflush(procFile);
 
 #undef error
-#define error(format, ...) fprintf(procFile, "ERROR: %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ###__VA_ARGS__); fflush(procFile);
+#define error(format, ...) fprintf(procFile, "ERROR: %s %d: ", __FILE__, __LINE__); fprintf(procFile, format, ##__VA_ARGS__); fflush(procFile);
 
