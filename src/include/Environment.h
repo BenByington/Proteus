@@ -23,6 +23,13 @@ typedef struct
     int width;
 }indexes;
 
+typedef struct
+{
+    PRECISION dx;
+    PRECISION dy;
+    PRECISION dz;
+}displacement;
+
 //Comms
 extern MPI_Comm hcomm;
 extern MPI_Comm vcomm;
@@ -137,6 +144,13 @@ extern PRECISION magK;
 extern PRECISION magW;
 extern PRECISION magB0;
 
+//domain shifting parameters
+extern int recentering;
+extern int sanitize;
+#define NOCENTERING 0
+#define BYMAXCENTER 1
+#define NOTERMINATE 0
+extern int recenterTerminate;
 
 //phsyics parameters
 extern PRECISION Pr;

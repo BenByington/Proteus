@@ -65,10 +65,9 @@ int execute(char * propLoc)
 {
     loadPrefs(propLoc);
 
-
     info("Code Initialization Complete\n");
     setupEnvironment();
-
+    
     testIO();
     if(compute_node)
         testPT();
@@ -89,6 +88,11 @@ int execute(char * propLoc)
 
         MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
         performOutput();
+        
+//        if(recentering && recenterTerminate != 0)
+//        {
+//            if((*recenterTerminate)() == 1) break;
+//        }
     }
 
     info("Run Complete: Cleaning and Exiting now\n");

@@ -776,3 +776,53 @@ extern complex PRECISION dzFactor(int i)
     return I * 2 * PI * k / zmx;
 }
 
+extern void shiftField(displacement d, complex PRECISION * f)
+{
+    int i,j,k;
+    complex PRECISION *edkx, *edky, *edkz;
+    
+    edkx = (complex PRECISION*)malloc(my_kx->width*sizeof(complex PRECISION));
+    for(i=0; i < my_kx->width; i++)
+        edkx[i] = exp(dxFactor(i)*d.dx);
+    edky = (complex PRECISION*)malloc(my_ky->width*sizeof(complex PRECISION));
+    for(i=0; i < my_ky->width; i++)
+        edky[i] = exp(dyFactor(i)*d.dy);
+    edkz = (complex PRECISION*)malloc(ndkz*sizeof(complex PRECISION));
+    for(i=0; i < ndkz; i++)
+        edkz[i] = exp(dzFactor(i)*d.dz);
+    
+    int index = 0;
+    for(i = 0; i < my_kx->width; i++)
+    {
+        for(j = 0; j < my_ky->width; j++)
+        {
+            for(k = 0; k < ndkz; k++)
+            {
+                f[index] *= edkx[i]*edky[j]*edkz[k];
+                index++;
+            }
+        }
+    }
+    
+    free(edkx);
+    free(edky);
+    free(edkz);
+}
+
+extern void shiftAvg(displacement d, complex PRECISION * f)
+{
+    int k;
+    PRECISION dkz;
+    
+    int index = 0;
+    for(k = 0; k < ndkz; k++)
+    {
+        dkz = dzFactor(k);
+
+        f[index] *= exp(dkz*d.dz);
+
+        index++;
+    }
+}
+
+

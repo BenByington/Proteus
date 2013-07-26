@@ -7,6 +7,7 @@
 
 #include "Precision.h"
 #include "Field.h"
+#include "Environment.h"
 
 void testPT();
 
@@ -30,6 +31,9 @@ inline void partialZ(complex PRECISION * in, complex PRECISION * out, int arithm
 inline void multiply(PRECISION * one, PRECISION * two, PRECISION * out);
 inline void plusEq(complex PRECISION * one, complex PRECISION * two);
 inline void minusEq(complex PRECISION * one, complex PRECISION * two);
+
+inline void shiftField(displacement d, complex PRECISION * f);
+inline void shiftAvg(displacement d, complex PRECISION * f);
 
 //derivatives for a field
 inline void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor);

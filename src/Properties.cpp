@@ -8,6 +8,7 @@
 #include "Properties.h"
 #include "Environment.h"
 #include "Log.h"
+#include "Physics.h"
 
 #include <fstream>
 #include <string.h>
@@ -536,6 +537,9 @@ void parseForcings(iostream & in)
     const string sMagK("magK");
     const string sMagW("magW");
     const string sMagB0("magB0");
+    const string sRecentering("recentering");
+    const string sDefineHalt("defineHalt");
+    const string sSanitize("sanitizeBoundaries");
 
     string line;
     string one;
@@ -659,6 +663,43 @@ void parseForcings(iostream & in)
         {
             magB0 = atof(two.c_str());
             debug("magB0 = %g\n", magB0);
+        }
+        else if((int)one.find(sRecentering) != -1)
+        {
+            const string sMaxByCenter("maxByCenter");
+            if((int)two.find(off) != -1)
+                recentering = NOCENTERING;
+            else if((int)two.find(sMaxByCenter) != -1)
+                recentering = BYMAXCENTER;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            debug("Recentering flag: %d\n", recentering);
+        }
+        else if((int)one.find(sDefineHalt) != -1)
+        {
+            if((int)two.find(off) != -1)
+                recenterTerminate = 0;
+            //else if((int)two.find(off) != -1)
+            //    magTimeForcing = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            debug("recenterTerminate Function: %s\n", two);
+        }
+        else if((int)one.find(sSanitize) != -1)
+        {
+            if((int)two.find(on) != -1)
+                sanitize = 1;
+            else if((int)two.find(off) != -1)
+                sanitize = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            debug("Sanitize boundaries flag: %d\n", magTimeForcing);
         }
         else
         {

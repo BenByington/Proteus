@@ -153,6 +153,11 @@ PRECISION Pm = 0;
 PRECISION alpha = 1.0;
 PRECISION magBuoyScale = 1.0;
 
+//domain shifting parameters
+int recentering = NOCENTERING;
+int sanitize = 0;
+int recenterTerminate = NOTERMINATE;
+
 int maxSteps = 0;
 PRECISION maxTime = 0;
 int iteration = 0;

@@ -9,11 +9,15 @@
 #define	_PHYSICS_H
 
 #include "Precision.h"
+#include "Environment.h"
 
 void iterate();
 
 void initPhysics();
 void finalizePhysics();
+
+//functions that can be used to find displacement for field shifting
+displacement displacementByCenter();
 
 #endif	/* _PHYSICS_H */
 

@@ -31,6 +31,57 @@ void iterate()
     calcForces();
     step();
 
+    if(recentering != NOCENTERING)
+    {
+        displacement d;
+        
+        if(recentering == BYMAXCENTER)
+            d = displacementByCenter();
+        
+        if(magEquation)
+        {
+            shiftField(d, u->sol->toroidal->spectral);
+            shiftField(d, u->sol->toroidal->force1);
+            shiftField(d, u->sol->toroidal->force2);
+            
+            shiftField(d, u->sol->poloidal->spectral);
+            shiftField(d, u->sol->poloidal->force1);
+            shiftField(d, u->sol->poloidal->force2);
+            
+            shiftAvg(d, u->sol->mean_x);
+            shiftAvg(d, u->sol->mean_xf1);
+            shiftAvg(d, u->sol->mean_xf2);
+            
+            shiftAvg(d, u->sol->mean_y);
+            shiftAvg(d, u->sol->mean_yf1);
+            shiftAvg(d, u->sol->mean_yf2);
+        }
+        if(momEquation)
+        {
+            shiftField(d, B->sol->toroidal->spectral);
+            shiftField(d, B->sol->toroidal->force1);
+            shiftField(d, B->sol->toroidal->force2);
+            
+            shiftField(d, B->sol->poloidal->spectral);
+            shiftField(d, B->sol->poloidal->force1);
+            shiftField(d, B->sol->poloidal->force2);
+            
+            shiftAvg(d, B->sol->mean_x);
+            shiftAvg(d, B->sol->mean_xf1);
+            shiftAvg(d, B->sol->mean_xf2);
+            
+            shiftAvg(d, B->sol->mean_y);
+            shiftAvg(d, B->sol->mean_yf1);
+            shiftAvg(d, B->sol->mean_yf2);
+        }
+        if(tEquation)
+        {
+            shiftField(d, T->spectral);
+            shiftField(d, T->force1);
+            shiftField(d, T->force2);
+        }
+    }
+    
     //make sure our u,v,w terms are up to date, both spectral and spatial
     if(momEquation)
     {
@@ -260,6 +311,8 @@ void calcMomentum()
     {
         p_field tense = temp1->x;
 
+	//Note here, because I already forgot once.  a 2 as the third
+	// parameter makes things behave as a -= operation!
         multiply(u->vec->x->spatial, u->vec->x->spatial, tense->spatial);
         fftForward(tense);
         partialX(tense->spectral, rhs->x->spectral, 2);
@@ -798,3 +851,50 @@ void AB3Step()
     }
 }
 
+//This function is only designed to work on 2D y-invariant simulations
+displacement displacementByCenter()
+{
+    int i;
+    displacement ret;
+    complex PRECISION dkz;
+    complex PRECISION dkx;
+    
+    PRECISION * data = B->vec->y->spatial;
+    PRECISION mean = 0;
+    PRECISION weightedMeanX = 0;
+    PRECISION weightedMeanZ = 0;
+    
+    //Only one processor has the data to find the z center of mass, as it only
+    //uses the mean values of x
+    if(my_kx->min == 0)
+    {
+        for(i = 0; i < ndkz; i++)
+        {
+            dkz = dzFactor(i);
+            weightedMeanZ += __real__(zmx * data[i] * exp(dkz*zmx) / dkz);
+        }
+        mean = __real__(data[0]);
+    }
+    
+    //Everyone shares in doing part of the x center mass
+    for(i = 0; i < my_kx->width; i++)
+    {
+        dkx = dxFactor(i);
+        weightedMeanX += __real__(xmx * data[ndkz*i] * exp(dkx * xmx) / dkx);
+    }
+    
+    //Root need all the info for the scattered sum
+    if(vrank == 0)
+    {
+        MPI_Reduce(MPI_IN_PLACE, &weightedMeanX, 1, MPI_PRECISION, MPI_SUM, 0, vcomm);
+        ret.dx = xmx / 2 - (2*weightedMeanX/mean)*(xmx/nx);
+        ret.dy = 0;
+        ret.dz = zmx / 2 - (2*weightedMeanZ/mean)*(zmx/nz);
+    }   
+    else
+        MPI_Reduce(&weightedMeanX, 0, 1, MPI_PRECISION, MPI_SUM, 0, vcomm);
+        
+    MPI_Bcast(&ret, sizeof(displacement), MPI_BYTE, 0, vcomm);
+    
+    return ret;
+}
