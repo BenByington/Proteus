@@ -38,7 +38,7 @@ void iterate()
         if(recentering == BYMAXCENTER)
             d = displacementByCenter();
         
-        if(magEquation)
+        if(momEquation)
         {
             shiftField(d, u->sol->toroidal->spectral);
             shiftField(d, u->sol->toroidal->force1);
@@ -56,7 +56,7 @@ void iterate()
             shiftAvg(d, u->sol->mean_yf1);
             shiftAvg(d, u->sol->mean_yf2);
         }
-        if(momEquation)
+        if(magEquation)
         {
             shiftField(d, B->sol->toroidal->spectral);
             shiftField(d, B->sol->toroidal->force1);
@@ -859,7 +859,7 @@ displacement displacementByCenter()
     complex PRECISION dkz;
     complex PRECISION dkx;
     
-    PRECISION * data = B->vec->y->spatial;
+    complex PRECISION * data = B->vec->y->spectral;
     PRECISION mean = 0;
     PRECISION weightedMeanX = 0;
     PRECISION weightedMeanZ = 0;
@@ -868,28 +868,40 @@ displacement displacementByCenter()
     //uses the mean values of x
     if(my_kx->min == 0)
     {
-        for(i = 0; i < ndkz; i++)
+        mean = __real__(data[0]);
+		weightedMeanZ = zmx/2.*mean;
+        for(i = 1; i < ndkz; i++)
         {
             dkz = dzFactor(i);
-            weightedMeanZ += __real__(zmx * data[i] * exp(dkz*zmx) / dkz);
+            weightedMeanZ += __real__(data[i] / dkz);
         }
-        mean = __real__(data[0]);
     }
     
     //Everyone shares in doing part of the x center mass
-    for(i = 0; i < my_kx->width; i++)
-    {
-        dkx = dxFactor(i);
-        weightedMeanX += __real__(xmx * data[ndkz*i] * exp(dkx * xmx) / dkx);
+    if(vrank == 0)
+	{
+		weightedMeanX = xmx/2.*mean;
+    	for(i = 1; i < my_kx->width; i++)
+    	{
+    	    dkx = dxFactor(i);
+    	    weightedMeanX += 2*__real__(data[ndkz*i] / dkx);
+   		}
+	}
+	else
+	{
+    	for(i = 0; i < my_kx->width; i++)
+    	{
+    	    dkx = dxFactor(i);
+    	    weightedMeanX += 2*__real__(data[ndkz*i] / dkx);
+   		}
     }
-    
     //Root need all the info for the scattered sum
     if(vrank == 0)
     {
         MPI_Reduce(MPI_IN_PLACE, &weightedMeanX, 1, MPI_PRECISION, MPI_SUM, 0, vcomm);
-        ret.dx = xmx / 2 - (2*weightedMeanX/mean)*(xmx/nx);
+        ret.dx = (weightedMeanX/mean) - xmx/2.;
         ret.dy = 0;
-        ret.dz = zmx / 2 - (2*weightedMeanZ/mean)*(zmx/nz);
+        ret.dz = (weightedMeanZ/mean) - zmx/2.;
     }   
     else
         MPI_Reduce(&weightedMeanX, 0, 1, MPI_PRECISION, MPI_SUM, 0, vcomm);

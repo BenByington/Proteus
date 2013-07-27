@@ -187,7 +187,7 @@ void fft1_forward(PRECISION * in, complex PRECISION* out)
     fft_free(comp5);
 
     int size = my_kx->width * my_ky->width * ndkz;
-    PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);
+    PRECISION factor = ny * nx * nz;
     for(i = 0; i < size; i++)
         out[i] /= factor;
 
@@ -442,15 +442,6 @@ void fft1_backward(complex PRECISION* in, PRECISION * out)
     fft_execute_c2r(planb1, comp5, out);
     fft_free(comp5);
     
-
-    int i;
-    PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);
-    int size = my_x->width * my_z->width * ny;
-    for(i = 0; i < size; i++)
-    {
-        out[i] /= factor;
-    }
-
     trace("Inverse FFT completed\n");
 }
 
@@ -716,7 +707,7 @@ void fft2_forward(PRECISION* in, complex PRECISION* out)
     fft_free(comp5);
 
     int i;
-    PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);
+    PRECISION factor = ny * nx * nz;
     int size = my_kx->width * my_ky->width * ndkz;
     for(i = 0; i < size; i++)
         out[i] /= factor;
@@ -877,12 +868,6 @@ void fft2_backward(complex PRECISION* in, PRECISION* out)
     
     fft_execute_c2r(planb1, comp4, out);
     fft_free(comp4);
-
-    int i;
-    PRECISION factor = sqrt(ny) * sqrt(nx) * sqrt(nz);
-    int size = my_x->width * my_z->width * ny;
-    for(i = 0; i < size; i++)
-        out[i] /= factor;
 }
 
 void fft2_tpb1(complex PRECISION* in, complex PRECISION* out)

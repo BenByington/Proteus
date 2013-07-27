@@ -783,13 +783,13 @@ extern void shiftField(displacement d, complex PRECISION * f)
     
     edkx = (complex PRECISION*)malloc(my_kx->width*sizeof(complex PRECISION));
     for(i=0; i < my_kx->width; i++)
-        edkx[i] = exp(dxFactor(i)*d.dx);
+        edkx[i] = cexp(dxFactor(i)*d.dx);
     edky = (complex PRECISION*)malloc(my_ky->width*sizeof(complex PRECISION));
     for(i=0; i < my_ky->width; i++)
-        edky[i] = exp(dyFactor(i)*d.dy);
+        edky[i] = cexp(dyFactor(i)*d.dy);
     edkz = (complex PRECISION*)malloc(ndkz*sizeof(complex PRECISION));
     for(i=0; i < ndkz; i++)
-        edkz[i] = exp(dzFactor(i)*d.dz);
+        edkz[i] = cexp(dzFactor(i)*d.dz);
     
     int index = 0;
     for(i = 0; i < my_kx->width; i++)
@@ -812,14 +812,14 @@ extern void shiftField(displacement d, complex PRECISION * f)
 extern void shiftAvg(displacement d, complex PRECISION * f)
 {
     int k;
-    PRECISION dkz;
+    complex PRECISION dkz;
     
     int index = 0;
     for(k = 0; k < ndkz; k++)
     {
         dkz = dzFactor(k);
 
-        f[index] *= exp(dkz*d.dz);
+        f[index] *= cexp(dkz*d.dz);
 
         index++;
     }
