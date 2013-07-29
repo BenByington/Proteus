@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "Environment.h"
 #include "Communication.h"
+#include "State.h"
 
 #include <mpi.h>
 #include <math.h>
@@ -447,7 +448,7 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
         if(add)
             out[i] += spect[i];
         else
-            out = spect[i];
+            out[i] = spect[i];
     }
 
     trace("Finished Laplacian\n");

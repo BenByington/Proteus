@@ -42,15 +42,22 @@ void initState()
                         for(k = 0; k < ny; k++)
                         {
                             hyper->spatial[index] = .5 * tanh(3 - k) + .5 * tanh(k + 3 - ny) + .5;
-                            hyper->spatial[index] = (temp =.5 * tanh(3 - j) + .5 * tanh(j + 3 - nx) + .5) < hyper[index] ? temp : hyper[index];
-                            hyper->spatial[index] = (temp =.5 * tanh(3 - i) + .5 * tanh(i + 3 - nz) + .5) < hyper[index] ? temp : hyper[index];
+                            temp =.5 * tanh(3 - j) + .5 * tanh(j + 3 - nx) + .5;
+                            if(temp < hyper->spatial[index])
+                                hyper->spatial[index] = temp;
+                            temp =.5 * tanh(3 - i) + .5 * tanh(i + 3 - nz) + .5;
+                            if(temp < hyper->spatial[index])
+                                hyper->spatial[index] = temp;
                             index++;
                         }
                     }
                     else
                     {
-                        hyper[index] = .5 * tanh(3 - j) + .5 * tanh(j + 3 - nx) + .5;
-                        hyper[index] = (temp =.5 * tanh(3 - i) + .5 * tanh(i + 3 - nz) + .5) < hyper[index] ? temp : hyper[index];
+                        
+                        hyper->spatial[index] = .5 * tanh(3 - j) + .5 * tanh(j + 3 - nx) + .5;
+                        temp =.5 * tanh(3 - i) + .5 * tanh(i + 3 - nz) + .5;
+                        if(temp < hyper->spatial[index])
+                            hyper->spatial[index] = temp;
                         index++;
                     }
                 }
@@ -332,6 +339,7 @@ p_componentVar u;
 p_field T;
 
 p_field hyper;
+p_field hyperWork;
 
 PRECISION maxVel[3];
 p_field forceField = 0;
