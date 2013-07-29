@@ -37,4 +37,5 @@ inline void shiftAvg(displacement d, complex PRECISION * f);
 
 //derivatives for a field
 inline void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor);
+inline void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor);
 

@@ -24,6 +24,38 @@ void initState()
         allocateSpatial(T);
         allocateSpectral(T);
         allocateForce(T);
+        
+        if(sanitize)
+        {
+            allocateSpectral(hyperWork);
+            allocateSpatial(hyperWork);
+            allocateSpatial(hyper);
+            int i,j,k;
+            int index = 0;
+            double temp;
+            for(i = my_z->min; i <= my_z->max; i++)
+            {
+                for(j = my_x->min; j <= my_x->max; j++)
+                {
+                    if(ny > 1)
+                    {
+                        for(k = 0; k < ny; k++)
+                        {
+                            hyper->spatial[index] = .5 * tanh(3 - k) + .5 * tanh(k + 3 - ny) + .5;
+                            hyper->spatial[index] = (temp =.5 * tanh(3 - j) + .5 * tanh(j + 3 - nx) + .5) < hyper[index] ? temp : hyper[index];
+                            hyper->spatial[index] = (temp =.5 * tanh(3 - i) + .5 * tanh(i + 3 - nz) + .5) < hyper[index] ? temp : hyper[index];
+                            index++;
+                        }
+                    }
+                    else
+                    {
+                        hyper[index] = .5 * tanh(3 - j) + .5 * tanh(j + 3 - nx) + .5;
+                        hyper[index] = (temp =.5 * tanh(3 - i) + .5 * tanh(i + 3 - nz) + .5) < hyper[index] ? temp : hyper[index];
+                        index++;
+                    }
+                }
+            }
+        }
     }
 
     if(startFlag == CHECKPOINT)
@@ -151,6 +183,13 @@ void finalizeState()
         eraseSpectral(magForceField);
         free(magForceField);
         magForceField = 0;
+    }
+    
+    if(sanitize)
+    {
+        eraseSpatial(hyper);
+        eraseSpatial(hyperWork);
+        eraseSpectral(hyperWork);
     }
 }
 
@@ -291,6 +330,8 @@ void startSpatial()
 p_componentVar B;
 p_componentVar u;
 p_field T;
+
+p_field hyper;
 
 PRECISION maxVel[3];
 p_field forceField = 0;

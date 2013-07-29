@@ -405,6 +405,54 @@ extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, 
     trace("Finished Laplacian\n");
 }
 
+//TODO: Verify that it is safe to have both in and out reference the same
+//structure when in wont be needed any longer
+extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
+{
+    trace("Starting Hyper Diffusion\n");
+    
+    int i,j,k;
+    int index = 0;
+    complex PRECISION dkx,dky,dkz;
+    complex PRECISION deriv;
+    
+    complex PRECISION * spect = hyperWork->spectral;
+    PRECISION * spat = hyperWork->spatial;
+
+    for(i = 0; i < my_kx->width; i++)
+    {
+        dkx = dxFactor(i);
+        for(j = 0; j < my_ky->width; j++)
+        {
+            dky = dyFactor(j);
+            for(k = 0; k < ndkz; k++)
+            {
+                dkz = dzFactor(k);
+                deriv = (dkx * dkx + dky * dky + dkz * dkz)*(dkx * dkx + dky * dky + dkz * dkz);
+                spect[index] += factor * deriv *in[index];
+
+                index++;
+            }
+        }
+    }
+    
+    fftBackward(hyperWork);
+    for(i = 0; i < spatialCount; i++)
+    {
+        spat[i] *= hyper->spatial[i];
+    }
+    fftForward(hyperWork);
+    for(i = 0; i < spectralCount; i++)
+    {
+        if(add)
+            out[i] += spect[i];
+        else
+            out = spect[i];
+    }
+
+    trace("Finished Laplacian\n");
+}
+
 extern void curl(p_vector in, p_vector out)
 {
     int i,j,k;

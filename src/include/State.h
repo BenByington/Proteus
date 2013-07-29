@@ -18,6 +18,10 @@ extern p_componentVar B;
 extern p_componentVar u;
 extern p_field T;
 
+//field to be used for boundary hyper diffusion term
+extern p_field hyper;
+extern p_field hyperWork;
+
 extern PRECISION maxVel[3];
 extern p_field forceField;
 extern p_field magForceField;

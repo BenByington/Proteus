@@ -242,7 +242,7 @@ void calcForces()
 
     if(magEquation)
         calcMag();
-
+   
     debug("Forces done\n");
 }
 
@@ -265,6 +265,14 @@ void calcMomentum()
         memset(rhs->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
         memset(rhs->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
         memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    }
+    
+    //Apply hyper diffusion to the boundaries
+    if(sanitize)
+    {
+        hyperDiff(u->vec->x->spectral, rhs->x->spectral, 1, Pr/Pm);
+        hyperDiff(u->vec->y->spectral, rhs->y->spectral, 1, Pr/Pm);
+        hyperDiff(u->vec->z->spectral, rhs->z->spectral, 1, Pr/Pm);
     }
 
     //static forcing is currently only in the u direction and a function of y and z
@@ -450,6 +458,14 @@ void calcMag()
         memset(rhs->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
         memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
     }
+    
+    //Apply hyper diffusion to the boundaries
+    if(sanitize)
+    {
+        hyperDiff(B->vec->x->spectral, rhs->x->spectral, 1, Pr/Pm);
+        hyperDiff(B->vec->y->spectral, rhs->y->spectral, 1, Pr/Pm);
+        hyperDiff(B->vec->z->spectral, rhs->z->spectral, 1, Pr/Pm);
+    }
 
     //static forcing is currently only in the x direction and a function of y and z
     if(magStaticForcing)
@@ -540,6 +556,12 @@ void calcTemp()
 
         minusEq(forces, advect->spectral);
 
+    }
+    
+    //Apply hyper diffusion to the boundaries
+    if(sanitize)
+    {
+        hyperDiff(T->spectral, forces, 1, 1.0);
     }
 }
 
