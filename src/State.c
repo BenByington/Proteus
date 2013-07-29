@@ -27,6 +27,8 @@ void initState()
         
         if(sanitize)
         {
+			hyper = (p_field)malloc(sizeof(field));
+			hyperWork = (p_field)malloc(sizeof(field));
             allocateSpectral(hyperWork);
             allocateSpatial(hyperWork);
             allocateSpatial(hyper);
@@ -197,6 +199,8 @@ void finalizeState()
         eraseSpatial(hyper);
         eraseSpatial(hyperWork);
         eraseSpectral(hyperWork);
+		free(hyper);
+		free(hyperWork);
     }
 }
 

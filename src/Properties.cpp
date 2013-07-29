@@ -699,7 +699,7 @@ void parseForcings(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            debug("Sanitize boundaries flag: %d\n", magTimeForcing);
+            debug("Sanitize boundaries flag: %d\n", sanitize);
         }
         else
         {
