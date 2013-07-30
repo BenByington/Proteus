@@ -429,8 +429,8 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
             for(k = 0; k < ndkz; k++)
             {
                 dkz = dzFactor(k);
-                deriv = (dkx * dkx + dky * dky + dkz * dkz)*(dkx * dkx + dky * dky + dkz * dkz);
-                spect[index] += factor * deriv *in[index];
+                deriv = (dkx * dkx + dky * dky + dkz * dkz);
+                spect[index] = factor * deriv *in[index];
 
                 index++;
             }
@@ -451,9 +451,36 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
             out[i] = spect[i];
     }
 
-    trace("Finished Laplacian\n");
+    trace("Finished Hyper Diffusion\n");
 }
 
+//TODO: Verify that it is safe to have both in and out reference the same
+//structure when in wont be needed any longer
+extern void killBoundaries(PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
+{
+    trace("Starting Boundary Forcing\n");
+    
+    int i,j,x,y,z;
+    int index = 0;
+    
+    complex PRECISION * spect = hyperWork->spectral;
+    PRECISION * spat = hyperWork->spatial;
+
+    for(i = 0; i < spatialCount; i++)
+    {
+        spat[i] = -hyper->spatial[i]*factor*in[i];;
+    }
+    fftForward(hyperWork);
+    for(i = 0; i < spectralCount; i++)
+    {
+        if(add)
+            out[i] += spect[i];
+        else
+            out[i] = spect[i];
+    }
+
+    trace("Finished Boundary Forcing\n");
+}
 extern void curl(p_vector in, p_vector out)
 {
     int i,j,k;

@@ -270,9 +270,9 @@ void calcMomentum()
     //Apply hyper diffusion to the boundaries
     if(sanitize)
     {
-        hyperDiff(u->vec->x->spectral, rhs->x->spectral, 1, Pr/Pm);
-        hyperDiff(u->vec->y->spectral, rhs->y->spectral, 1, Pr/Pm);
-        hyperDiff(u->vec->z->spectral, rhs->z->spectral, 1, Pr/Pm);
+        killBoundaries(u->vec->x->spatial, rhs->x->spectral, 1, 100*Pr);
+        killBoundaries(u->vec->y->spatial, rhs->y->spectral, 1, 100*Pr);
+        killBoundaries(u->vec->z->spatial, rhs->z->spectral, 1, 100*Pr);
     }
 
     //static forcing is currently only in the u direction and a function of y and z
@@ -462,9 +462,9 @@ void calcMag()
     //Apply hyper diffusion to the boundaries
     if(sanitize)
     {
-        hyperDiff(B->vec->x->spectral, rhs->x->spectral, 1, Pr/Pm);
-        hyperDiff(B->vec->y->spectral, rhs->y->spectral, 1, Pr/Pm);
-        hyperDiff(B->vec->z->spectral, rhs->z->spectral, 1, Pr/Pm);
+        killBoundaries(B->vec->x->spatial, rhs->x->spectral, 1, 100*Pr/Pm);
+        killBoundaries(B->vec->y->spatial, rhs->y->spectral, 1, 100*Pr/Pm);
+        killBoundaries(B->vec->z->spatial, rhs->z->spectral, 1, 100*Pr/Pm);
     }
 
     //static forcing is currently only in the x direction and a function of y and z
@@ -561,7 +561,7 @@ void calcTemp()
     //Apply hyper diffusion to the boundaries
     if(sanitize)
     {
-        hyperDiff(T->spectral, forces, 1, 1.0);
+        killBoundaries(T->spatial, forces, 1, 100);
     }
 }
 
