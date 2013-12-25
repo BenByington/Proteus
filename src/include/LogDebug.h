@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   LogDebug.h
- * Author: Ben
- *
- * Created on April 2, 2010, 11:58 AM
- */
-
 
 #undef trace
 #define trace(format, ...)

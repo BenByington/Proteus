@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   LogTrace.h
- * Author: Ben
- *
- * Created on April 2, 2010, 12:18 PM
- */
-
 //TODO Add timing functionality to the other log levels
 #undef trace
 #define trace(format, ...) fprintf(procFile, "TRACE: %s %d - %f: ", __FILE__, __LINE__, (double)clock()); fprintf(procFile, format, ##__VA_ARGS__); fflush(procFile);

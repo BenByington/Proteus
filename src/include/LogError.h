@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   LogError.h
- * Author: Ben
- *
- * Created on April 2, 2010, 12:16 PM
- */
-
 #undef trace
 #define trace(format, ...)
 

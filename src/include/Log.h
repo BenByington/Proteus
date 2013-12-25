@@ -17,12 +17,39 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Log.h
- * Author: Ben
- *
- * Created on April 2, 2010, 12:21 PM
- */
+/*********
+ * This is a light weight logging system that is configured at compile time.
+ * There are five defined levels of logging macros, which in order of priority,
+ * are error(), warn(), info(), debug() and trace().  These macros have the
+ * same arguments as printf (indeed the arguments are passed TO printf), so they
+ * take a formatted string with optional values for that string.  
+ * 
+ * The level of debugging is controlled through the use of including the 
+ * specific header file for that level of logging, where the name of the logging
+ * file indicates the most detailed level of logging to be written.  The 
+ * specific version included in this file is the default for the entire program,
+ * and can be changed locally through additional include statements.  Logging 
+ * statements of a lower priority than is enabled (i.e. debug() statements when 
+ * only Info and above are in use) are defined as empty macros and are removed 
+ * by the compiler.
+ * 
+ * For example:  
+ *   - If you wish to globally suppress trace and debug statements, then at the
+ *     bottom of this file you place #include LogInfo.h
+ *   - If you are debugging a section of code and locally wish more detailed 
+ *     messages then you braked the region of interest with the relevant
+ *     includes:
+ *     #include LogTrace.h
+ *       <code snippet>
+ *     #include Log.h
+ * 
+ * Note: 
+ *   - If locally changing the level of logging, always remember to again
+ *     include Log.h afterwards, so that regions of code later in the file
+ *     remain unaffected.
+ *   - Trace creates output messages during some of the tight loops.  It is
+ *     NOT recommended to enable this as the program default.
+ *********/
 
 #ifndef _LOG_H
 #define	_LOG_H
@@ -33,9 +60,21 @@
 
 extern FILE * procFile;
 
+/*
+ * Initialization routine for the io stream used for logging.  
+ * 
+ * Only call once during execution, and before any logging macros are used!!!
+ */
 void initLogging();
 
-#include "LogInfo.h"
+/*
+ * Cleans up logging after program execution.
+ */
+void endLogging();
 
 #endif	/* _LOG_H */
+
+//Include one of the log levels here.  The program will default to this level
+//of verbosity.
+#include "LogInfo.h"
 

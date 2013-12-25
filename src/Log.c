@@ -26,6 +26,9 @@
 FILE * procFile;
 FILE * progress;
 
+/*
+ * Each process gets its own log file in the Logs directory.
+ */
 void initLogging()
 {
     if(grank == 0)
@@ -43,5 +46,15 @@ void initLogging()
     info("System wide info enabled\n");
     warn("System wide warning enabled\n");
     error("System wide error enabled\n");
+    
+    return;
+}
+
+void endLogging()
+{
+    info("Shutting down log file stream\n");
+    fclose(procFile);
+    
+    return;
 }
 
