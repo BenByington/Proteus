@@ -27,6 +27,13 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+/*
+ * Here we take care of initialization things.  Namely, we set the variables
+ * describing the physical extent of the problem, set the variables controlling
+ * communication between processes, set the variables controlling the
+ * distribution of work, and finally ensure the existence of the directories
+ * this program expects to exist.
+ */
 void setupEnvironment()
 {
     PI = 4.0 * atan2(1.0, 1.0);
@@ -39,7 +46,8 @@ void setupEnvironment()
 
     iteration = 0;
     elapsedTime = 0;
-    
+
+    //Check out LaborDivision.c for most of the initialization code.
     lab_initGeometry();
     lab_initGroups();
     lab_initDistributions();
@@ -52,7 +60,8 @@ void setupEnvironment()
         mkdir("Checkpoint1", S_IRWXU);
     }
 
-    //TODO: Don't forget to turn measuring back on!
+    //TODO: FFTW speed measuring is turned off.  Make this a configurable
+    //parameter!
     if(compute_node)
     {
         com_init(0);
