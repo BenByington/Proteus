@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   main.cpp
- * Author: Ben
- *
- * Created on February 12, 2010, 1:43 PM
- */
-
 #include <sys/time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,16 +39,20 @@ int execute(char * propFile);
 
 
 /*
- * 
+ * This is the main driving routine.  Doesn't do much save initialize MPI and
+ * a few other things, and then call the main execution loop.
  */
 int main(int argc, char** argv)
 {
     int status;
 
+    //Start up MPI
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &grank);
     MPI_Comm_size(MPI_COMM_WORLD, &gsize);
     
+    //Ensure correct calling signature.  Note: Benchmarking is not currently
+    //operative.
     if(argc < 2 || argc > 3)
     {
         fprintf(stderr, "Usage: imhd <propFile> [benchmark]\n");
@@ -74,6 +71,7 @@ int main(int argc, char** argv)
     else
         status = benchmark(argv[1]);
 
+    //shut it all down.
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
 
@@ -82,6 +80,12 @@ int main(int argc, char** argv)
     return status;
 }
 
+/*
+ * This is the main execution loop.  It does not do much besides initializing
+ * the physical problem and then entering a tight iteration evolving the system
+ * until either the maximum number of iterations has executed or the maximum 
+ * amount of simulation time has passed.
+ */
 int execute(char * propLoc)
 {
     loadPrefs(propLoc);
@@ -89,6 +93,8 @@ int execute(char * propLoc)
     info("Code Initialization Complete\n");
     setupEnvironment();
     
+    //Sanity checks.  These should either be removed or moved to a optional
+    //unit test framework.
     testIO();
     if(compute_node)
         testPT();
@@ -110,6 +116,9 @@ int execute(char * propLoc)
         MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
         performOutput();
         
+        //This is an experimental section where the domain moves during
+        //computation to keep an item of interest centered.  Not fully
+        //operational...
 //        if(recentering && recenterTerminate != 0)
 //        {
 //            if((*recenterTerminate)() == 1) break;
@@ -130,6 +139,9 @@ int execute(char * propLoc)
     return 0;
 }
 
+/*
+ * Not currently functional!
+ */
 int benchmark(char * propLoc)
 {
     double dstart;

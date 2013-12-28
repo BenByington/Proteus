@@ -17,12 +17,11 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   State.h
- * Author: Ben
- *
- * Created on March 11, 2010, 2:38 PM
- */
+/********************* 
+ * This file controls all the state variables that persist through the
+ * simulation and stores the current values of all state variables in the 
+ * problem  
+ *********************/
 
 #include "Field.h"
 #include "Precision.h"
@@ -30,18 +29,27 @@
 #ifndef _STATE_H
 #define	_STATE_H
 
+/*
+ * Init and cleanup routines for the state variables.  Should be called once
+ * each, before and after calculations.
+ */
 void initState();
 void finalizeState();
 
+//These are our state variables in this system.
 extern p_componentVar B;
 extern p_componentVar u;
 extern p_field T;
 
-//field to be used for boundary hyper diffusion term
+//field to be used for boundary hyper diffusion term.  Experimental and not
+//fully tested!
 extern p_field hyper;
 extern p_field hyperWork;
 
+//convenience variable used in status file outputs.
 extern PRECISION maxVel[3];
+
+//If we have time independent forcings, they get loaded into here.
 extern p_field forceField;
 extern p_field magForceField;
 

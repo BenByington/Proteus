@@ -17,12 +17,11 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   FFTWrapper.h
- * Author: Ben
- *
- * Created on November 18, 2010, 1:24 PM
- */
+/***************************
+ * This signature for FFTW routines depends on the precision the data is 
+ * stored in.  This is a lightweight interface designed to hide that dependence,
+ * as the precision this code runs in is determined at compile time. 
+ ***************************/
 
 #ifndef _FFTWRAPPER_H
 #define	_FFTWRAPPER_H

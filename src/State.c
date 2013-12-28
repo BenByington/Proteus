@@ -29,14 +29,25 @@
 #include <stdlib.h>
 #include <math.h>
 
+//These are "private" and never called outside this file.
 void startScratch();
 void startSpatial();
 
+/*
+ * Here we allocate memory for our state variables, and initialize them
+ * appropriately.
+ */
 void initState()
 {
     info("Setting up the initial conditions\n");
     if(compute_node)
     {
+        /*
+         * Note:  The forcing fields never get initialized to 0.  This is safe
+         *        because the integration scheme ramps up in accuracy, and wont
+         *        try to access any of the "dirty" arrays before they have been
+         *        filled with valid data.
+         */
         B = newComponentVar();
         u = newComponentVar();
         T = (p_field)malloc(sizeof(field));
@@ -44,13 +55,20 @@ void initState()
         allocateSpectral(T);
         allocateForce(T);
         
+        //This is for a hyper diffusion applied to the boundaries to try and
+        //zero them out without breaking divergence constraints.  Currently does
+        //not work as desired, and is disabled by default.
         if(sanitize)
         {
-			hyper = (p_field)malloc(sizeof(field));
-			hyperWork = (p_field)malloc(sizeof(field));
+            hyper = (p_field)malloc(sizeof(field));
+            hyperWork = (p_field)malloc(sizeof(field));
             allocateSpectral(hyperWork);
             allocateSpatial(hyperWork);
             allocateSpatial(hyper);
+            
+            //Use tanh functions to give us function that is 1 close to the
+            //boundaries and zero in the interior.  These will be weights 
+            //applied to they hyper diffusion.
             int i,j,k;
             int index = 0;
             double temp;
@@ -88,6 +106,7 @@ void initState()
 
     if(startFlag == CHECKPOINT)
     {
+        //IO.c knows how to read in data from a checkpoint.
         readCheckpoint();
     }
     else
@@ -100,7 +119,7 @@ void initState()
             //are empty (or have invalid data)
             FILE * out = fopen("Checkpoint0/state", "w");
             int idumb = 0;
-            int ddumb = 0;
+            PRECISION ddumb = 0;
             fwrite(&ddumb, sizeof(PRECISION), 1, out);
             fwrite(&ddumb, sizeof(PRECISION), 1, out);
             fwrite(&ddumb, sizeof(PRECISION), 1, out);
@@ -120,10 +139,12 @@ void initState()
         {
             //no need for IO nodes in here
             if(compute_node)
+                //Defined below
                 startScratch();
         }
         else if(startFlag == SPATIAL)
         {
+            //Defined below.
             startSpatial();
         }
         else
@@ -133,6 +154,7 @@ void initState()
     }
     
 
+    //Time independent forcing for the momentum equation.
     if(momStaticForcing)
     {
         if(!viscosity)
@@ -161,6 +183,8 @@ void initState()
             }
         }
     }
+    
+    //Time independent forcing for the magnetic induction equation.
     if(magStaticForcing)
     {
         if(!magDiff)
@@ -191,6 +215,9 @@ void initState()
     }
 }
 
+/*
+ * Undo all memory allocations from the above routine.
+ */
 void finalizeState()
 {
     deleteComponentVar(&B);
@@ -218,11 +245,15 @@ void finalizeState()
         eraseSpatial(hyper);
         eraseSpatial(hyperWork);
         eraseSpectral(hyperWork);
-		free(hyper);
-		free(hyperWork);
+        free(hyper);
+        free(hyperWork);
     }
 }
 
+/*
+ * If we are starting a simulation from scratch, then all of our state variables
+ * need to be initialized to zero at all points in the domain.
+ */
 void startScratch()
 {
     info("Code is starting from scratch\n");
@@ -263,10 +294,17 @@ void startScratch()
     u->sol->mean_z = 0;
 }
 
+/*
+ * User has specified a folder on disk containing dumps of the state variables,
+ * and we will read them in and use them as initial conditions.
+ */
 void startSpatial()
 {
     char name[100];
 
+    //If we are continuing from another simulation, but not using checkpoints 
+    //for some reason, then we need to recover the simulation time that this
+    //data dump was made at.
     if(grank == 0)
     {
         sprintf(name,"%s/info",startDir);
@@ -283,8 +321,13 @@ void startSpatial()
         }
     }
 
+    //share out the simulation time so everyone knows.
     MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
 
+    //Read in state variables for any active equations.  Don't bother for
+    //variable that won't be used.  They are read in the spatial coordinates
+    //they were stored in, converted to spectral coordinates, and if necessary
+    //converted further into toroidal/poloidal decomposition.
     if(compute_node)
     {
         if(magEquation)

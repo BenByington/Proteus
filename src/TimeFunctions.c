@@ -24,6 +24,10 @@
 
 #include <math.h>
 
+/*
+ * Here we just loop over each element in the given array, assigning it a value
+ * from the specified time dependent function.
+ */
 void fillTimeField(p_vector vec, int func)
 {
     int i,j,k;

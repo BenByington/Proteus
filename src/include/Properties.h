@@ -17,12 +17,10 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Properties.h
- * Author: Ben
- *
- * Created on March 11, 2010, 10:02 PM
- */
+/*********************** 
+ * This module is in charge of reading in the parameters file that specifies 
+ * the problem to be solved. 
+ ***********************/
 
 #ifndef _PROPERTIES_H
 #define	_PROPERTIES_H

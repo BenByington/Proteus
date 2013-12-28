@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Properties.cpp
- * Author: Ben
- * 
- * Created on March 11, 2010, 10:02 PM
- */
-
 #include "Properties.h"
 #include "Environment.h"
 #include "Log.h"
@@ -47,14 +40,26 @@ using namespace std;
 const string on("on");
 const string off("off");
 
+/*
+ * The parameters file is divided into several different "topics", and each 
+ * topic is handled by a different, but similar routine (to reduce clutter).
+ * Only one of these will receive comments (below) since they all follow
+ * the same pattern.
+ */
 void parseProblemSize(iostream & in);
 void parseIO(iostream & in);
 void parseIC(iostream & in);
 void parsePhysics(iostream & in);
 void parseForcings(iostream & in);
 void parseIntegration(iostream & in);
+
+//Currently does nothing...
 void init();
 
+/*
+ * Open up the configuration file, and call the sub-parsers to grab environment 
+ * variables out of it.
+ */
 void loadPrefs(char * loc)
 {
     info("Loading Preferences from file %s\n",loc);
@@ -71,12 +76,15 @@ void loadPrefs(char * loc)
     int itwo;
     while(!getline(input, line).eof())
     {
+        //Burn through lines until we come to the start of a section
         ione = line.find_first_of(starts);
         itwo = line.find_first_of(ends);
 
         if(ione == -1 || itwo == -1 || itwo < ione)
             continue;
 
+        //Figure out which section we stumbled upon, and hand it to the
+        //appropriate parser.
         section = line.substr(ione+1, itwo - ione - 1);
 
         if(section == PROBLEM_SIZE)
@@ -112,6 +120,11 @@ void init()
 
 void parseProblemSize(iostream & in)
 {
+    /*
+     * These are all of the valid strings we recognize as belonging to this 
+     * section.  Any other strings present will result in a warning message
+     * being placed in the logs.
+     */
     const string snx("nx");
     const string sny("ny");
     const string snz("nz");
@@ -126,9 +139,13 @@ void parseProblemSize(iostream & in)
     string two;
     int index;
 
+    //Read the file line by line
     debug("Loading PROBLEM_SIZE\n",0);
     while(!getline(in, line).eof())
     {
+        //If the line does not contain an assigment, it is garbage.  If it
+        //contains a '[' then we have hit the end of our section and we must
+        //surrender control back to the calling routine.
         trace("Reading line %s\n", line.c_str());
         index = line.find_first_of('=');
         if((int)line.find_first_of("[") != -1)
@@ -139,6 +156,9 @@ void parseProblemSize(iostream & in)
         one = line.substr(0, index);
         two = line.substr(index+1, line.size()-1);
 
+        //Stupid long if/else if to see which of the expected inputs we have now
+        //Any input found will be parsed, stored into the appropriate variable,
+        //and then logged.
         if((int)one.find(snx) != -1)
         {
             nx = atoi(two.c_str());
