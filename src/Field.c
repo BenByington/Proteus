@@ -17,12 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Field.cpp
- * Author: Ben
- * 
- * Created on February 12, 2010, 2:06 PM
- */
 
 #include "Field.h"
 #include "Environment.h"

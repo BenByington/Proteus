@@ -17,15 +17,19 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Precision.h
- * Author: Ben
- *
- * Created on November 17, 2010, 3:34 PM
- */
+ /***************************
+  * There have been times this code was desired in single precision rather than
+  * double.  To make things flexible, major arrays MUST be declared to use
+  * this PRECISION data type rather than explicitly chosing double or float.  
+  * As a rule of thumb, unless it is for a small local calulation, use this data
+  * time.  As a more firm rule, if it is going to be passed through MPI, then 
+  * *definitely* use this data type.
+  ***************************/
 
 #ifndef _PRECISION_H
 #define	_PRECISION_H
+
+//#define FP
 
 #ifdef FP
 
