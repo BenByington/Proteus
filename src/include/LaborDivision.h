@@ -17,21 +17,25 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   LaborDivision.h
- * Author: Ben
- *
- * Created on March 8, 2010, 3:57 PM
- */
-
 #ifndef _LABORDIVISION_H
 #define	_LABORDIVISION_H
 
 #include "Precision.h"
 
+/*
+ * These methods are used to initialize the code.  They are *only* to be called
+ * once, and only from the init method inside Environment.c.  The first method
+ * initializes the physical problem, the second initializes the communication
+ * groups to be used by MPI, and the last one initializes the domain 
+ * decompositions to be used.
+ */
 void lab_initGeometry();
 void lab_initGroups();
 void lab_initDistributions();
+
+/*
+ * Cleanup routine to be called from main when the program is ready to terminate
+ */
 void lab_finalize();
 
 

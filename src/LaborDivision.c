@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   LaborDivision.cpp
- * Author: Ben
- * 
- * Created on March 8, 2010, 3:57 PM
- */
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -31,27 +24,40 @@
 #include "LaborDivision.h"
 #include "Log.h"
 
+/*
+ * This routine is in charge of things related to the size of the problem.
+ * Most notably it calculates the number of wavemodes, which are derived from
+ * the resolution passed in from the configuration file
+ */
 void lab_initGeometry()
 {
     info("Initializing Problem Geometry\n");
 
+    //physical extent of each grid cell in length units
     dx = xmx / nx;
     dy = ymx / ny;
     dz = zmx / nz;
     trace("dx dy dz: %g %g %g\n", dx, dy, dz);
 
+    //An FFT produces the same number of wave modes as grid points.  However,
+    //because this is a real to complex fft, the first fft is only have the
+    //size because of the symmetries involved.
     nkx = nx;
-    nky = ny/2 + 1;
+    nky = ny/2 + 1;    //Integer division is intentional.
     nkz = nz;
     trace("nkx nky nkz: %d %d %d\n", nkx, nky, nkz);
 
+    //Due to the nature of the pseudo-spectral algorithm, it is necessary to
+    //eliminate the middle third of wave numbers (which are the smallest length
+    //scales) in order to remove aliasing effects from the calculation of
+    //nonlinear terms.
     dealias_kx.min = (nx/2) * 2 / 3 + 1;
     dealias_ky.min = (ny/2) * 2 / 3 + 1;
     dealias_kz.min = (nz/2) * 2 / 3 + 1;
     trace("Smallest dialised kx ky kz: %d %d %d\n", dealias_kx.min, dealias_ky.min, dealias_kz.min);
 
     dealias_kx.max = nkx  - dealias_kx.min;
-    dealias_ky.max = nky - 1;      //This is the first dimension transposed
+    dealias_ky.max = nky - 1;      //This is the first dimension FFT'ed
     dealias_kz.max = nkz  - dealias_kz.min;
     trace("Largest dialised kx ky kz: %d %d %d\n", dealias_kx.max, dealias_ky.max, dealias_kz.max);
 
@@ -60,6 +66,7 @@ void lab_initGeometry()
     dealias_kz.width = dealias_kz.max - dealias_kz.min + 1;
     trace("Width of dealiasing kx ky kz: %d %d %d\n", dealias_kx.width, dealias_ky.width, dealias_kz.width)
 
+    //stores the number of wavemodes that exist after de-aliasing
     ndkx = nkx - dealias_kx.width;
     ndky = nky - dealias_ky.width;
     ndkz = nkz - dealias_kz.width;
@@ -68,12 +75,34 @@ void lab_initGeometry()
     info("Problem Geometry Done\n");
 }
 
+
+/*
+ * Here we must set up the MPI communication groups.  There are 5:
+ * 
+ * 1. Compute nodes - a logical 2D array of processes excluding IO nodes.
+ * 2. Horizontal groups - Communication along rows of compute nodes.
+ * 3. Vertical groups - Communication along columns of compute nodes.
+ * 4. IO groups - 1 IO node and an integer number of compute rows.
+ * 5. File group - Between all IO nodes for parallel file writes.
+ * 
+ * Nodes are laid out in the following order:
+ * 1. The first nxm nodes are compute nodes, were there are n rows and m columns
+ * 2. The compute nodes are laid out in row major order
+ * 3. The last X nodes are io nodes, where there are 1 < X <= n io nodes.
+ * 4. Simple layout example:
+ *      c01 c02 c03 c04    I17
+ *      c05 c06 c07 c08    I18
+ *      c09 c10 c11 c12    I19
+ *      c13 c14 c15 c16    I20
+ */
 void lab_initGroups()
 {
     info("Initializing Communication Groups\n");
 
     int i;
 
+    //Divide rows (contiguously) among io nodes as evenly as possible.  
+    //If they cannot be divided evenly, the extra go to the first set.
     int div = vdiv / n_io_nodes;
     int rem = vdiv % n_io_nodes;
     io_layers = (indexes*)malloc(n_io_nodes*sizeof(indexes));
@@ -89,6 +118,8 @@ void lab_initGroups()
         trace("io_layers[%d].width = %d\n", i, io_layers[i].width);
     }
 
+    //we have widths, now explicitly record the first and last index for rows
+    //owned by each io node
     io_layers[0].min = 0;
     io_layers[0].max = io_layers[0].width-1;
     trace("io_layers[%d].min = %d\n", 0, io_layers[0].min);
@@ -123,10 +154,13 @@ void lab_initGroups()
         compute_node = 0;
         io_node = 1;
     }
+    //this is just in case someone set mpi to run with more nodes than were
+    //needed.  Its wasteful, but at least we can still run gracefully.
     else
     {
         compute_node = 0;
         io_node = 0;
+        warn("I am a useless node!  More nodes provided than were requested in parameters file!\n");
     }
 
     info("compute_node flag set to %d\n", compute_node);
@@ -137,6 +171,8 @@ void lab_initGroups()
     MPI_Comm_group(MPI_COMM_WORLD, &global);
 
     
+    //logical compute grid is set up so that rows are contiguous in the global
+    //group, and compute nodes come before the IO nodes.
     if(compute_node)
     {
         debug("Setting up hcomm and vcomm\n");
@@ -261,17 +297,18 @@ void lab_initGroups()
         //create the comm group for consolidating data to IO nodes
         int iotrip[2][3];
 
+        //We want the IO node to be root in this group.
         iotrip[0][0] = vdiv * hdiv + my_io_layer;
         iotrip[0][1] = vdiv * hdiv + my_io_layer;
         iotrip[0][2] = 1;
 
+        //Compute nodes next.
         iotrip[1][0] = hdiv * io_layers[my_io_layer].min;   //start index of our row
         iotrip[1][1] = hdiv * io_layers[my_io_layer].max + hdiv - 1;   //final index of our row
         iotrip[1][2] = 1;                                    //stride between elements of our row
         trace("Tripplets for group: %d %d %d %d %d %d\n", iotrip[0][0], iotrip[0][1], iotrip[0][2], iotrip[1][0], iotrip[1][1], iotrip[1][2])
 
         trace("Creating group\n");
-        //create groups for our horizontal and vertical associations
         MPI_Group iogroup;
         MPI_Group_range_incl(global, 2, iotrip, &iogroup);
 
@@ -294,18 +331,35 @@ void lab_initGroups()
 
 }
 
+/*
+ * Here we divide the computational domain among processors.  We define the
+ * mapping of our 2D logical grid of compute nodes to our 3D grid of data, so
+ * that each processor knows how it's local data arrays fit into the full 3D
+ * array
+ * 
+ * For all of these, we will give each processor a roughly equal division of
+ * contiguous data layers, and any dimensions that do not divide equally will
+ * distribute the remainder among the first layers.
+ * 
+ * Note:  Spatial arrays are stored as [z][x][y] with y in processor. 
+ *        Spectral arrays are stored as [kx][ky][kz] with kz in processor
+ */
 void lab_initDistributions()
 {
     info("Initializing Work Distributions\n");
     int i;
     int d,r;
 
+    //These all follow the same pattern so I'll only comment the first section
+    
+    //Find how many x go in each layer
     d = nx / hdiv;
     r = nx % hdiv;
     debug("Dividing x: d r = %d %d\n", d,r);
-    all_x = (indexes*)malloc((hdiv+1) * sizeof(indexes));
-    max_x = all_x + hdiv;
-    max_x->width = (r == 0 ? d : d+1);
+    all_x = (indexes*)malloc((hdiv+1) * sizeof(indexes)); 
+    max_x = all_x + hdiv;               //the max is stored in the final element
+    max_x->width = (r == 0 ? d : d+1);  //we only care about width for the max
+    //set widths for each layer.  First layers get any extra that exist.
     for(i = 0; i < r; i++)
     {
         all_x[i].width = d+1;
@@ -316,6 +370,7 @@ void lab_initDistributions()
         all_x[i].width = d;
         trace("all_x[%d].width = %d\n", i, all_x[i].width);
     }
+    //calculate min and max index for each layer in the logical global array.
     all_x[0].min = 0;
     all_x[0].max = all_x[0].width-1;
     trace("all_x[%d].min = %d\n", 0, all_x[0].min);
@@ -412,6 +467,8 @@ void lab_initDistributions()
         trace("all_kx[%d].max = %d\n", i, all_kx[i].max);
     }
 
+    //Set up an alias for our processors personal information inside the full
+    //array
     if(compute_node)
     {
         my_x = all_x + hrank;
@@ -421,10 +478,14 @@ void lab_initDistributions()
     }
 
     //TODO:  Find a better place for this.  It REALLY doesn't belong here...
+    //Find number of z layers in a current IO communcate group.  Note that a 
+    //given io group may contain multiple rows of compute nodes.
     nz_layers = 0;
     for(i = io_layers[my_io_layer].min; i <= io_layers[my_io_layer].max; i++)
         nz_layers += all_z[i].width;
 
+    //set up convenience variables telling us how large our main local arrays
+    //will be.
     if(compute_node)
     {
         spatialCount = my_x->width * my_z->width * ny;
@@ -436,6 +497,12 @@ void lab_initDistributions()
     info("Work Distrubution Done\n");
 }
 
+/*
+ * Take out the trash!
+ * 
+ * Calling this before computations are finished will of course make everything
+ * die a fiery death.
+ */
 void lab_finalize()
 {
     free(all_x);
