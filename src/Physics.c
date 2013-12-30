@@ -44,12 +44,21 @@ void eulerStep();
 void AB2Step();
 void AB3Step();
 
+/* 
+ * This is one of the few methods available externally.  Here we simply 
+ * calculate the timestep to use for this iteration, calculate the new batch
+ * of forces, and then propagate our variables forward through time.
+ */
 void iterate()
 {
     calcNewTimestep();
     calcForces();
     step();
 
+    /*
+     * This is an experimental and only partially functional attempt to recenter
+     * the domain upon a quantity of interest.  
+     */
     if(recentering != NOCENTERING)
     {
         displacement d;

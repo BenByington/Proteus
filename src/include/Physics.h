@@ -24,6 +24,22 @@
  * Created on April 15, 2010, 8:45 AM
  */
 
+/**********************
+ * The physics module is where the terms in the system of partial differential
+ * equations reside. Each equation currently has its own method for evaluating
+ * the force each timestep, and each term in the equations is capable of being
+ * enabled or disabled via parameters handed in through the configuration file.
+ * 
+ * Most of the methods here are not publicly accessible.  From the outside,
+ * one only needs to initialize and clean up this module, and iteration is
+ * controlled by a single method, very creatively named, iterate().
+ * 
+ * In addition to pure physics, this module is also in charge of calculating 
+ * the next time step, which lies on the border between physics and numerics,
+ * and also handles the time integration, which actually should be ported
+ * over to Numerics.c. 
+ **********************/
+
 #ifndef _PHYSICS_H
 #define	_PHYSICS_H
 
@@ -32,10 +48,16 @@
 
 void iterate();
 
+/*
+ * Standard init and cleanup routines.  Only call each once per execution.
+ */
 void initPhysics();
 void finalizePhysics();
 
-//functions that can be used to find displacement for field shifting
+/*
+ * functions that can be used to find displacement for field shifting if we wish
+ * to keep something of interest centered in the domain. Experimental!!!
+ */
 displacement displacementByCenter();
 
 #endif	/* _PHYSICS_H */
