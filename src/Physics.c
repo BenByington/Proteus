@@ -110,7 +110,7 @@ void iterate()
         }
     }
     
-    //make sure our u,v,w terms are up to date, both spectral and spatial
+    //make sure our state variables are up to date, both spectral and spatial
     if(momEquation)
     {
         recomposeSolenoidal(u->sol, u->vec);
@@ -133,26 +133,53 @@ void iterate()
     }
 }
 
+/*
+ * This routine calculates the dt to use for the next time step.  This dt is
+ * intentionally variable so that we can take as large of a time step as is
+ * stable, depending on the state of the system.  There are two types of
+ * guesses included in the routine below, both of which essentially boil down
+ * to making sure that no information travels further than one grid cell during
+ * an iteration.  To take larger steps one would need implicit methods.
+ * 
+ * 1.   The diffusion timescale in the x direction with a diffusion coefficient
+ *      of D is dx**2 / D.  For each diffusion term in the problem, the most 
+ *      restrictive dt is chosen.
+ * 
+ * 2.   For advection terms, we simply ensure that when using the peak 
+ *      velocities in the problem, a passive tracer particle cannot move from
+ *      one boundary to the next.
+ * 
+ * While there are sets of equations where these guidelines are actual stability
+ * criterion, in this more complicated set of equations they are simply good
+ * ideas.  As such, there is also a safety factor multiplied by all of our
+ * estimates in order to help maintain stability.  In the past, a safety factor
+ * of rougly 0.02 has been used, though it may be possible to safely raise this
+ * further.
+ */
 void calcNewTimestep()
 {
+    //Shuffle along our old dt's.  We need to record what the past two were
+    //for our AB3 routine.
     dt2 = dt1;
     dt1 = dt;
     dt = 0.01;  //just a trial.  This should be overwritten by at least one
                 //of the following cases.
 
+    PRECISION min_d2 = pow(fmin(fmin(dx,dy),dz),2);
+    
     if(momEquation && viscosity)
     {
-        dt = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) / Pr;
+        dt = safetyFactor * min_d2 / Pr;
     }
     if(tEquation && tDiff)
     {
-        PRECISION temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2);
+        PRECISION temp = safetyFactor * min_d2;
         if(temp < dt)
             dt = temp;
     }
     if(magEquation && magDiff)
     {
-        PRECISION temp = safetyFactor * pow(fmin(fmin(dx,dy),dz),2) * Pm / Pr;
+        PRECISION temp = safetyFactor * min_d2 * Pm / Pr;
         if(temp < dt)
             dt = temp;
     }
@@ -182,6 +209,8 @@ void calcNewTimestep()
 
         trace("Max VeL %g %g %g\n", maxVel[0], maxVel[1], maxVel[2]);
         
+        //Each direction may have a different restraint.  Take the most 
+        //restrictive!
         if(maxVel[0] != 0)
         {
             if(safetyFactor * dx / maxVel[0] < dt)
@@ -202,11 +231,16 @@ void calcNewTimestep()
 
 }
 
+/*
+ * This is just an entry point.  All this routine does is shuffle the force
+ * fields, so that we can save the last two forcing evaluations, and call
+ * the routines in charge of each individual equation.
+ */
 void calcForces()
 {
     debug("Calculating forces\n");
 
-    //cycle the force pointers
+    //cycle the force pointers for any active equation.
     complex PRECISION * temp;
     if(momEquation)
     {
@@ -262,6 +296,7 @@ void calcForces()
         T->force1 = temp;
     }
 
+    //real force calculations are in these methods.
     if(momEquation)
         calcMomentum();
 
@@ -274,6 +309,18 @@ void calcForces()
     debug("Forces done\n");
 }
 
+/*
+ * This routine is in charge of the momentum equation.  Virtually all
+ * of the terms can be enabled or disabled by parameters read in through the
+ * configuration file.  This equation has the form:
+ * 
+ * du/dt = div(alpha BB - uu - P) + (Ra T + B^2 / beta) hat z + Pr del^2 u + F_u 
+ * 
+ * Since the velocity field is incompressible, the pressure term doesn't matter
+ * and is eliminated by taking the curl of the right-hand side.  This is then
+ * decomposed into poloidal and toroidal components, which are then used in the
+ * time integration.
+ */
 void calcMomentum()
 {
     debug("Calculating momentum forces\n");
@@ -283,6 +330,10 @@ void calcMomentum()
 
     if(viscosity)
     {
+        //First argument is the field we take the laplacian of.
+        //Second argument is where the result is stored.
+        //The 0 in the third argument means we overwrite the destination array
+        //Pr is the coefficient for this diffusion term.
         laplacian(u->vec->x->spectral, rhs->x->spectral, 0, Pr);
         laplacian(u->vec->y->spectral, rhs->y->spectral, 0, Pr);
         laplacian(u->vec->z->spectral, rhs->z->spectral, 0, Pr);
@@ -296,6 +347,7 @@ void calcMomentum()
     }
     
     //Apply hyper diffusion to the boundaries
+    //This does not currently work and is disabled by default!
     if(sanitize)
     {
         killBoundaries(u->vec->x->spatial, rhs->x->spectral, 1, 100*Pr);
@@ -303,43 +355,28 @@ void calcMomentum()
         killBoundaries(u->vec->z->spatial, rhs->z->spectral, 1, 100*Pr);
     }
 
-    //static forcing is currently only in the u direction and a function of y and z
+    //static forcing is read in from a file and currently only in the u 
+    //direction as a function of y and z (to remove nonlinear advection)
     if(momStaticForcing)
     {
         complex PRECISION * xfield = rhs->x->spectral;
         complex PRECISION * ffield = forceField->spectral;
         index = 0;
-        for(i = 0; i < my_kx->width; i++)
+        for(i = 0; i < spectralCount; i++)
         {
-            for(j = 0; j < my_ky->width; j++)
-            {
-                for(k = 0; k < ndkz; k++)
-                {
-                    xfield[index] += ffield[index];
-                    index++;
-                }
-            }
+            xfield[i] += ffield[i];
         }
     }
 
+    //
     if(momTimeForcing)
     {
+        //Evaluate the force function at the current time.
         fillTimeField(temp1, MOMENTUM);
 
-        complex PRECISION * xfield = rhs->x->spectral;
-        complex PRECISION * yfield = rhs->y->spectral;
-        complex PRECISION * zfield = rhs->z->spectral;
-        complex PRECISION * xforce = temp1->x->spectral;
-        complex PRECISION * yforce = temp1->y->spectral;
-        complex PRECISION * zforce = temp1->z->spectral;
-
-        int i;
-        for(i = 0; i < spectralCount; i++)
-        {
-            xfield[i] += xforce[i];
-            yfield[i] += yforce[i];
-            zfield[i] += zforce[i];
-        }
+        plusEq(rhs->x->spectral, temp1->x->spectral);
+        plusEq(rhs->y->spectral, temp1->y->spectral);
+        plusEq(rhs->z->spectral, temp1->z->spectral);
     }
 
     
@@ -347,8 +384,8 @@ void calcMomentum()
     {
         p_field tense = temp1->x;
 
-	//Note here, because I already forgot once.  a 2 as the third
-	// parameter makes things behave as a -= operation!
+	    //Note here, because I already forgot once.  a 2 as the third
+	    //parameter makes things behave as a -= operation!
         multiply(u->vec->x->spatial, u->vec->x->spatial, tense->spatial);
         fftForward(tense);
         partialX(tense->spectral, rhs->x->spectral, 2);
@@ -383,6 +420,9 @@ void calcMomentum()
         p_field tense = temp1->x;
         p_vector lor = temp2;
 
+        //The third parameter as a 0 means we overwrite the destination array.
+        //The third parameter as a 1 means it behaves as a += operation.
+        
         multiply(B->vec->x->spatial, B->vec->x->spatial, tense->spatial);
         fftForward(tense);
         partialX(tense->spectral, lor->x->spectral, 0);
@@ -410,7 +450,7 @@ void calcMomentum()
         partialZ(tense->spectral, lor->y->spectral, 1);
         partialY(tense->spectral, lor->z->spectral, 1);
 
-        //TODO Find a routine to change to include this factor
+        //TODO: Find a routine to change to include this factor
         complex PRECISION * px = lor->x->spectral;
         complex PRECISION * py = lor->y->spectral;
         complex PRECISION * pz = lor->z->spectral;
@@ -446,27 +486,32 @@ void calcMomentum()
 
         PRECISION factor =  Ra * Pr;
         index = 0;
-        for(i = 0; i < my_kx->width; i++)
+        for(i = 0; i < spectralCount; i++)
         {
-            for(j = 0; j < my_ky->width; j++)
-            {
-                for(k = 0; k < ndkz; k++)
-                {
-                    zfield[index] += factor * tfield[index];
-
-                    index++;
-                }
-            }
+            zfield[i] += factor * tfield[i];
         }
     }
     
     //curl it so we can avoid dealing with the pressure term
     curl(rhs, temp1);
 
+    //The third parameter as a 1 means we store the result in the force
+    //arrays for u->sol.
     decomposeCurlSolenoidal(u->sol, temp1, 1);
     debug("Momentum forces done\n");
 }
 
+/*
+ * This routine is in charge of the magnetic induction equation.  Virtually all
+ * of the terms can be enabled or disabled by parameters read in through the
+ * configuration file.  This equation has the form:
+ * 
+ * dB/dt = curl(u cross B) + Pm/Pr*del^2 B + F_B 
+ * 
+ * Again we have an incompressible field, so after evaluating the force in 
+ * vector notation, we decompose it into poloidal and toroidal scalar fields for
+ * the time integration.
+ */
 void calcMag()
 {
     int i,j,k;
@@ -487,7 +532,8 @@ void calcMag()
         memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
     }
     
-    //Apply hyper diffusion to the boundaries
+    //Apply hyper diffusion to the boundaries.  Again, this does not currently
+    //work!
     if(sanitize)
     {
         killBoundaries(B->vec->x->spatial, rhs->x->spectral, 1, 100*Pr/Pm);
@@ -501,24 +547,25 @@ void calcMag()
         complex PRECISION * xfield = rhs->x->spectral;
         complex PRECISION * ffield = magForceField->spectral;
         index = 0;
-        for(i = 0; i < my_kx->width; i++)
+        for(i = 0; i < spectralCount; i++)
         {
-            for(j = 0; j < my_ky->width; j++)
-            {
-                for(k = 0; k < ndkz; k++)
-                {
-                    xfield[index] += ffield[index];
-                    index++;
-                }
-            }
+            xfield[i] += ffield[i];
         }
     }
     
+    //If we are doing the kinematic problem then the velocity field is
+    //specified ahead of time.  Note, this conflicts with the momentum equation
+    //being enabled.  If both momentum equation and kinematic are enabled, then
+    //we will still be doing all the work of both, but right here we will erase
+    //any work previously done on the momentum equation, at least insofar as
+    //the magnetic field is concerned.
     if(kinematic)
     {
         fillTimeField(u->vec, KINEMATIC);
     }
 
+    //This is really the induction term, not advection, though it does contain
+    //advection effects within it.
     if(magAdvect)
     {
         p_vector uxb = temp1;
@@ -545,13 +592,22 @@ void calcMag()
         plusEq(rhs->z->spectral, temp1->z->spectral);
     }
 
+    //The 1 means we store the result in the force vectors.
     decomposeSolenoidal(B->sol, rhs, 1);
     debug("Magnetic forces done\n");
 }
 
+/*
+ * This routine is in charge of the Temperature equation.  Virtually all
+ * of the terms can be enabled or disabled by parameters read in through the
+ * configuration file.  This equation has the form:
+ * 
+ * dT/dt = div(uT) + w hat z + del^2 T 
+ */
 void calcTemp()
 {
     complex PRECISION * forces = T->force1;
+    
     if(tDiff)
     {
         laplacian(T->spectral, forces, 0, 1.0);
@@ -593,6 +649,9 @@ void calcTemp()
     }
 }
 
+/*
+ * These are trash vectors that we will use for intermediate calculations.
+ */
 void initPhysics()
 {
     temp1 = newVector(SPEC | SPAT);
@@ -600,6 +659,9 @@ void initPhysics()
     rhs = newVector(SPEC);
 }
 
+/*
+ * Cleanup after the init method.
+ */
 void finalizePhysics()
 {
     deleteVector(&temp1);
@@ -607,6 +669,12 @@ void finalizePhysics()
     deleteVector(&rhs);
 }
 
+/*
+ * This is an entry point to the time integration.  When things are fully
+ * running we do a third level Adams-Bashforth scheme which requires knowing the
+ * past three forcing evaluations.  Since these are not available intitially,
+ * the first few steps are lower order while we ramp up.
+ */
 void step()
 {
     if(iteration == 1)
@@ -624,6 +692,15 @@ void step()
     elapsedTime += dt;
 }
 
+/*
+ * Horribly basic explicit euler step.  We just add dt * force to all of our 
+ * variables.
+ * 
+ * For divergence free variables, we do time integration on the poloidal and
+ * toroidal scalars, rather than on the vector itself.  This makes things
+ * slightly verbose, as we then have to manually track the horizontal means
+ * as well.
+ */
 void eulerStep()
 {
     int i;
@@ -704,6 +781,9 @@ void eulerStep()
     }
 }
 
+/*
+ * See AB3Step for more comments.
+ */
 void AB2Step()
 {
     int i;
@@ -797,6 +877,14 @@ void AB2Step()
     }
 }
 
+/*
+ * This is our main integration routine.  AB methods rely on knowing the past
+ * state of the system for multiple times in the past.  In essence, this method
+ * interpolates a curve between these last known points, and then performs an
+ * exact integration over this curve to proceed from the last time step to the
+ * next.  The fact that we have variable time steps complicates the derived 
+ * coefficients, as can be seen by c0, c1 and c2.
+ */
 void AB3Step()
 {
     int i;
@@ -902,6 +990,11 @@ void AB3Step()
 }
 
 //This function is only designed to work on 2D y-invariant simulations
+//It is also highly experimental and not fully functional.
+/*
+ * This routine calculates the center of mass of B2, in order to keep 
+ * concentrations of magnetic field centered in the domain.
+ */
 displacement displacementByCenter()
 {
     int i;

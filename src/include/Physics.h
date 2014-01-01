@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Physics.h
- * Author: Ben
- *
- * Created on April 15, 2010, 8:45 AM
- */
-
 /**********************
  * The physics module is where the terms in the system of partial differential
  * equations reside. Each equation currently has its own method for evaluating
