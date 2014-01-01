@@ -28,6 +28,12 @@
 #include <stdlib.h>
 #include <complex.h>
 
+/*
+ * This is a basic test of our poloida/toroidal decomposition.  We begin with
+ * a simple vector field with a known form, pass it through our routines, and
+ * make sure that the recompose method really is the inverse of the decompose
+ * method.
+ */
 void testPT()
 {
     int i,j,k,l;
@@ -38,7 +44,7 @@ void testPT()
     p_vector v = newVector(SPEC);
     p_vector v2 = newVector(SPEC);
 
-    //set the z field
+    //set the z field with a bunch of random spectral amplitudes
     for(i = 0; i < my_kx->width; i++)
     {
         for(j = 0; j < my_ky->width; j++)
@@ -55,7 +61,7 @@ void testPT()
         }
     }
     
-    //set the y field
+    //set the y direction in similar fashion, though there are constraints now
     index = 0;
     for(i = 0; i < my_kx->width; i++)
     {
@@ -108,7 +114,7 @@ void testPT()
                 {
                     v->x->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
                 }
-                //everything else must cancle with other fields
+                //everything else must cancel with other fields
                 else
                 {
                     v->x->spectral[index] = -(dkz * v->z->spectral[index] + dky * v->y->spectral[index])/dkx;
@@ -122,9 +128,12 @@ void testPT()
       //  fprintf(stderr,"%g %g\n", __real__ v->x->spectral[i], __imag__ v->x->spectral[i]);
 
 
+    //Decompose and recompose the vectors.  This should be a unitary transform,
+    //with v2 = v
     decomposeSolenoidal(s, v, 0);
     recomposeSolenoidal(s, v2);
 
+    //Loop through the arrays and ensure v = v2 to tolerable precision.
     index = 0;
     for(i = 0; i < my_kx->width; i++)
     {
@@ -150,6 +159,39 @@ void testPT()
 
 }
 
+/*
+ * We can write a given divergence free vector A as:
+ * 
+ * A = curl(T hat z) + curl(curl(P hat z)) + < Ax_m(z), Ay_m(z) , Az_m >
+ * 
+ * In component form this gives us:
+ * 
+ * curl(T hat z)       = < dy T, -dx T, 0 >
+ * curl(curl(P hat z)) = < dx dz P, dy dz P, -(dx dx + dy dy)P >
+ * A                   = < dx dz P + dy T, dy dz P - dx T, -(dx dx + dy dy)P >
+ * 
+ * This is a linear operator, so all of our wavemodes remain independent. It is
+ * easiest to separate the modes by their spatial dependencies, e.g.
+ * P = F1(x) + F2(y) + F3(z) + F4(x,y) + F5(x,z) + F6(y,z) + F7(x,y,z)
+ * 
+ * First we apply the inverse horizontal laplacian to the z component of our 
+ * vector A.  This uniquely determines all of P save for F3, which we chose to 
+ * set to zero.  
+ * 
+ * Finding the toroidal field happens in two stages.  Any dependence of T on
+ * *just* x will not appear in Ax, and similarly any dependence of T on *just*
+ * y will not appear in Ay.  So first we use Ax to solve for F2, F3 and F6,
+ * since they cannot be gleaned from Ay.  Ay is then used to find the remaining
+ * unknowns.
+ * 
+ * Note that it is possible, for example, to find F7 from either Ax or Ay.  If
+ * a properly divergence free vector was passed in, then either way will result
+ * in the same answer.  If a non-divergence free vector is passed in, then this
+ * decomposition will not be reversible. In practice this means that the small
+ * truncation errors inherent in any discretized code are projected onto a 
+ * nearby divergence free vector, and any large divergent components will result
+ * in unpredictable behavior. 
+ */
 void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
 {
     //TODO: do some code duplication that will allow us to avoid checking
@@ -173,6 +215,7 @@ void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
     complex PRECISION * xmean;
     complex PRECISION * ymean;
 
+    //Are we storing the result in the forcing fields or in the spectral fields.
     if(force)
     {
         ppol = s->poloidal->force1;
@@ -243,6 +286,19 @@ void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
 
 }
 
+/*
+ * Very similar to the previous function, save that now we are dealing with the
+ * curl of a divergence free vector and thus have:
+ * 
+ * curl(T hat z)       = < dy T, -dx T, 0 >
+ * curl(curl(P hat z)) = < dx dz P, dy dz P, -(dx dx + dy dy)P >
+ * A                   = < dx dz P + dy T, dy dz P - dx T, -(dx dx + dy dy)P >
+ * curl(A)             = < dx dz T - dy del^2 P, dy dz T + dx del^2 P, - (dx dx + dy dy) T> 
+ * 
+ * We proceed as before, save that the inverse derivatives are now slightly
+ * more complicated, and the wavenumbers that were previously used to find P are
+ * now used to find T, and vise versa. 
+ */
 void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
 {
     //TODO: do some code duplication that will allow us to avoid checking
@@ -318,6 +374,11 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
                     if(k==0)
                     {
                         //something curled wont have a box mean
+                        //Note: For most things this wont make a difference, but
+                        //this implicitly means that you can't chose a forcing 
+                        //that gives a variable a net acceleration upwards, 
+                        //though it is unclear why that would be wanted in a
+                        //periodic domain.
                         xmean[k] = 0;
                         ymean[k] = 0;
                         s->mean_z = 0;
@@ -346,6 +407,12 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
     }
 }
 
+/*
+ * Recomposing is much simpler than decomposing.  Here we apply derivatives and
+ * directly use:
+ * 
+ * A  = < dx dz P + dy T, dy dz P - dx T, -(dx dx + dy dy)P >
+ */
 void recomposeSolenoidal(p_solenoid s, p_vector v)
 {
     int i,j,k;
@@ -393,8 +460,12 @@ void recomposeSolenoidal(p_solenoid s, p_vector v)
     }
 }
 
-//TODO: Verify that it is safe to have both in and out reference the same
-//structure when in wont be needed any longer
+/*
+ * Here we just apply the laplacian, which is a linear operator so each wavemode
+ * is simply multiplied by (dx dx + dy dy + dz dz)*factor.  Since each wavemode
+ * is independent, this operation can safely be done in place and both out and
+ * in can point to the same memory as long as in is no longer needed. 
+ */
 extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
 {
     trace("Starting Laplacian\n");
@@ -425,8 +496,14 @@ extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, 
     trace("Finished Laplacian\n");
 }
 
-//TODO: Verify that it is safe to have both in and out reference the same
-//structure when in wont be needed any longer
+/*
+ * Experimental hyper diffusion used to try and remove field near the boundaries
+ * of the computation without breaking the divergence constraints on solenoidal
+ * variables.  The hyperdiffusion coefficient is 0 interior to the domain and
+ * smoothely ramps up to 'factor' (tanh) at the boundaries.  
+ * 
+ * DOES NOT WORK AS DESIRED
+ */
 extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
 {
     trace("Starting Hyper Diffusion\n");
@@ -439,6 +516,7 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
     complex PRECISION * spect = hyperWork->spectral;
     PRECISION * spat = hyperWork->spatial;
 
+    //Calculate hyper diffusion as if with a constant coefficient
     for(i = 0; i < my_kx->width; i++)
     {
         dkx = dxFactor(i);
@@ -450,12 +528,13 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
                 dkz = dzFactor(k);
                 deriv = (dkx * dkx + dky * dky + dkz * dkz);
                 spect[index] = factor * deriv *in[index];
-
                 index++;
             }
         }
     }
     
+    //Transform things to spatial and back, modulating things so that our
+    //force vanishes near the interior of the domain.
     fftBackward(hyperWork);
     for(i = 0; i < spatialCount; i++)
     {
@@ -473,8 +552,12 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
     trace("Finished Hyper Diffusion\n");
 }
 
-//TODO: Verify that it is safe to have both in and out reference the same
-//structure when in wont be needed any longer
+/*
+ * This method does not work. It is means to zero out the boundaries when the
+ * a domain shift moves data through the periodic boundaries, so that fluid can 
+ * rise through an infinite domain, but either the boundaries do not get
+ * sanitized or else numerical instabilities ruin everything.
+ */
 extern void killBoundaries(PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
 {
     trace("Starting Boundary Forcing\n");
@@ -500,6 +583,15 @@ extern void killBoundaries(PRECISION * in, complex PRECISION * out, int add, PRE
 
     trace("Finished Boundary Forcing\n");
 }
+
+/*
+ * Standard curl operation where:
+ * 
+ * Curl(A) = < dy Az - dz Ay, dz Ax - dx Az, dx Ay - dy Ax >
+ * 
+ * All wave modes are independent, so in and out can point to the same memory
+ * as long as we are allowed to overwrite.
+ */
 extern void curl(p_vector in, p_vector out)
 {
     int i,j,k;
@@ -533,6 +625,13 @@ extern void curl(p_vector in, p_vector out)
     }
 }
 
+/*
+ * Standard gradient of a scalar field where:
+ * 
+ * grad(A) = < dx A, dy A, dz A >
+ * 
+ * Again in and out can point to the same memory locations.
+ */
 extern void gradient(p_field in, p_vector out)
 {
     int i,j,k;
@@ -564,6 +663,9 @@ extern void gradient(p_field in, p_vector out)
     }
 }
 
+/*
+ * A dot B = Ax Bx + Ay By + Az Bz
+ */
 extern void dotProduct(p_vector one, p_vector two, p_field out)
 {
     int i;
@@ -584,6 +686,9 @@ extern void dotProduct(p_vector one, p_vector two, p_field out)
     }
 }
 
+/*
+ * A cross B = < Ay Bz - Az By, Az Bx - Ax Bz, Ax By - Ay Bx >
+ */
 extern void crossProduct(p_vector one, p_vector two, p_vector out)
 {
     int i;
@@ -606,6 +711,9 @@ extern void crossProduct(p_vector one, p_vector two, p_vector out)
     }
 }
 
+/*
+ * div(a) = dx Ax + dy Ay + dz Az
+ */
 extern void divergence(p_vector in, p_field out)
 {
     int i,j,k;
@@ -637,6 +745,14 @@ extern void divergence(p_vector in, p_field out)
 
 }
 
+/*
+ * Applied differentiation operation to a complex field, which reduces to
+ * simply multiplying each element by its corresponding wavenyumber.
+ * 
+ * arithmetic = 0  : overwrite
+ * arithmetic = 1  : +=
+ * arithmetic = 2  : -=
+ */
 extern void partialX(complex PRECISION * in, complex PRECISION * out, int arithmetic)
 {
     int i,j,k;
@@ -694,6 +810,14 @@ extern void partialX(complex PRECISION * in, complex PRECISION * out, int arithm
     }
 }
 
+/*
+ * Applied differentiation operation to a complex field, which reduces to
+ * simply multiplying each element by its corresponding wavenyumber.
+ * 
+ * arithmetic = 0  : overwrite
+ * arithmetic = 1  : +=
+ * arithmetic = 2  : -=
+ */
 extern void partialY(complex PRECISION * in, complex PRECISION * out, int arithmetic)
 {
     int i,j,k;
@@ -751,6 +875,14 @@ extern void partialY(complex PRECISION * in, complex PRECISION * out, int arithm
     }
 }
 
+/*
+ * Applied differentiation operation to a complex field, which reduces to
+ * simply multiplying each element by its corresponding wavenyumber.
+ * 
+ * arithmetic = 0  : overwrite
+ * arithmetic = 1  : +=
+ * arithmetic = 2  : -=
+ */
 extern void partialZ(complex PRECISION * in, complex PRECISION * out, int arithmetic)
 {
     int i,j,k;
@@ -808,6 +940,10 @@ extern void partialZ(complex PRECISION * in, complex PRECISION * out, int arithm
     }
 }
 
+/*
+ * Basic multiplication.  Can only be applied to fields in spatial coordinates
+ * (no wave modes!)
+ */
 extern void multiply(PRECISION * one, PRECISION * two, PRECISION * out)
 {
     int i;
@@ -817,6 +953,9 @@ extern void multiply(PRECISION * one, PRECISION * two, PRECISION * out)
     }
 }
 
+/*
+ * Basic addition routine for two complex fields.
+ */
 extern void plusEq(complex PRECISION * one, complex PRECISION * two)
 {
     int i;
@@ -826,6 +965,9 @@ extern void plusEq(complex PRECISION * one, complex PRECISION * two)
     }
 }
 
+/*
+ * Basic subtraction routine for two complex fields.
+ */
 extern void minusEq(complex PRECISION * one, complex PRECISION * two)
 {
 
@@ -837,6 +979,23 @@ extern void minusEq(complex PRECISION * one, complex PRECISION * two)
 }
 
 #include "LogInfo.h"
+/*
+ * To understand the following three routines, one must understand the data 
+ * layout from an FFT operation.  For a basic 1D FFT, the first index of the 
+ * resultant will be the mean, and each element afterwards can be thought of as
+ * one wavenumber higher.  
+ * 
+ * However, due to aliasing there is an ambiguity, so if
+ * there are N elements into the vector, index 7 can be thought of as wavenumber
+ * 7, N+7, 2N+7, etc.  Since it makes sense from a physical standpoint to use
+ * the smallest wavenumber modes, this means we will use index 7 as wavenumber
+ * 7, but also means we will use index N-7 as wavenumber -7.  
+ * 
+ * The consequence of this is that our highest wavenumbers are actually 
+ * stored in the center of the array.  So we always have to figure out which
+ * half of the array we are in, and our current wavenumber is really the 
+ * distance to the closest edge, not the distance to index 0.
+ */
 extern complex PRECISION dxFactor(int i)
 {
     int k = i + my_kx->min;
@@ -871,6 +1030,12 @@ extern complex PRECISION dzFactor(int i)
     return I * 2 * PI * k / zmx;
 }
 
+/*
+ * This routine shifts a given field f by a given displacement d.  This is done
+ * by changing the phase of each wavemode appropriately.  This method works, but
+ * is somewhat useless without the boundary sanitization routines that do not
+ * currently work.
+ */
 extern void shiftField(displacement d, complex PRECISION * f)
 {
     int i,j,k;
