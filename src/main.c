@@ -132,6 +132,7 @@ int execute(char * propLoc)
         finalizeState();
         com_finalize();
     }
+    finalizeIO();
     lab_finalize();
 
     MPI_Barrier(MPI_COMM_WORLD);

@@ -38,6 +38,11 @@ PRECISION * scalarData;
 PRECISION * piScalarData;
 int numScalar;
 
+/*
+ * This is a very rudimentary test routine to ensure that we can write data
+ * to disk and read it back in without corruption.  We just create three simple
+ * data fields with simple spatial dependencies, and write/read them.
+ */
 void testIO()
 {
     int i,j,k;
@@ -58,6 +63,9 @@ void testIO()
         allocateSpatial(f2+1);
         allocateSpatial(f2+2);
 
+        //f[0](x,y,z) = x
+        //f[1](x,y,z) = y
+        //f[2](x,y,z) = z
         for(i = 0; i < my_z->width; i++)
         {
             for(j = 0; j < my_x->width; j++)
@@ -125,6 +133,34 @@ void testIO()
     info("IO Test complete\n");
 }
 
+/*
+ * There are three stages of execution in this routine.  
+ * 
+ * 1.   Data in an IO group is gathered together.  An IO group consists of an
+ *      integer number of compute node layers and a single IO node, and the IO
+ *      node is where the data is gathered.
+ * 
+ * 2.   The data is transposed to have the desired layout in memory.  Data on
+ *      a compute node is stored as [z][x][y].  After gathering to the IO node,
+ *      the ordering of compute nodes results in a data layout of 
+ *      [l][h][z][y][x] where l iterates over layers and h iterates over rows.
+ *      We wish to transpose it to be [z][y][x], both because this is a more
+ *      intuitive ordering for data during analysis, and because z is the final
+ *      remaining distributed dimension, and a raw combination of the data in
+ *      all the IO nodes will now result in a well ordered layout.
+ * 
+ * 3.   The set of all IO nodes perform a parallel write to disk, resulting in
+ *      a single file with an expected ordering.
+ * 
+ *      Note:  The reason compute nodes store data as [z][x][y] instead of 
+ *             [z][y][x] is so that after an FFT operation (and it's required
+ *             transposed) spectral modes are stored in [kz][ky][kx].  This 
+ *             is a simpler ordering to remember, and in the code we are far
+ *             more likely to iterate over individual dimensions in spectral
+ *             coordinates than spatial ones. IO happens rarely enough that
+ *             the cost of the extra transpose required here is probably
+ *             negligible, though this should be verified.
+ */
 void writeSpatial(field * f, char * name)
 {
     int i,j,k,l,m;
@@ -133,6 +169,7 @@ void writeSpatial(field * f, char * name)
     int sndcnt = 0;
     PRECISION * rcvbuff = 0;
     PRECISION * sndbuff = 0;
+    
     //the extra +1 just gives a little extra room to do an extra loop below.
     //The extra element means nothing, it just makes the code a hair easier
     //to write
@@ -154,10 +191,18 @@ void writeSpatial(field * f, char * name)
         sndbuff = (PRECISION *)malloc(nx * ny * nz_layers * sizeof(PRECISION));
         trace("Total local data will be %d PRECISIONs\n", nx*ny*nz_layers);
 
+        //We need to calculate the starting index that data from each compute
+        //processor will begin at in our array.
+        //Note:  Since our own IO node is not contributing any data, both our
+        //       IO node and the first compute node get to start at a 
+        //       displacement of 0.
         displs[0] = 0;
         displs[1] = 0;
         rcvcounts[0] = 0;
 
+        //staggered loop.  We calculate how much data we receive from one
+        //processor at the same time we calculate where the data for the
+        //next processor will begin storage.
         int * pidspls = displs + 2;
         int * pircvcounts = rcvcounts+1;
         for(i = io_layers[my_io_layer].min; i <= io_layers[my_io_layer].max; i++)
@@ -210,15 +255,22 @@ void writeSpatial(field * f, char * name)
     MPI_File fh;
     MPI_File_open(fcomm, name, MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
     debug("MPI File opened successfully\n");
+    
+    //Calculate displacements for each IO processor into the full file.
     int disp = 0;
+    
+    //loop over each IO processor before us
     for(i = 0; i < my_io_layer; i++)
     {
+        //calculate how many layers those IO processors contribute
         for(j = io_layers[i].min; j <= io_layers[i].max; j++)
         {
             disp += all_z[j].width;
         }
     }
+    //Convert layers into actual data size.
     disp *= nx * ny * sizeof(PRECISION);
+    
     trace("Our view starts at element %d\n", disp);
     trace("Setting view...\n");
     MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, "native", MPI_INFO_NULL);
@@ -233,6 +285,10 @@ void writeSpatial(field * f, char * name)
 
 }
 
+/*
+ * This function is just the inverse of writeSpatial.  See comments for above
+ * function.
+ */
 void readSpatial(field * f, char * name)
 {
     int i,j,k,l,m;
@@ -240,12 +296,6 @@ void readSpatial(field * f, char * name)
 
     PRECISION * sndbuff = 0;
     PRECISION * rcvbuff = 0;
-
-    //check if there is an info file telling us our starting time
-    if(grank == 0)
-    {
-
-    }
 
     if(io_node)
     {
@@ -348,6 +398,14 @@ void readSpatial(field * f, char * name)
     debug("Reading from file done\n");
 }
 
+/*
+ * There really are only two things we need to initialize.
+ * 
+ * 1.   How many scalars there will be, which depends on if magnetic fields
+ *      are included in the calculation or not.
+ * 2.   Set up the array that will hold the scalar values between outputs to
+ *      disk.
+ */
 void initIO()
 {
     if(magEquation)
@@ -381,6 +439,30 @@ void initIO()
     }
 }
 
+/*
+ * Clean up the memory that the init method allocated.
+ */
+void finalizeIO()
+{
+    if(crank == 0)
+    {
+        free(scalarData);
+    }
+}
+
+/*
+ * This is the basic entry point for most IO operations.  It should be called
+ * once per iteration of the code, and it will determine which types of IO
+ * IO should be performed.  The different types of IO are:
+ * 
+ * 1.   Spatial dumps
+ * 2.   Checkpoint dumps
+ * 3.   Scalar reductions
+ * 4.   Status file updates
+ * 
+ * The frequency of each of these is controlled by parameters read in from the
+ * configuration file.
+ */
 void performOutput()
 {
 
@@ -395,6 +477,37 @@ void performOutput()
         }
     }
 
+    /*
+     * The scalars are single values that result from a global operation on the
+     * domain.  The scalars are:
+     * 
+     * [0]  --  iteration
+     * [1]  --  elapsed time
+     * [2]  --  min  u
+     * [3]  --  max  u
+     * [4]  --  mean u
+     * [5]  --  min  v
+     * [6]  --  max  v
+     * [7]  --  mean v
+     * [8]  --  min  w
+     * [9]  --  max  w
+     * [10] --  mean w
+     * [11] --  mean kinetic energy density
+     * [12] --  max kinetic energy density
+     * 
+     * ------------ Only present if magnetic fields are included:
+     * [13] --  min  Bx
+     * [14] --  max  Bx
+     * [15] --  mean Bx
+     * [16] --  min  By
+     * [17] --  max  By
+     * [18] --  mean By
+     * [19] --  min  Bz
+     * [20] --  max  Bz
+     * [21] --  mean Bz
+     * [22] --  mean magnetic energy density
+     * [23] --  max  magnetic energy density* 
+     */
     if(compute_node)
     {
         if(iteration % scalarRate == 0)
@@ -407,6 +520,11 @@ void performOutput()
             PRECISION * dataz = u->vec->z->spatial;
             PRECISION temp;
 
+            //I feel like there should be an MPI operation that doesn't require
+            //me to manually take a local min/max/etc, but I'm failing to find
+            //it.  The general MPI_Reduce does an element by element reduction,
+            //which is not what we want.
+            
             local[0] = iteration;
             local[1] = elapsedTime;
             local[2] = datax[0];
@@ -501,6 +619,9 @@ void performOutput()
                 MPI_Reduce(local+23, piScalarData+23, 1, MPI_PRECISION, MPI_MAX, 0, ccomm);
             }
             free(local);
+            
+            //Either store our data for later output, or perform the write to 
+            //file
             if(crank == 0)
             {
                 //make the means means and not sums
@@ -517,6 +638,8 @@ void performOutput()
                 scalarCount++;
                 piScalarData += numScalar;
 
+                //no reason to send this small amount of data to an IO node.
+                //our root compute node will just quickly take care of this.
                 if(scalarCount >= scalarPerF)
                 {
                     char fileName[100];
@@ -532,16 +655,19 @@ void performOutput()
             }
         }
     }
+    
     //Time for spatial file output?
     if(iteration % spatialRate == 0)
     {
         char * name = (char *)malloc(100);
+        
         //create the directory
         if(crank == 0)
         {
             sprintf(name, "Spatial/%08d",iteration);
             mkdir(name, S_IRWXU);
 
+            //Record the simulation time that this snapshot belongs to
             sprintf(name, "Spatial/%08d/info",iteration);
             FILE * info;
             info = fopen(name, "w");
@@ -630,6 +756,26 @@ void performOutput()
 
 #include "LogTrace.h"
 
+/*
+ * This routine is virtually a memory dump.  There is no reason to gather data
+ * to IO nodes, we are just going to open up files for each processor and dump
+ * our section of the global array there.  We are also going to dump all of the
+ * stored forcing evaluations.  The design is that any simulation that begins
+ * from one of these checkpoints will be identical to a simulation that did
+ * not stop in the first place.
+ * 
+ * Since this program is capable of terminating at any point in time, we take 
+ * measures to ensure that the program does not terminate DURING a checkpoint
+ * write and creating data corruption.  This is done by having two separate
+ * checkpoint directories.  We alternate writes between these two directories,
+ * and the final thing written during an output is a single file indicating 
+ * that IO is done.  This way we always have a pristine checkpoint file that
+ * we can restart from, regardless of when the program happens to terminate.
+ * 
+ * TODO: This folder gets very cluttered, especially with a lot of processors.
+ *       Things should be changed so each processor gets one file, rather than
+ *       one file per array being saved.
+ */
 void writeCheckpoint()
 {
     FILE * out;
@@ -813,6 +959,20 @@ void writeCheckpoint()
         checkDir = 0;
 }
 
+/*
+ * This is largely the inverse of the write method.  In order for this to work, 
+ * the program MUST be run with the same number of compute nodes as previously
+ * ran. 
+ * 
+ * The only extra bit is we here have to determine which checkpoint file is the
+ * one to start from.  An earlier IO method ensures that the two directories 
+ * exist and have a status file.  We first read in both status files, and the
+ * the one with the latest simulation time is the newest and the one we will
+ * begin from.  Since this status file is the last thing written and it is
+ * written by a single processor after ALL of the other processors have finished
+ * dumping data, we are guaranteed to not be reading in a checkpoint that was
+ * corrupted because the program terminated while actually writing a checkpoint.
+ */
 void readCheckpoint()
 {
     if(grank == 0)
@@ -859,6 +1019,7 @@ void readCheckpoint()
 
     }
 
+    //Let all processors know where we currently are in this simulation.
     MPI_Bcast(&iteration, 1, MPI_INTEGER, 0, MPI_COMM_WORLD);
     MPI_Bcast(&elapsedTime, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);
     MPI_Bcast(&dt, 1, MPI_PRECISION, 0, MPI_COMM_WORLD);

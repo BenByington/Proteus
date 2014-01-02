@@ -17,13 +17,6 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   IO.h
- * Author: Ben
- *
- * Created on March 31, 2010, 3:19 PM
- */
-
 #ifndef _IO_H
 #define	_IO_H
 
@@ -31,15 +24,53 @@
 #include <string.h>
 #include "Field.h"
 
+/*
+ * Basic test routine to make sure we can write a file and read it back in
+ * without corruption.
+ */
 void testIO();
+
+/*
+ * Takes care of some background initialization required for the IO functions.
+ * Should only be called once, at the start of execution.
+ */
 void initIO();
 
+/*
+ * Cleans up after the initIO() function.  Should be called once at program
+ * termination
+ */
+void finalizeIO();
+ 
+/*
+ * Read-write bulk outputs.  These functions behaves differently depending on if
+ * it is called by an IO node or a Compute node. 
+ * 
+ * For a compute node:
+ *   f    :  Field we wish to write to file
+ *   name :  <ignored>
+ * For an IO node:
+ *   f    :  <ignored>
+ *   name :  path to the file we wish to write, relative to the directory that
+ *           the simulation is running in.
+ * 
+ * Note: This routine involves MPI collectives, so EVERY processor must call it 
+ *       in order to avoid deadlocks. 
+ */
 void writeSpatial(p_field f, char * name);
 void readSpatial(p_field f, char * name);
 
+/*
+ * Read-write checkpoints.  The location is determined automatically, and only
+ * compute nodes should call these routines.
+ */
 void writeCheckpoint();
 void readCheckpoint();
 
+/*
+ * Entry point for IO operations.  Call this routine once per iteration, and
+ * it will automatically perform the various types of IO operations as needed.
+ */
 void performOutput();
 
 #endif	/* _IO_H */
