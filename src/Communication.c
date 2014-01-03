@@ -17,11 +17,65 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-/* 
- * File:   Communication.cpp
- * Author: Ben
+/*
+ * This file represents the FFT workhorse that is the basis for this pseudo-
+ * spectral algorithm.  It is essentially because we take derivatives in
+ * spectral coordinates, multiply nonlinear terms in spatial coordinates, and
+ * use FFTs to move between the two.  There are a number of design choices that
+ * have been made, which result in the code below.
  * 
- * Created on February 18, 2010, 1:15 PM
+ * 1.   The FFTs are performed by the FFTW library.  This has the benefit of 
+ *      giving us access to a very portable, robust and optimized FFT library.
+ *      However, this may prove a hindrance if this code is ported to 
+ *      accelerators that use proprietary FFT routines.  
+ * 
+ * 2.   There is a fundamental choice between doing a distributed FFT algorithm,
+ *      and doing FFTs for individual dimensions local in processor and doing 
+ *      global transpose operations to change which dimension is contained in
+ *      a single processor.  This code takes the latter route.  When this was
+ *      originally written, FFTW did have an MPI version, but it was being
+ *      phased out because it was apparently performing poorly.  As of Jan 2014
+ *      however it seems to be back, so it may be worth re-evaluating this 
+ *      decision when one gets the time.
+ * 
+ * 3.   We must have at least one dimension distributed to make use of MPI
+ *      parallelism, but we can chose if we have a slab (2 dimensions contained
+ *      in processor) or pencil (one dimension contained in processor) layout.
+ *      The pencil layout requires two transpose steps instead of one, but those
+ *      transpose steps are within horizontal or vertical compute layers rather
+ *      than using a full all-to-all, and with two distributed dimensions we can
+ *      scale to larger problems.  
+ * 
+ * In addition to those design choices, there are two additional items worth
+ * knowing to understand the approach taken below:
+ * 
+ * 4.   Pseudo-spectral methods require a de-aliasing step.  Anytime you
+ *      multiply two wave modes together, say modes m and n, the result will be
+ *      in modes m+n and m-n.  This means that if you have N modes, and multiply 
+ *      mode N by itself, you have contributions to mode 2N which is not
+ *      explicitly represented by our discretization.  Additionally, due to
+ *      the aliasing that occurs with high wave number, the energy that should
+ *      have been deposited in 2N is deposited in other modes where they belong.
+ *      To avoid this problem, every time an FFT is taken, the highest 1/3 of
+ *      wave modes are discarded.  Any energy that is deposited into these
+ *      de-aliased modes is lost -- just another part of the truncation error
+ *      involved in any numerical method -- but now calculating the nonlinear
+ *      terms no longer deposits energy into unphysical wave modes.  
+ * 
+ *      Punch line for the above information: After every FFT we are going to
+ *      repack our arrays, discarding the 1/3 highest wave modes, which are 
+ *      actually stored in the middle third of the array.
+ * 
+ * 5.   We have to transpose the data to change which dimension is contiguous
+ *      in memory for the next FFTW operation, but we have a choice as to how
+ *      that transpose takes place.  Regardless we have to shuffle data between
+ *      processors, but we can either transpose the local memory manually, or 
+ *      else use a more complicated FFTW interface and let the libraries there
+ *      take care of it.  We actually here have two implementations, doing it
+ *      both ways.  There is an optional measure routine to see which method
+ *      is faster for a given machine, though currently it is disabled.  I don't
+ *      believe it makes much difference which method is chosen, though this is
+ *      something that needs to be verified explicitly.
  */
 
 #include "Communication.h"
@@ -73,6 +127,11 @@ void repeatfft2(int count);
 
 void generateFunc(int * ks, int len, PRECISION * out);
 
+/*
+ * Both types of FFT implemented here have a separate init routine.  If we are
+ * to measure, then try them both and leave the best one active.  If not, then
+ * call whichever init routine has been specified.
+ */
 void com_init(int measure)
 {
     int test = 1;
@@ -673,6 +732,12 @@ void fft_tpb3(complex PRECISION * in, complex PRECISION * out)
     }
 }
 
+/*
+ * This is the alternate FFT formulation.  Here we are still responsible for
+ * shuffling data between processors and repacking the de-aliased arrays, but
+ * we don't have to manually transpose anything, and things can be thought of
+ * as contiguous memory copies.
+ */
 void initfft2()
 {
     PRECISION * real;
