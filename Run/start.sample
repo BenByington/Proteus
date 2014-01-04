@@ -1,10 +1,10 @@
 #!/bin/sh
 #PBS -N test
-#PBS -u bbyingto
+#PBS -u change_username
 #PBS -r n
 #PBS -j oe
 #PBS -m be
-#PBS -M bbyingto@soe.ucsc.edu
+#PBS -M change_email
 #PBS -V
 #PBS -l nodes=1:ppn=9
 #PBS -l walltime=24:00:00
