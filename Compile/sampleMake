@@ -1,25 +1,27 @@
 .SUFFIXES: .c .o .cpp
 
-LIBS =  -lfftw3 -lfftw3f
+LIBS =  -L/Users/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
+-I/Users/bbyingto/fftw/include
 
-cc = cc 
-CC = CC
+INCL=../src/include/
+
+cc = mpicc 
+CC = mpic++
 
 FASTSSE= -O3
 
- CCFLAGS = $(FASTSSE)  -I../src/include
+  CCFLAGS = $(FASTSSE)  -I../src/include -I/Users/bbyingto/fftw/include
 # Debug flags
-#CCFLAGS =  -g  -I./src
+# CCFLAGS =  -g  -I../src/include -I/cse/grads/bbyingto/fftw/include
 
 SRC = ../src
-INCL = ../src/include
 
 OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
-        TimeFunctions.o FFTWrapper.o 
+        TimeFunctions.o FFTWrapper.o
 
-imhd: $(OBJS) 
-	$(CC) $(CCFLAGS) -o imhd $(OBJS) $(LIBS) 
+proteus: $(OBJS) 
+	$(CC) $(CCFLAGS) -o proteus $(OBJS) $(LIBS) 
 
 TimeFunctions.o: ${SRC}/TimeFunctions.c
 	$(cc) $(CCFLAGS) -c $(SRC)/TimeFunctions.c
@@ -59,11 +61,11 @@ Properties.o: ${SRC}/Properties.cpp
 
 State.o: ${SRC}/State.c
 	$(cc) $(CCFLAGS) -c $(SRC)/State.c
-
-FFTWrapper.o:  ${SRC}/FFTWrapper.c
-	$(cc)  $(CCFLAGS) -c $(SRC)/FFTWrapper.c
 	
-Copmunication.o : $(INCL)/Communication.h
+FFTWrapper.o: ${SRC}/FFTWrapper.c
+	${cc} $(CCFLAGS) -c $(SRC)/FFTWrapper.c
+
+Communication.o : $(INCL)/Communication.h
 Communication.o : $(INCL)/FFTWrapper.h
 Communication.o : $(INCL)/Environment.h
 Communication.o : $(INCL)/Log.h
