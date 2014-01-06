@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+using namespace std;
+
 //These are "private" and never called outside this file.
 void startScratch();
 void startSpatial();
@@ -259,21 +261,21 @@ void startScratch()
     info("Code is starting from scratch\n");
 
     memset(T->spatial, 0, spatialCount * sizeof(PRECISION));
-    memset(T->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(T->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
 
     memset(B->vec->x->spatial, 0, spatialCount * sizeof(PRECISION));
     memset(B->vec->y->spatial, 0, spatialCount * sizeof(PRECISION));
     memset(B->vec->z->spatial, 0, spatialCount * sizeof(PRECISION));
 
-    memset(B->vec->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
-    memset(B->vec->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
-    memset(B->vec->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(B->vec->x->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+    memset(B->vec->y->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+    memset(B->vec->z->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
 
-    memset(B->sol->poloidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
-    memset(B->sol->toroidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(B->sol->poloidal->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+    memset(B->sol->toroidal->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
 
-    memset(B->sol->mean_x, 0, ndkz * sizeof(complex PRECISION));
-    memset(B->sol->mean_y, 0, ndkz * sizeof(complex PRECISION));
+    memset(B->sol->mean_x, 0, ndkz * sizeof(complex<PRECISION>));
+    memset(B->sol->mean_y, 0, ndkz * sizeof(complex<PRECISION>));
 
     B->sol->mean_z = 0;
 
@@ -281,15 +283,15 @@ void startScratch()
     memset(u->vec->y->spatial, 0, spatialCount * sizeof(PRECISION));
     memset(u->vec->z->spatial, 0, spatialCount * sizeof(PRECISION));
 
-    memset(u->vec->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
-    memset(u->vec->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
-    memset(u->vec->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(u->vec->x->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+    memset(u->vec->y->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+    memset(u->vec->z->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
 
-    memset(u->sol->poloidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
-    memset(u->sol->toroidal->spectral, 0, spectralCount * sizeof(complex PRECISION));
+    memset(u->sol->poloidal->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+    memset(u->sol->toroidal->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
 
-    memset(u->sol->mean_x, 0, ndkz * sizeof(complex PRECISION));
-    memset(u->sol->mean_y, 0, ndkz * sizeof(complex PRECISION));
+    memset(u->sol->mean_x, 0, ndkz * sizeof(complex<PRECISION>));
+    memset(u->sol->mean_y, 0, ndkz * sizeof(complex<PRECISION>));
 
     u->sol->mean_z = 0;
 }

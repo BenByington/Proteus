@@ -26,7 +26,8 @@
 #include <mpi.h>
 #include <math.h>
 #include <stdlib.h>
-#include <complex.h>
+
+using namespace std;
 
 /*
  * This is a basic test of our poloida/toroidal decomposition.  We begin with
@@ -39,7 +40,7 @@ void testPT()
     int i,j,k,l;
     int index = 0;
     PRECISION ampM = 3;
-    complex PRECISION dkx,dky,dkz;
+    complex<PRECISION> dkx,dky,dkz;
     p_solenoid s = newSolenoid();
     p_vector v = newVector(SPEC);
     p_vector v2 = newVector(SPEC);
@@ -55,7 +56,7 @@ void testPT()
                 if(i + j + grank == 0)
                     v->z->spectral[index] = 0;
                 else
-                    v->z->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
+                    v->z->spectral[index] = ampM * complex<PRECISION>(((PRECISION)rand()) / RAND_MAX, ((PRECISION)rand()) / RAND_MAX);
                 index++;
             }
         }
@@ -86,7 +87,7 @@ void testPT()
                 //we are free to chose everything else.
                 else
                 {
-                    v->y->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
+                    v->y->spectral[index] = ampM * complex<PRECISION>(((PRECISION)rand()) / RAND_MAX, ((PRECISION)rand()) / RAND_MAX);
                 }
                 index++;
             }
@@ -112,7 +113,7 @@ void testPT()
                 //we can chose any field of y and z
                 else if(i + vrank == 0)
                 {
-                    v->x->spectral[index] = ampM * (((PRECISION)rand()) / RAND_MAX + I * ((PRECISION)rand()) / RAND_MAX);
+                    v->x->spectral[index] = ampM * complex<PRECISION>(((PRECISION)rand()) / RAND_MAX, ((PRECISION)rand()) / RAND_MAX);
                 }
                 //everything else must cancel with other fields
                 else
@@ -141,15 +142,15 @@ void testPT()
         {
             for(k = 0; k < ndkz; k++)
             {
-                PRECISION diff = cabs(v2->z->spectral[index] - v->z->spectral[index]);
+                PRECISION diff = abs(v2->z->spectral[index] - v->z->spectral[index]);
                 if(diff > 1e-10)
                     fprintf(stderr,"diffz: %d %d %d %d %g\n", grank, i + my_kx->min, j + my_ky->min, k, diff);
 
-                diff = cabs(v2->y->spectral[index] - v->y->spectral[index]);
+                diff = abs(v2->y->spectral[index] - v->y->spectral[index]);
                 if(diff > 1e-10)
                     fprintf(stderr,"diffy: %d %d %d %d %g\n", grank, i + my_kx->min, j + my_ky->min, k, diff);
 
-                diff = cabs(v2->x->spectral[index] - v->x->spectral[index]);
+                diff = abs(v2->x->spectral[index] - v->x->spectral[index]);
                 if(diff > 1e-10)
                     fprintf(stderr,"diffx: %d %d %d %d %g\n", grank, i + my_kx->min, j + my_ky->min, k, diff);
                 index++;
@@ -206,14 +207,14 @@ void decomposeSolenoidal(p_solenoid s, p_vector v, int force)
 
     debug("Calculating Poloidal field\n");
 
-    complex PRECISION dkx,dky,dkz;
-    complex PRECISION * pz = v->z->spectral;
-    complex PRECISION * py = v->y->spectral;
-    complex PRECISION * px = v->x->spectral;
-    complex PRECISION * ppol;
-    complex PRECISION * ptor;
-    complex PRECISION * xmean;
-    complex PRECISION * ymean;
+    complex<PRECISION> dkx,dky,dkz;
+    complex<PRECISION> * pz = v->z->spectral;
+    complex<PRECISION> * py = v->y->spectral;
+    complex<PRECISION> * px = v->x->spectral;
+    complex<PRECISION> * ppol;
+    complex<PRECISION> * ptor;
+    complex<PRECISION> * xmean;
+    complex<PRECISION> * ymean;
 
     //Are we storing the result in the forcing fields or in the spectral fields.
     if(force)
@@ -313,14 +314,14 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
 
     debug("Calculating Toroidal field\n");
 
-    complex PRECISION dkx,dky,dkz;
-    complex PRECISION * pz = v->z->spectral;
-    complex PRECISION * py = v->y->spectral;
-    complex PRECISION * px = v->x->spectral;
-    complex PRECISION * ppol;
-    complex PRECISION * ptor;
-    complex PRECISION * xmean;
-    complex PRECISION * ymean;
+    complex<PRECISION> dkx,dky,dkz;
+    complex<PRECISION> * pz = v->z->spectral;
+    complex<PRECISION> * py = v->y->spectral;
+    complex<PRECISION> * px = v->x->spectral;
+    complex<PRECISION> * ppol;
+    complex<PRECISION> * ptor;
+    complex<PRECISION> * xmean;
+    complex<PRECISION> * ymean;
 
     if(force)
     {
@@ -416,14 +417,14 @@ void decomposeCurlSolenoidal(p_solenoid s, p_vector v, int force)
 void recomposeSolenoidal(p_solenoid s, p_vector v)
 {
     int i,j,k;
-    complex PRECISION dkx,dky,dkz;
-    complex PRECISION * pz = v->z->spectral;
-    complex PRECISION * py = v->y->spectral;
-    complex PRECISION * px = v->x->spectral;
-    complex PRECISION * ppol = s->poloidal->spectral;
-    complex PRECISION * ptor = s->toroidal->spectral;
-    complex PRECISION * xmean = s->mean_x;
-    complex PRECISION * ymean = s->mean_y;
+    complex<PRECISION> dkx,dky,dkz;
+    complex<PRECISION> * pz = v->z->spectral;
+    complex<PRECISION> * py = v->y->spectral;
+    complex<PRECISION> * px = v->x->spectral;
+    complex<PRECISION> * ppol = s->poloidal->spectral;
+    complex<PRECISION> * ptor = s->toroidal->spectral;
+    complex<PRECISION> * xmean = s->mean_x;
+    complex<PRECISION> * ymean = s->mean_y;
 
     int index = 0;
     for(i = 0; i < my_kx->width; i++)
@@ -466,13 +467,13 @@ void recomposeSolenoidal(p_solenoid s, p_vector v)
  * is independent, this operation can safely be done in place and both out and
  * in can point to the same memory as long as in is no longer needed. 
  */
-extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
+void laplacian(complex<PRECISION> * in, complex<PRECISION> * out, int add, PRECISION factor)
 {
     trace("Starting Laplacian\n");
     
     int i,j,k;
     int index = 0;
-    complex PRECISION dkx,dky,dkz;
+    complex<PRECISION> dkx,dky,dkz;
 
     for(i = 0; i < my_kx->width; i++)
     {
@@ -504,16 +505,16 @@ extern void laplacian(complex PRECISION * in, complex PRECISION * out, int add, 
  * 
  * DOES NOT WORK AS DESIRED
  */
-extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
+void hyperDiff(complex<PRECISION> * in, complex<PRECISION> * out, int add, PRECISION factor)
 {
     trace("Starting Hyper Diffusion\n");
     
     int i,j,k;
     int index = 0;
-    complex PRECISION dkx,dky,dkz;
-    complex PRECISION deriv;
+    complex<PRECISION> dkx,dky,dkz;
+    complex<PRECISION> deriv;
     
-    complex PRECISION * spect = hyperWork->spectral;
+    complex<PRECISION> * spect = hyperWork->spectral;
     PRECISION * spat = hyperWork->spatial;
 
     //Calculate hyper diffusion as if with a constant coefficient
@@ -558,14 +559,14 @@ extern void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
  * rise through an infinite domain, but either the boundaries do not get
  * sanitized or else numerical instabilities ruin everything.
  */
-extern void killBoundaries(PRECISION * in, complex PRECISION * out, int add, PRECISION factor)
+void killBoundaries(PRECISION * in, complex<PRECISION> * out, int add, PRECISION factor)
 {
     trace("Starting Boundary Forcing\n");
     
     int i,j,x,y,z;
     int index = 0;
     
-    complex PRECISION * spect = hyperWork->spectral;
+    complex<PRECISION> * spect = hyperWork->spectral;
     PRECISION * spat = hyperWork->spatial;
 
     for(i = 0; i < spatialCount; i++)
@@ -592,19 +593,19 @@ extern void killBoundaries(PRECISION * in, complex PRECISION * out, int add, PRE
  * All wave modes are independent, so in and out can point to the same memory
  * as long as we are allowed to overwrite.
  */
-extern void curl(p_vector in, p_vector out)
+void curl(p_vector in, p_vector out)
 {
     int i,j,k;
-    complex PRECISION dkx, dky, dkz;
+    complex<PRECISION> dkx, dky, dkz;
     int index = 0;
 
-    complex PRECISION * xin = in->x->spectral;
-    complex PRECISION * yin = in->y->spectral;
-    complex PRECISION * zin = in->z->spectral;
+    complex<PRECISION> * xin = in->x->spectral;
+    complex<PRECISION> * yin = in->y->spectral;
+    complex<PRECISION> * zin = in->z->spectral;
 
-    complex PRECISION * xout = out->x->spectral;
-    complex PRECISION * yout = out->y->spectral;
-    complex PRECISION * zout = out->z->spectral;
+    complex<PRECISION> * xout = out->x->spectral;
+    complex<PRECISION> * yout = out->y->spectral;
+    complex<PRECISION> * zout = out->z->spectral;
 
     for(i = 0; i < my_kx->width; i++)
     {
@@ -632,15 +633,15 @@ extern void curl(p_vector in, p_vector out)
  * 
  * Again in and out can point to the same memory locations.
  */
-extern void gradient(p_field in, p_vector out)
+void gradient(p_field in, p_vector out)
 {
     int i,j,k;
-    complex PRECISION dkx, dky, dkz;
+    complex<PRECISION> dkx, dky, dkz;
 
-    complex PRECISION * pin = in->spectral;
-    complex PRECISION * outx = out->x->spectral;
-    complex PRECISION * outy = out->y->spectral;
-    complex PRECISION * outz = out->z->spectral;
+    complex<PRECISION> * pin = in->spectral;
+    complex<PRECISION> * outx = out->x->spectral;
+    complex<PRECISION> * outy = out->y->spectral;
+    complex<PRECISION> * outz = out->z->spectral;
 
     int index = 0;
     for(i = 0; i < my_kx->width; i++)
@@ -666,7 +667,7 @@ extern void gradient(p_field in, p_vector out)
 /*
  * A dot B = Ax Bx + Ay By + Az Bz
  */
-extern void dotProduct(p_vector one, p_vector two, p_field out)
+void dotProduct(p_vector one, p_vector two, p_field out)
 {
     int i;
 
@@ -689,7 +690,7 @@ extern void dotProduct(p_vector one, p_vector two, p_field out)
 /*
  * A cross B = < Ay Bz - Az By, Az Bx - Ax Bz, Ax By - Ay Bx >
  */
-extern void crossProduct(p_vector one, p_vector two, p_vector out)
+void crossProduct(p_vector one, p_vector two, p_vector out)
 {
     int i;
 
@@ -714,16 +715,16 @@ extern void crossProduct(p_vector one, p_vector two, p_vector out)
 /*
  * div(a) = dx Ax + dy Ay + dz Az
  */
-extern void divergence(p_vector in, p_field out)
+void divergence(p_vector in, p_field out)
 {
     int i,j,k;
-    complex PRECISION dkx,dky,dkz;
+    complex<PRECISION> dkx,dky,dkz;
     int index = 0;
 
-    complex PRECISION * o = out->spectral;
-    complex PRECISION * x = in->x->spectral;
-    complex PRECISION * y = in->y->spectral;
-    complex PRECISION * z = in->z->spectral;
+    complex<PRECISION> * o = out->spectral;
+    complex<PRECISION> * x = in->x->spectral;
+    complex<PRECISION> * y = in->y->spectral;
+    complex<PRECISION> * z = in->z->spectral;
     for(i = 0; i < my_kx->width; i++)
     {
         dkx = dxFactor(i);
@@ -753,11 +754,11 @@ extern void divergence(p_vector in, p_field out)
  * arithmetic = 1  : +=
  * arithmetic = 2  : -=
  */
-extern void partialX(complex PRECISION * in, complex PRECISION * out, int arithmetic)
+void partialX(complex<PRECISION> * in, complex<PRECISION> * out, int arithmetic)
 {
     int i,j,k;
     int index = 0;
-    complex PRECISION dk;
+    complex<PRECISION> dk;
 
     if(arithmetic == 0)
     {
@@ -818,11 +819,11 @@ extern void partialX(complex PRECISION * in, complex PRECISION * out, int arithm
  * arithmetic = 1  : +=
  * arithmetic = 2  : -=
  */
-extern void partialY(complex PRECISION * in, complex PRECISION * out, int arithmetic)
+void partialY(complex<PRECISION> * in, complex<PRECISION> * out, int arithmetic)
 {
     int i,j,k;
     int index = 0;
-    complex PRECISION dk;
+    complex<PRECISION> dk;
 
     if(arithmetic == 0)
     {
@@ -883,11 +884,11 @@ extern void partialY(complex PRECISION * in, complex PRECISION * out, int arithm
  * arithmetic = 1  : +=
  * arithmetic = 2  : -=
  */
-extern void partialZ(complex PRECISION * in, complex PRECISION * out, int arithmetic)
+void partialZ(complex<PRECISION> * in, complex<PRECISION> * out, int arithmetic)
 {
     int i,j,k;
     int index = 0;
-    complex PRECISION dk;
+    complex<PRECISION> dk;
 
     if(arithmetic == 0)
     {
@@ -944,7 +945,7 @@ extern void partialZ(complex PRECISION * in, complex PRECISION * out, int arithm
  * Basic multiplication.  Can only be applied to fields in spatial coordinates
  * (no wave modes!)
  */
-extern void multiply(PRECISION * one, PRECISION * two, PRECISION * out)
+void multiply(PRECISION * one, PRECISION * two, PRECISION * out)
 {
     int i;
     for(i = 0; i < spatialCount; i++)
@@ -956,7 +957,7 @@ extern void multiply(PRECISION * one, PRECISION * two, PRECISION * out)
 /*
  * Basic addition routine for two complex fields.
  */
-extern void plusEq(complex PRECISION * one, complex PRECISION * two)
+void plusEq(complex<PRECISION> * one, complex<PRECISION> * two)
 {
     int i;
     for(i = 0; i < spectralCount; i++)
@@ -968,7 +969,7 @@ extern void plusEq(complex PRECISION * one, complex PRECISION * two)
 /*
  * Basic subtraction routine for two complex fields.
  */
-extern void minusEq(complex PRECISION * one, complex PRECISION * two)
+void minusEq(complex<PRECISION> * one, complex<PRECISION> * two)
 {
 
     int i;
@@ -996,7 +997,7 @@ extern void minusEq(complex PRECISION * one, complex PRECISION * two)
  * half of the array we are in, and our current wavenumber is really the 
  * distance to the closest edge, not the distance to index 0.
  */
-extern complex PRECISION dxFactor(int i)
+complex<PRECISION> dxFactor(int i)
 {
     int k = i + my_kx->min;
     if(k >= dealias_kx.min)
@@ -1004,30 +1005,32 @@ extern complex PRECISION dxFactor(int i)
        k += 1 - 2 * dealias_kx.min;
     }
 
-    trace("kx index %d was found to be wave mode %d, %g\n", i, k, __imag__ (I * 2 * PI * k / xmx) );
-
-    return I * 2 * PI * k / xmx;
-}
-
-extern complex PRECISION dyFactor(int i)
-{
-    int k = i + my_ky->min;
-    complex PRECISION ret = I * 2 * PI * k / ymx;
-    trace("ky index %d was found to be wave mode %d, %g\n", i, k, __imag__ ret );
+    complex<PRECISION> ret(0, 2 * PI * k / xmx);
+    trace("kx index %d was found to be wave mode %d, %g\n", i, k, ret.imag() );
 
     return ret;
 }
 
-extern complex PRECISION dzFactor(int i)
+complex<PRECISION> dyFactor(int i)
+{
+    int k = i + my_ky->min;
+    complex<PRECISION> ret(0, 2 * PI * k / ymx);
+    trace("ky index %d was found to be wave mode %d, %g\n", i, k, ret.imag() );
+
+    return ret;
+}
+
+complex<PRECISION> dzFactor(int i)
 {
     int k = i;
     if(k >= dealias_kz.min)
     {
        k += 1 - 2 * dealias_kz.min;
     }
-    trace("kz index %d was found to be wave mode %d, %g\n", i, k, __imag__ (I * 2 * PI * k / xmx) );
+    complex<PRECISION> ret(0, 2 * PI * k / zmx);
+    trace("kz index %d was found to be wave mode %d, %g\n", i, k, ret.imag());
 
-    return I * 2 * PI * k / zmx;
+    return ret;
 }
 
 /*
@@ -1036,20 +1039,20 @@ extern complex PRECISION dzFactor(int i)
  * is somewhat useless without the boundary sanitization routines that do not
  * currently work.
  */
-extern void shiftField(displacement d, complex PRECISION * f)
+void shiftField(displacement d, complex<PRECISION> * f)
 {
     int i,j,k;
-    complex PRECISION *edkx, *edky, *edkz;
+    complex<PRECISION> *edkx, *edky, *edkz;
     
-    edkx = (complex PRECISION*)malloc(my_kx->width*sizeof(complex PRECISION));
+    edkx = (complex<PRECISION>*)malloc(my_kx->width*sizeof(complex<PRECISION>));
     for(i=0; i < my_kx->width; i++)
-        edkx[i] = cexp(dxFactor(i)*d.dx);
-    edky = (complex PRECISION*)malloc(my_ky->width*sizeof(complex PRECISION));
+        edkx[i] = exp(dxFactor(i)*d.dx);
+    edky = (complex<PRECISION>*)malloc(my_ky->width*sizeof(complex<PRECISION>));
     for(i=0; i < my_ky->width; i++)
-        edky[i] = cexp(dyFactor(i)*d.dy);
-    edkz = (complex PRECISION*)malloc(ndkz*sizeof(complex PRECISION));
+        edky[i] = exp(dyFactor(i)*d.dy);
+    edkz = (complex<PRECISION>*)malloc(ndkz*sizeof(complex<PRECISION>));
     for(i=0; i < ndkz; i++)
-        edkz[i] = cexp(dzFactor(i)*d.dz);
+        edkz[i] = exp(dzFactor(i)*d.dz);
     
     int index = 0;
     for(i = 0; i < my_kx->width; i++)
@@ -1069,17 +1072,17 @@ extern void shiftField(displacement d, complex PRECISION * f)
     free(edkz);
 }
 
-extern void shiftAvg(displacement d, complex PRECISION * f)
+void shiftAvg(displacement d, complex<PRECISION> * f)
 {
     int k;
-    complex PRECISION dkz;
+    complex<PRECISION> dkz;
     
     int index = 0;
     for(k = 0; k < ndkz; k++)
     {
         dkz = dzFactor(k);
 
-        f[index] *= cexp(dkz*d.dz);
+        f[index] *= exp(dkz*d.dz);
 
         index++;
     }

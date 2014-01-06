@@ -21,7 +21,7 @@
 #define	_IO_H
 
 #include "Precision.h"
-#include <string.h>
+#include <string>
 #include "Field.h"
 
 /*
@@ -57,8 +57,8 @@ void finalizeIO();
  * Note: This routine involves MPI collectives, so EVERY processor must call it 
  *       in order to avoid deadlocks. 
  */
-void writeSpatial(p_field f, char * name);
-void readSpatial(p_field f, char * name);
+void writeSpatial(p_field f, std::string name);
+void readSpatial(p_field f, std::string name);
 
 /*
  * Read-write checkpoints.  The location is determined automatically, and only

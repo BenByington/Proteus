@@ -39,9 +39,9 @@ void testPT();
  * Derivatives are done in spectral space, where they reduce to a multiplication
  * by wavenumber, and this factor is provided by these routines.
  */
-inline complex PRECISION dxFactor(int i);
-inline complex PRECISION dyFactor(int i);
-inline complex PRECISION dzFactor(int i);
+std::complex<PRECISION> dxFactor(int i);
+std::complex<PRECISION> dyFactor(int i);
+std::complex<PRECISION> dzFactor(int i);
 
 /*
  * These methods deal with the poloidal and toroidal decomposition.  There are
@@ -59,16 +59,16 @@ void recomposeSolenoidal(p_solenoid s, p_vector v);
  * argument is applied to and the second argument is where the result is to be
  * stored.
  */
-inline void curl(p_vector in, p_vector out);
-inline void gradient(p_field in, p_vector out);
-inline void divergence(p_vector in, p_field out);
+void curl(p_vector in, p_vector out);
+void gradient(p_field in, p_vector out);
+void divergence(p_vector in, p_field out);
 
 /*
  * Standard dot and cross product.  The first two arguments are the vectors
  * being operated on, and the result is stored in the third.
  */
-inline void dotProduct(p_vector one, p_vector two, p_field out);
-inline void crossProduct(p_vector one, p_vector two, p_vector out);
+void dotProduct(p_vector one, p_vector two, p_field out);
+void crossProduct(p_vector one, p_vector two, p_vector out);
 
 /*
  * Routines to take the derivative on a single spectral field.  The first
@@ -80,17 +80,17 @@ inline void crossProduct(p_vector one, p_vector two, p_vector out);
  * 1 -- out += derivative
  * 2 -- out -= derivative
  */
-inline void partialX(complex PRECISION * in, complex PRECISION * out, int arithmetic);
-inline void partialY(complex PRECISION * in, complex PRECISION * out, int arithmetic);
-inline void partialZ(complex PRECISION * in, complex PRECISION * out, int arithmetic);
+void partialX(std::complex<PRECISION> * in, std::complex<PRECISION> * out, int arithmetic);
+void partialY(std::complex<PRECISION> * in, std::complex<PRECISION> * out, int arithmetic);
+void partialZ(std::complex<PRECISION> * in, std::complex<PRECISION> * out, int arithmetic);
 
 /*
  * More basic operations, again with the first two arguments being the subject
  * of the operation with the third argument holding the result
  */
-inline void multiply(PRECISION * one, PRECISION * two, PRECISION * out);
-inline void plusEq(complex PRECISION * one, complex PRECISION * two);
-inline void minusEq(complex PRECISION * one, complex PRECISION * two);
+void multiply(PRECISION * one, PRECISION * two, PRECISION * out);
+void plusEq(std::complex<PRECISION> * one, std::complex<PRECISION> * two);
+void minusEq(std::complex<PRECISION> * one, std::complex<PRECISION> * two);
 
 /*
  * Experimental and unfinished routines.  These ones work, but they are 
@@ -99,12 +99,12 @@ inline void minusEq(complex PRECISION * one, complex PRECISION * two);
  * These routines are used to shift a given spectral field f by a given
  * displacement d.
  */
-inline void shiftField(displacement d, complex PRECISION * f);
-inline void shiftAvg(displacement d, complex PRECISION * f);
+void shiftField(displacement d, std::complex<PRECISION> * f);
+void shiftAvg(displacement d, std::complex<PRECISION> * f);
 
 //derivatives for a field
-inline void laplacian(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor);
-inline void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, PRECISION factor);
+void laplacian(std::complex<PRECISION> * in, std::complex<PRECISION> * out, int add, PRECISION factor);
+void hyperDiff(std::complex<PRECISION> * in, std::complex<PRECISION> * out, int add, PRECISION factor);
 
 /*
  * Experimental routine that does not work as intended.  This was originally
@@ -115,5 +115,5 @@ inline void hyperDiff(complex PRECISION * in, complex PRECISION * out, int add, 
  * wipe those out while still maintaining the divergence free constraint.  It
  * fails miserably...
  */
-inline void killBoundaries(PRECISION * in, complex PRECISION * out, int add, PRECISION factor);
+void killBoundaries(PRECISION * in, std::complex<PRECISION> * out, int add, PRECISION factor);
 

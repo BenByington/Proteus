@@ -6,7 +6,6 @@ LIBS =  -L/Users/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
 INCL=../include
 SRC = ../src
 
-cc = mpicc 
 CC = mpic++
 
 FASTSSE= -O3
@@ -23,47 +22,47 @@ OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 proteus: $(OBJS) 
 	$(CC) $(CCFLAGS) -o proteus $(OBJS) $(LIBS) 
 
-TimeFunctions.o: ${SRC}/TimeFunctions.c
-	$(cc) $(CCFLAGS) -c $(SRC)/TimeFunctions.c
+TimeFunctions.o: ${SRC}/TimeFunctions.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/TimeFunctions.c
 
-Communication.o: ${SRC}/Communication.c
-	$(cc) $(CCFLAGS) -c $(SRC)/Communication.c
+Communication.o: ${SRC}/Communication.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Communication.c
 
 clean:
 	rm -f *.o *.mod imhd
 
-Numerics.o: ${SRC}/Numerics.c
-	$(cc) $(CCFLAGS) -c $(SRC)/Numerics.c
+Numerics.o: ${SRC}/Numerics.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Numerics.c
 
-Environment.o: ${SRC}/Environment.c
-	$(cc) $(CCFLAGS) -c $(SRC)/Environment.c
+Environment.o: ${SRC}/Environment.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Environment.c
 
-Field.o: ${SRC}/Field.c
-	$(cc) $(CCFLAGS) -c $(SRC)/Field.c
+Field.o: ${SRC}/Field.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Field.c
 
-IO.o: ${SRC}/IO.c
-	$(cc) $(CCFLAGS) -c $(SRC)/IO.c
+IO.o: ${SRC}/IO.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/IO.c
 
-LaborDivision.o: ${SRC}/LaborDivision.c
-	$(cc) $(CCFLAGS) -c $(SRC)/LaborDivision.c
+LaborDivision.o: ${SRC}/LaborDivision.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/LaborDivision.c
 
-Log.o: ${SRC}/Log.c
-	$(cc) $(CCFLAGS) -c $(SRC)/Log.c
+Log.o: ${SRC}/Log.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Log.c
 
-main.o: ${SRC}/main.c
-	$(cc) $(CCFLAGS) -c $(SRC)/main.c
+main.o: ${SRC}/main.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/main.cpp
 
-Physics.o: ${SRC}/Physics.c
-	$(cc) $(CCFLAGS) -c $(SRC)/Physics.c
+Physics.o: ${SRC}/Physics.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/Physics.c
 
 Properties.o: ${SRC}/Properties.cpp
 	$(CC) $(CCFLAGS) -c $(SRC)/Properties.cpp
 
-State.o: ${SRC}/State.c
-	$(cc) $(CCFLAGS) -c $(SRC)/State.c
+State.o: ${SRC}/State.cpp
+	$(CC) $(CCFLAGS) -c $(SRC)/State.c
 	
-FFTWrapper.o: ${SRC}/FFTWrapper.c
-	${cc} $(CCFLAGS) -c $(SRC)/FFTWrapper.c
+FFTWrapper.o: ${SRC}/FFTWrapper.cpp
+	${CC} $(CCFLAGS) -c $(SRC)/FFTWrapper.c
 
 Communication.o : $(INCL)/Communication.h
 Communication.o : $(INCL)/FFTWrapper.h

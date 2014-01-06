@@ -82,7 +82,7 @@
 #include "mpi.h"
 #include "FFTWrapper.h"
 
-#include <complex.h>
+#include <complex>
 #include <fftw3.h>
 #include <math.h>
 #include <time.h>
@@ -91,6 +91,8 @@
 
 #include "Environment.h"
 #include "Logs/Log.h"
+
+using namespace std;
 
 int whichfft;
 
@@ -102,23 +104,22 @@ FFT_PLAN planb2;
 FFT_PLAN planb3;
 
 void initfft1();
-void fft1_forward(PRECISION * in, complex PRECISION * out);
-void fft1_tpf1(complex PRECISION * in, complex PRECISION * out);
-void fft1_tpf2(complex PRECISION * in, complex PRECISION * out);
-void fft1_backward(complex PRECISION * in, PRECISION * out);
-void fft1_tpb1(complex PRECISION * in, complex PRECISION * out);
-void fft1_tpb2(complex PRECISION * in, complex PRECISION * out);
-
-void fft_tpf3(complex PRECISION * in, complex PRECISION * out);
-void fft_tpb3(complex PRECISION * in, complex PRECISION * out);
+void fft1_forward(PRECISION * in, complex<PRECISION> * out);
+void fft1_tpf1(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft1_tpf2(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft1_backward(complex<PRECISION> * in, PRECISION * out);
+void fft1_tpb1(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft1_tpb2(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft_tpf3(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft_tpb3(complex<PRECISION> * in, complex<PRECISION> * out);
 
 void initfft2();
-void fft2_forward(PRECISION * in, complex PRECISION * out);
-void fft2_tpf1(complex PRECISION * in, complex PRECISION * out);
-void fft2_tpf2(complex PRECISION * in, complex PRECISION * out);
-void fft2_backward(complex PRECISION * in, PRECISION * out);
-void fft2_tpb1(complex PRECISION * in, complex PRECISION * out);
-void fft2_tpb2(complex PRECISION * in, complex PRECISION * out);
+void fft2_forward(PRECISION * in, complex<PRECISION> * out);
+void fft2_tpf1(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft2_tpf2(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft2_backward(complex<PRECISION> * in, PRECISION * out);
+void fft2_tpb1(complex<PRECISION> * in, complex<PRECISION> * out);
+void fft2_tpb2(complex<PRECISION> * in, complex<PRECISION> * out);
 
 void testfft1();
 void repeatfft1(int count);
@@ -206,25 +207,25 @@ void initfft1()
 {
     debug("Initializing fft1...\n");
     PRECISION * real;
-    complex PRECISION * comp1;
-    complex PRECISION * comp2;
+    complex<PRECISION> * comp1;
+    complex<PRECISION> * comp2;
 
     real = (PRECISION*)fft_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    comp1 = (complex PRECISION*)fft_malloc(my_z->width * my_x->width * nky * sizeof(complex PRECISION));
+    comp1 = (complex<PRECISION>*)fft_malloc(my_z->width * my_x->width * nky * sizeof(complex<PRECISION>));
     planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, 1, nky, FFTW_MEASURE);
     planb1 = fft_plan_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, 1, nky, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
     fft_free(real);
     fft_free(comp1);
 
-    comp1 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nx * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nkx * sizeof(complex PRECISION));
+    comp1 = (complex<PRECISION>*)fft_malloc(my_z->width * my_ky->width * nx * sizeof(complex<PRECISION>));
+    comp2 = (complex<PRECISION>*)fft_malloc(my_z->width * my_ky->width * nkx * sizeof(complex<PRECISION>));
     planf2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp1, 0, 1, nx, comp2, 0, 1, nkx, FFTW_FORWARD, FFTW_MEASURE);
     planb2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp2, 0, 1, nkx, comp1, 0, 1, nx, FFTW_BACKWARD, FFTW_MEASURE);
     fft_free(comp1);
     fft_free(comp2);
 
-    comp1 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    comp1 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex<PRECISION>));
+    comp2 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex<PRECISION>));
     planf3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp1, 0, 1, nz, comp2, 0, 1, nkz, FFTW_FORWARD, FFTW_MEASURE);
     planb3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp2, 0, 1, nkz, comp1, 0, 1, nz, FFTW_BACKWARD, FFTW_MEASURE);
     fft_free(comp1);
@@ -233,7 +234,7 @@ void initfft1()
     debug("Initialization done\n");
 }
 
-void fft1_forward(PRECISION * in, complex PRECISION* out)
+void fft1_forward(PRECISION * in, complex<PRECISION> * out)
 {
     int i;
 
@@ -242,22 +243,22 @@ void fft1_forward(PRECISION * in, complex PRECISION* out)
     int mySize2 = my_z->width * my_ky->width * nx;
     int mySize3 = my_kx->width * my_ky->width * nz;
 
-    complex PRECISION * comp = (complex PRECISION*)fft_malloc(mySize1*sizeof(complex PRECISION));
+    complex<PRECISION> * comp = (complex<PRECISION>*)fft_malloc(mySize1*sizeof(complex<PRECISION>));
     fft_execute_r2c(planf1, in, comp);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(mySize2*sizeof(complex PRECISION));
+    complex<PRECISION> * comp2 = (complex<PRECISION>*)fft_malloc(mySize2*sizeof(complex<PRECISION>));
     fft1_tpf1(comp, comp2);
     fft_free(comp);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(mySize2*sizeof(complex PRECISION));
+    complex<PRECISION> * comp3 = (complex<PRECISION>*)fft_malloc(mySize2*sizeof(complex<PRECISION>));
     fft_execute_c2c(planf2, comp2, comp3);
     fft_free(comp2);
 
-    complex PRECISION * comp4 = (complex PRECISION*)fft_malloc(mySize3*sizeof(complex PRECISION));
+    complex<PRECISION> * comp4 = (complex<PRECISION>*)fft_malloc(mySize3*sizeof(complex<PRECISION>));
     fft1_tpf2(comp3, comp4);
     fft_free(comp3);
 
-    complex PRECISION * comp5 = (complex PRECISION*)fft_malloc(mySize3*sizeof(complex PRECISION));
+    complex<PRECISION> * comp5 = (complex<PRECISION>*)fft_malloc(mySize3*sizeof(complex<PRECISION>));
     fft_execute_c2c(planf3, comp4, comp5);
     fft_free(comp4);
 
@@ -272,18 +273,18 @@ void fft1_forward(PRECISION * in, complex PRECISION* out)
     trace("Forward fftw competed\n");
 }
 
-void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
+void fft1_tpf1(complex<PRECISION> * in, complex<PRECISION> * out)
 {
     int i,j,k;
     int maxSize1 = max_z->width * max_x->width * max_ky->width;
     trace("Starting first transpose for forward fft1\n");
-    //in is complex PRECISION[my_z->width][my_x->width][nky]
-    //sndbuff and rcvbuff is complex PRECISION[hsize][maxz->width][maxx->width][maxky->width]
-    complex PRECISION * sndbuff = (complex PRECISION*)malloc(maxSize1 * hsize * sizeof(complex PRECISION));
-    complex PRECISION * rcvbuff = (complex PRECISION*)malloc(maxSize1 * hsize * sizeof(complex PRECISION));
+    //in is complex<PRECISION>[my_z->width][my_x->width][nky]
+    //sndbuff and rcvbuff is complex<PRECISION>[hsize][maxz->width][maxx->width][maxky->width]
+    complex<PRECISION> * sndbuff = (complex<PRECISION>*)malloc(maxSize1 * hsize * sizeof(complex<PRECISION>));
+    complex<PRECISION> * rcvbuff = (complex<PRECISION>*)malloc(maxSize1 * hsize * sizeof(complex<PRECISION>));
 
-    complex PRECISION * piin = in;
-    complex PRECISION * pisbuff = sndbuff;
+    complex<PRECISION> * piin = in;
+    complex<PRECISION> * pisbuff = sndbuff;
 
     trace("Packing arrays for MPI all-to-all\n");
     //loop over each x and z to process contiguous 1D arrays
@@ -300,7 +301,7 @@ void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
             {
                 //our internal pointers start where they need to.  Just do the
                 //memcpy
-                memcpy(pisbuff, piin, all_ky[k].width * sizeof(complex PRECISION));
+                memcpy(pisbuff, piin, all_ky[k].width * sizeof(complex<PRECISION>));
 
                 //incriment pointers.  Simple for picomp.  Be careful for
                 //pisbuff
@@ -317,15 +318,15 @@ void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
     MPI_Alltoall(sndbuff, 2 * maxSize1, MPI_PRECISION, rcvbuff, 2 * maxSize1, MPI_PRECISION, hcomm);
 
     trace("Unpacking data from transfer\n");
-    //out is complex PRECISION[myz->width][my_ky->width][nx]
-    //rcvbuff is complex PRECISION[hsize][maxz->width][maxx->width][maxky->width]
+    //out is complex<PRECISION>[myz->width][my_ky->width][nx]
+    //rcvbuff is complex<PRECISION>[hsize][maxz->width][maxx->width][maxky->width]
     //loop overy every element in out and set it to the correct value.  This will
     //perform the transpost
     //TODO look into a more efficient way to do this...
     int xBig;
     int xSmall;
-    complex PRECISION * pirbuff = rcvbuff;
-    complex PRECISION * piout = out;
+    complex<PRECISION> * pirbuff = rcvbuff;
+    complex<PRECISION> * piout = out;
     for(i = 0; i < my_z->width; i++)
     {
         for(j = 0; j < my_ky->width; j++)
@@ -351,19 +352,19 @@ void fft1_tpf1(complex PRECISION* in, complex PRECISION* out)
     free(rcvbuff);
 }
 
-void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
+void fft1_tpf2(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     trace("Starting second transpose for forward fft1\n");
     int i,j,k;
     int maxSize1 = max_z->width * max_kx->width * max_ky->width;
 
-    //in is complex PRECISION[my_z->width][my_ky->width][nkx]
-    //sndbuff and rcvbuff is complex PRECISION[vsize][max_z->width][max_ky->width][max_kx->width]
-    complex PRECISION * sndbuff = (complex PRECISION*)malloc(maxSize1 * vsize * sizeof(complex PRECISION));
-    complex PRECISION * rcvbuff = (complex PRECISION*)malloc(maxSize1 * vsize * sizeof(complex PRECISION));
+    //in is complex<PRECISION>[my_z->width][my_ky->width][nkx]
+    //sndbuff and rcvbuff is complex<PRECISION>[vsize][max_z->width][max_ky->width][max_kx->width]
+    complex<PRECISION> * sndbuff = (complex<PRECISION>*)malloc(maxSize1 * vsize * sizeof(complex<PRECISION>));
+    complex<PRECISION> * rcvbuff = (complex<PRECISION>*)malloc(maxSize1 * vsize * sizeof(complex<PRECISION>));
 
-    complex PRECISION * piin = in;
-    complex PRECISION * pisbuff = sndbuff;
+    complex<PRECISION> * piin = in;
+    complex<PRECISION> * pisbuff = sndbuff;
 
     //One of the processors is going to have to deal with skipping over wavelengths
     //for dealiasing.  Stay tuned to find out who!!
@@ -398,19 +399,19 @@ void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
                 {
                     
                     if(nlow)
-                        memcpy(pisbuff, piin, nlow * sizeof(complex PRECISION));
+                        memcpy(pisbuff, piin, nlow * sizeof(complex<PRECISION>));
 
                     piin += nlow + dealias_kx.width;
 
                     if(nhigh)
-                        memcpy(pisbuff + nlow, piin, nhigh * sizeof(complex PRECISION));
+                        memcpy(pisbuff + nlow, piin, nhigh * sizeof(complex<PRECISION>));
                     piin += nhigh;
                 }
                 else
                 {
                     //our internal pointers start where they need to.  Just do the
                     //memcpy
-                    memcpy(pisbuff, piin, all_kx[k].width * sizeof(complex PRECISION));
+                    memcpy(pisbuff, piin, all_kx[k].width * sizeof(complex<PRECISION>));
 
                     //incriment pointers.  Simple for picomp.  Be careful for
                     //pisbuff
@@ -425,15 +426,15 @@ void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
     MPI_Alltoall(sndbuff, 2 * maxSize1, MPI_PRECISION, rcvbuff, 2 * maxSize1, MPI_PRECISION, vcomm);
 
     trace("Unpacking data from transfer\n");
-    //out is complex PRECISION[my_kx->width][my_ky->width][nz]
-    //rcvbuff is complex PRECISION[hsize][max_z->width][max_ky->width][max_kx->width]
+    //out is complex<PRECISION>[my_kx->width][my_ky->width][nz]
+    //rcvbuff is complex<PRECISION>[hsize][max_z->width][max_ky->width][max_kx->width]
     //loop overy every element in out and set it to the correct value.  This will
     //perform the transpost
     //TODO look into a more efficient way to do this...
     int zBig;
     int zSmall;
-    complex PRECISION * pirbuff = rcvbuff;
-    complex PRECISION * piout = out;
+    complex<PRECISION> * pirbuff = rcvbuff;
+    complex<PRECISION> * piout = out;
     for(i = 0; i < my_kx->width; i++)
     {
         for(j = 0; j < my_ky->width; j++)
@@ -459,15 +460,15 @@ void fft1_tpf2(complex PRECISION* in, complex PRECISION* out)
     free(rcvbuff);
 }
 
-void fft_tpf3(complex PRECISION * in, complex PRECISION * out)
+void fft_tpf3(complex<PRECISION> * in, complex<PRECISION> * out)
 {
     trace("Performing final dealias for forward transform\n");
     int i,j,k;
     //in is [my_kx][my_ky][nkz]
     //out is [my_kx][my_ky][ndkz]
 
-    complex PRECISION * piin = in;
-    complex PRECISION * piout = out;
+    complex<PRECISION> * piin = in;
+    complex<PRECISION> * piout = out;
     //loop over x and y to process contiguous arrays
 
     int len1 = dealias_kz.min;
@@ -478,12 +479,12 @@ void fft_tpf3(complex PRECISION * in, complex PRECISION * out)
     {
         for(j = 0; j < my_ky->width; j++)
         {
-            memcpy(piout, piin, len1 * sizeof(complex PRECISION));
+            memcpy(piout, piin, len1 * sizeof(complex<PRECISION>));
 
             piout += len1;
             piin += len1 + cut;
 
-            memcpy(piout, piin, len2*sizeof(complex PRECISION));
+            memcpy(piout, piin, len2*sizeof(complex<PRECISION>));
 
             piout += len2;
             piin += len2;
@@ -491,29 +492,29 @@ void fft_tpf3(complex PRECISION * in, complex PRECISION * out)
     }
 }
 
-void fft1_backward(complex PRECISION* in, PRECISION * out)
+void fft1_backward(complex<PRECISION>* in, PRECISION * out)
 {
     trace("Begin fft1 backwards transform\n");
     int mySize1 = my_kx->width * my_ky->width * nz;
     int mySize2 = my_z->width * my_ky->width * nkx;
     int mySize3 = my_z->width * my_x->width * nky;
 
-    complex PRECISION * comp = (complex PRECISION*)fft_malloc(mySize1 * sizeof(complex PRECISION));
+    complex<PRECISION> * comp = (complex<PRECISION>*)fft_malloc(mySize1 * sizeof(complex<PRECISION>));
     fft_tpb3(in, comp);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(mySize1 * sizeof(complex PRECISION));
+    complex<PRECISION> * comp2 = (complex<PRECISION>*)fft_malloc(mySize1 * sizeof(complex<PRECISION>));
     fft_execute_c2c(planb3, comp, comp2);
     fft_free(comp);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(mySize2 * sizeof(complex PRECISION));
+    complex<PRECISION> * comp3 = (complex<PRECISION>*)fft_malloc(mySize2 * sizeof(complex<PRECISION>));
     fft1_tpb2(comp2, comp3);
     fft_free(comp2);
 
-    complex PRECISION * comp4 = (complex PRECISION*)fft_malloc(mySize2 * sizeof(complex PRECISION));
+    complex<PRECISION> * comp4 = (complex<PRECISION>*)fft_malloc(mySize2 * sizeof(complex<PRECISION>));
     fft_execute_c2c(planb2, comp3, comp4);
     fft_free(comp3);
 
-    complex PRECISION * comp5 = (complex PRECISION*)fft_malloc(mySize3 * sizeof(complex PRECISION));
+    complex<PRECISION> * comp5 = (complex<PRECISION>*)fft_malloc(mySize3 * sizeof(complex<PRECISION>));
     fft1_tpb1(comp4, comp5);
     fft_free(comp4);
 
@@ -523,14 +524,14 @@ void fft1_backward(complex PRECISION* in, PRECISION * out)
     trace("Inverse FFT completed\n");
 }
 
-void fft1_tpb1(complex PRECISION* in, complex PRECISION* out)
+void fft1_tpb1(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     int i,j,k;
-    //in is complex PRECISION[my_z->width][my_ky->width][nx]
-    //sndbuff is complex PRECISION[hsize][maxz->width][maxx->width][maxky->width]
+    //in is complex<PRECISION>[my_z->width][my_ky->width][nx]
+    //sndbuff is complex<PRECISION>[hsize][maxz->width][maxx->width][maxky->width]
     int maxSize1 = max_z->width * max_x->width * max_ky->width;
-    complex PRECISION* sndbuff = (complex PRECISION*)malloc(maxSize1 * hsize * sizeof(complex PRECISION));
-    complex PRECISION* rcvbuff = (complex PRECISION*)malloc(maxSize1 * hsize * sizeof(complex PRECISION));
+    complex<PRECISION>* sndbuff = (complex<PRECISION>*)malloc(maxSize1 * hsize * sizeof(complex<PRECISION>));
+    complex<PRECISION>* rcvbuff = (complex<PRECISION>*)malloc(maxSize1 * hsize * sizeof(complex<PRECISION>));
 
 
     //loop overy every element in in and send it to the correct spot in sndbuff.
@@ -538,8 +539,8 @@ void fft1_tpb1(complex PRECISION* in, complex PRECISION* out)
     //TODO look into a more efficient way to do this...
     int xBig;
     int xSmall;
-    complex PRECISION * pisbuff = sndbuff;
-    complex PRECISION * piin = in;
+    complex<PRECISION> * pisbuff = sndbuff;
+    complex<PRECISION> * piin = in;
     for(i = 0; i < my_z->width; i++)
     {
         for(j = 0; j < my_ky->width; j++)
@@ -563,8 +564,8 @@ void fft1_tpb1(complex PRECISION* in, complex PRECISION* out)
 
     MPI_Alltoall(sndbuff, 2 * maxSize1, MPI_PRECISION, rcvbuff, 2 * maxSize1, MPI_PRECISION, hcomm);
 
-    complex PRECISION * pirbuff = rcvbuff;
-    complex PRECISION * piout = out;
+    complex<PRECISION> * pirbuff = rcvbuff;
+    complex<PRECISION> * piout = out;
     //loop over each x and z to process contiguous 1D arrays
     for(i = 0; i < my_z->width; i++)
     {
@@ -579,14 +580,14 @@ void fft1_tpb1(complex PRECISION* in, complex PRECISION* out)
             {
                 //our internal pointers start where they need to.  Just do the
                 //memcpy
-                memcpy(piout, pirbuff, all_ky[k].width * sizeof(complex PRECISION));
+                memcpy(piout, pirbuff, all_ky[k].width * sizeof(complex<PRECISION>));
 
                 piout += all_ky[k].width;
                 pirbuff += maxSize1;
             }
             //There are some dealiased wavelengths at the end that we need
             //to put back in as 0's
-            memset(piout, 0, dealias_ky.width * sizeof(complex PRECISION));
+            memset(piout, 0, dealias_ky.width * sizeof(complex<PRECISION>));
             piout += dealias_ky.width;
         }
     }
@@ -595,23 +596,23 @@ void fft1_tpb1(complex PRECISION* in, complex PRECISION* out)
     free(rcvbuff);
 }
 
-void fft1_tpb2(complex PRECISION* in, complex PRECISION* out)
+void fft1_tpb2(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     int i,j,k;
     int maxSize1 = max_z->width * max_kx->width * max_ky->width;
-    complex PRECISION * sndbuff = (complex PRECISION*)malloc(maxSize1 * vsize * sizeof(complex PRECISION));
-    complex PRECISION * rcvbuff = (complex PRECISION*)malloc(maxSize1 * vsize * sizeof(complex PRECISION));
+    complex<PRECISION> * sndbuff = (complex<PRECISION>*)malloc(maxSize1 * vsize * sizeof(complex<PRECISION>));
+    complex<PRECISION> * rcvbuff = (complex<PRECISION>*)malloc(maxSize1 * vsize * sizeof(complex<PRECISION>));
 
 
-    //in is complex PRECISION[my_kx->width][my_ky->width][nz]
-    //sndbuff is complex PRECISION[vsize][max_z->width][max_ky->width][max_kx->width]
+    //in is complex<PRECISION>[my_kx->width][my_ky->width][nz]
+    //sndbuff is complex<PRECISION>[vsize][max_z->width][max_ky->width][max_kx->width]
     //loop overy every element in in and set it to the correct value.  This will
     //perform the transpost
     //TODO look into a more efficient way to do this...
     int zBig;
     int zSmall;
-    complex PRECISION * pisbuff = sndbuff;
-    complex PRECISION * piin = in;
+    complex<PRECISION> * pisbuff = sndbuff;
+    complex<PRECISION> * piin = in;
     for(i = 0; i < my_kx->width; i++)
     {
         for(j = 0; j < my_ky->width; j++)
@@ -635,8 +636,8 @@ void fft1_tpb2(complex PRECISION* in, complex PRECISION* out)
 
     MPI_Alltoall(sndbuff, 2 * maxSize1, MPI_PRECISION, rcvbuff, 2 * maxSize1, MPI_PRECISION, vcomm);
 
-    complex PRECISION * piout = out;
-    complex PRECISION * pirbuff = sndbuff;
+    complex<PRECISION> * piout = out;
+    complex<PRECISION> * pirbuff = sndbuff;
 
     //One of the processors is going to have to deal with skipping over wavelengths
     //for dealiasing.  Stay tuned to find out who!!
@@ -670,21 +671,21 @@ void fft1_tpb2(complex PRECISION* in, complex PRECISION* out)
                 {
 
                     if(nlow)
-                        memcpy(piout, pirbuff, nlow * sizeof(complex PRECISION));
+                        memcpy(piout, pirbuff, nlow * sizeof(complex<PRECISION>));
 
                     piout += nlow;
-                    memset(piout, 0, dealias_kx.width*sizeof(complex PRECISION));
+                    memset(piout, 0, dealias_kx.width*sizeof(complex<PRECISION>));
                     piout += dealias_kx.width;
 
                     if(nhigh)
-                        memcpy(piout, pirbuff + nlow, nhigh * sizeof(complex PRECISION));
+                        memcpy(piout, pirbuff + nlow, nhigh * sizeof(complex<PRECISION>));
                     piout += nhigh;
                 }
                 else
                 {
                     //our internal pointers start where they need to.  Just do the
                     //memcpy
-                    memcpy(piout, pirbuff, all_kx[k].width * sizeof(complex PRECISION));
+                    memcpy(piout, pirbuff, all_kx[k].width * sizeof(complex<PRECISION>));
 
                     //incriment pointers.  Simple for picomp.  Be careful for
                     //pisbuff
@@ -699,14 +700,14 @@ void fft1_tpb2(complex PRECISION* in, complex PRECISION* out)
     free(rcvbuff);
 }
 
-void fft_tpb3(complex PRECISION * in, complex PRECISION * out)
+void fft_tpb3(complex<PRECISION> * in, complex<PRECISION> * out)
 {
     int i,j;
     //in is [my_kx][my_ky][ndkz]
     //out is [my_kx][my_ky][nkz]
 
-    complex PRECISION * piin = in;
-    complex PRECISION * piout = out;
+    complex<PRECISION> * piin = in;
+    complex<PRECISION> * piout = out;
     //loop over x and y to process contiguous arrays
 
     int len1 = dealias_kz.min;
@@ -717,14 +718,14 @@ void fft_tpb3(complex PRECISION * in, complex PRECISION * out)
     {
         for(j = 0; j < my_ky->width; j++)
         {
-            memcpy(piout, piin, len1 * sizeof(complex PRECISION));
+            memcpy(piout, piin, len1 * sizeof(complex<PRECISION>));
             piout += len1;
             
-            memset(piout, 0, cut * sizeof(complex PRECISION));
+            memset(piout, 0, cut * sizeof(complex<PRECISION>));
             piout += cut;
 
             piin += len1;
-            memcpy(piout, piin, len2*sizeof(complex PRECISION));
+            memcpy(piout, piin, len2*sizeof(complex<PRECISION>));
 
             piin += len2;
             piout += len2;
@@ -741,49 +742,49 @@ void fft_tpb3(complex PRECISION * in, complex PRECISION * out)
 void initfft2()
 {
     PRECISION * real;
-    complex PRECISION * comp1;
-    complex PRECISION * comp2;
+    complex<PRECISION> * comp1;
+    complex<PRECISION> * comp2;
 
     real = (PRECISION*)fft_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    comp1 = (complex PRECISION*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex PRECISION));
+    comp1 = (complex<PRECISION>*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex<PRECISION>));
     planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, my_x->width * my_z->width, 1, FFTW_MEASURE);
     planb1 = fft_plan_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, my_x->width * my_z->width, 1, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
     fft_free(real);
     fft_free(comp1);
 
-    comp1 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nx * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fft_malloc(my_z->width * my_ky->width * nkx * sizeof(complex PRECISION));
+    comp1 = (complex<PRECISION>*)fft_malloc(my_z->width * my_ky->width * nx * sizeof(complex<PRECISION>));
+    comp2 = (complex<PRECISION>*)fft_malloc(my_z->width * my_ky->width * nkx * sizeof(complex<PRECISION>));
     planf2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp1, 0, 1, nx, comp2, 0, my_z->width * my_ky->width, 1, FFTW_FORWARD, FFTW_MEASURE);
     planb2 = fft_plan_c2c(1, &nx, my_z->width * my_ky->width, comp2, 0, my_z->width * my_ky->width, 1, comp1, 0, 1, nx, FFTW_BACKWARD, FFTW_MEASURE);
     fft_free(comp1);
     fft_free(comp2);
 
-    comp1 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
-    comp2 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    comp1 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex<PRECISION>));
+    comp2 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex<PRECISION>));
     planf3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp1, 0, 1, nz, comp2, 0, 1, nkz, FFTW_FORWARD, FFTW_MEASURE);
     planb3 = fft_plan_c2c(1, &nz, my_kx->width * my_ky->width, comp2, 0, 1, nkz, comp1, 0, 1, nz, FFTW_BACKWARD, FFTW_MEASURE);
     fft_free(comp1);
     fft_free(comp2);
 }
 
-void fft2_forward(PRECISION* in, complex PRECISION* out)
+void fft2_forward(PRECISION* in, complex<PRECISION>* out)
 {
-    complex PRECISION * comp1 = (complex PRECISION*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex PRECISION));
+    complex<PRECISION> * comp1 = (complex<PRECISION>*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex<PRECISION>));
     fft_execute_r2c(planf1, in, comp1);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(my_ky->width * my_z->width * nx * sizeof(complex PRECISION));
+    complex<PRECISION> * comp2 = (complex<PRECISION>*)fft_malloc(my_ky->width * my_z->width * nx * sizeof(complex<PRECISION>));
     fft2_tpf1(comp1, comp2);
     fft_free(comp1);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(nkx * my_ky->width * my_z->width * sizeof(complex PRECISION));
+    complex<PRECISION> * comp3 = (complex<PRECISION>*)fft_malloc(nkx * my_ky->width * my_z->width * sizeof(complex<PRECISION>));
     fft_execute_c2c(planf2, comp2, comp3);
     fft_free(comp2);
 
-    complex PRECISION* comp4 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
+    complex<PRECISION>* comp4 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nz * sizeof(complex<PRECISION>));
     fft2_tpf2(comp3, comp4);
     fft_free(comp3);
 
-    complex PRECISION * comp5 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    complex<PRECISION> * comp5 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex<PRECISION>));
     fft_execute_c2c(planf3, comp4, comp5);
     fft_free(comp4);
 
@@ -797,10 +798,10 @@ void fft2_forward(PRECISION* in, complex PRECISION* out)
         out[i] /= factor;
 }
 
-void fft2_tpf1(complex PRECISION* in, complex PRECISION* out)
+void fft2_tpf1(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     int i,j,k;
-    complex PRECISION * rcvbuff = (complex PRECISION*)malloc(my_ky->width * my_z->width * nx * sizeof(complex PRECISION));
+    complex<PRECISION> * rcvbuff = (complex<PRECISION>*)malloc(my_ky->width * my_z->width * nx * sizeof(complex<PRECISION>));
     //set up the send/receive data structures
     int * scnt = (int*)malloc(hsize * sizeof(int));
     int * sdisp = (int*)malloc(hsize * sizeof(int));
@@ -825,8 +826,8 @@ void fft2_tpf1(complex PRECISION* in, complex PRECISION* out)
     //contiguously through it, and jumping around in out.
     //out = [my_ky->width][my_z->width][nx]
     //rcvbuff = [p][my_ky->width][my_z->width][px]
-    complex PRECISION * pirbuff = rcvbuff;
-    complex PRECISION *  piout = out;
+    complex<PRECISION> * pirbuff = rcvbuff;
+    complex<PRECISION> *  piout = out;
 
     int offset = 0;
     for(i = 0; i < hsize; i++)
@@ -836,7 +837,7 @@ void fft2_tpf1(complex PRECISION* in, complex PRECISION* out)
             for(k = 0; k < my_z->width; k++)
             {
                 piout = out + offset + k * nx + j * my_z->width * nx;
-                memcpy(piout, pirbuff, all_x[i].width * sizeof(complex PRECISION));
+                memcpy(piout, pirbuff, all_x[i].width * sizeof(complex<PRECISION>));
                 pirbuff += all_x[i].width;
             }
         }
@@ -850,10 +851,10 @@ void fft2_tpf1(complex PRECISION* in, complex PRECISION* out)
     free(sdisp);
 }
 
-void fft2_tpf2(complex PRECISION* in, complex PRECISION* out)
+void fft2_tpf2(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     int i,j,k;
-    complex PRECISION * rcvbuff = (complex PRECISION*)malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
+    complex<PRECISION> * rcvbuff = (complex<PRECISION>*)malloc(my_kx->width * my_ky->width * nz * sizeof(complex<PRECISION>));
     //set up the send/receive data structures
     int * scnt = (int*)malloc(vsize * sizeof(int));
     int * sdisp = (int*)malloc(vsize * sizeof(int));
@@ -877,7 +878,7 @@ void fft2_tpf2(complex PRECISION* in, complex PRECISION* out)
         }
     }
     //now move the data so the data for dProc is contiguous
-    memmove(in + dealias_kx.min * my_ky->width * my_z->width, in + (dealias_kx.max+1) * my_ky->width * my_z->width, nhigh * my_ky->width * my_z->width * sizeof(complex PRECISION));
+    memmove(in + dealias_kx.min * my_ky->width * my_z->width, in + (dealias_kx.max+1) * my_ky->width * my_z->width, nhigh * my_ky->width * my_z->width * sizeof(complex<PRECISION>));
 
     scnt[0] = 2 * all_kx[0].width * my_ky->width * my_z->width;
     rcnt[0] = 2 * my_kx->width * my_ky->width * all_z[0].width;
@@ -904,8 +905,8 @@ void fft2_tpf2(complex PRECISION* in, complex PRECISION* out)
     //contiguously through it, and jumping around in out.
     //out = [my_kx->width][my_ky->width][nz]
     //rcvbuff = [p][my_kx->width][my_ky->width][pz]
-    complex PRECISION * pirbuff = rcvbuff;
-    complex PRECISION *  piout = out;
+    complex<PRECISION> * pirbuff = rcvbuff;
+    complex<PRECISION> *  piout = out;
 
     int offset = 0;
     for(i = 0; i < vsize; i++)
@@ -915,7 +916,7 @@ void fft2_tpf2(complex PRECISION* in, complex PRECISION* out)
             for(k = 0; k < my_ky->width; k++)
             {
                 piout = out + offset + k * nz + j * my_ky->width * nz;
-                memcpy(piout, pirbuff, all_z[i].width * sizeof(complex PRECISION));
+                memcpy(piout, pirbuff, all_z[i].width * sizeof(complex<PRECISION>));
                 pirbuff += all_z[i].width;
             }
         }
@@ -929,24 +930,24 @@ void fft2_tpf2(complex PRECISION* in, complex PRECISION* out)
     free(sdisp);
 }
 
-void fft2_backward(complex PRECISION* in, PRECISION* out)
+void fft2_backward(complex<PRECISION>* in, PRECISION* out)
 {
-    complex PRECISION * comp = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex PRECISION));
+    complex<PRECISION> * comp = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nkz * sizeof(complex<PRECISION>));
     fft_tpb3(in, comp);
 
-    complex PRECISION * comp1 = (complex PRECISION*)fft_malloc(my_kx->width * my_ky->width * nkz*sizeof(complex PRECISION));
+    complex<PRECISION> * comp1 = (complex<PRECISION>*)fft_malloc(my_kx->width * my_ky->width * nkz*sizeof(complex<PRECISION>));
     fft_execute_c2c(planb3, comp, comp1);
     fft_free(comp);
 
-    complex PRECISION * comp2 = (complex PRECISION*)fft_malloc(nkx * my_ky->width * my_z->width*sizeof(complex PRECISION));
+    complex<PRECISION> * comp2 = (complex<PRECISION>*)fft_malloc(nkx * my_ky->width * my_z->width*sizeof(complex<PRECISION>));
     fft2_tpb2(comp1, comp2);
     fft_free(comp1);
 
-    complex PRECISION * comp3 = (complex PRECISION*)fft_malloc(my_ky->width * my_z->width * nx*sizeof(complex PRECISION));
+    complex<PRECISION> * comp3 = (complex<PRECISION>*)fft_malloc(my_ky->width * my_z->width * nx*sizeof(complex<PRECISION>));
     fft_execute_c2c(planb2, comp2, comp3);
     fft_free(comp2);
     
-    complex PRECISION * comp4 = (complex PRECISION*)fft_malloc(nky * my_z->width * my_x->width*sizeof(complex PRECISION));
+    complex<PRECISION> * comp4 = (complex<PRECISION>*)fft_malloc(nky * my_z->width * my_x->width*sizeof(complex<PRECISION>));
     fft2_tpb1(comp3, comp4);
     fft_free(comp3);
     
@@ -954,10 +955,10 @@ void fft2_backward(complex PRECISION* in, PRECISION* out)
     fft_free(comp4);
 }
 
-void fft2_tpb1(complex PRECISION* in, complex PRECISION* out)
+void fft2_tpb1(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     int i,j,k;
-    complex PRECISION * sndbuff = (complex PRECISION*)malloc(my_ky->width * my_z->width * nx * sizeof(complex PRECISION));
+    complex<PRECISION> * sndbuff = (complex<PRECISION>*)malloc(my_ky->width * my_z->width * nx * sizeof(complex<PRECISION>));
     //set up the send/receive data structures
     int * scnt = (int*)malloc(hsize * sizeof(int));
     int * sdisp = (int*)malloc(hsize * sizeof(int));
@@ -968,8 +969,8 @@ void fft2_tpb1(complex PRECISION* in, complex PRECISION* out)
     //contiguously through it, and jumping around in out.
     //out = [my_ky->width][my_z->width][nx]
     //rcvbuff = [p][my_ky->width][my_z->width][px]
-    complex PRECISION * pisbuff = sndbuff;
-    complex PRECISION *  piin = in;
+    complex<PRECISION> * pisbuff = sndbuff;
+    complex<PRECISION> *  piin = in;
 
     int offset = 0;
     for(i = 0; i < hsize; i++)
@@ -979,7 +980,7 @@ void fft2_tpb1(complex PRECISION* in, complex PRECISION* out)
             for(k = 0; k < my_z->width; k++)
             {
                 piin = in + offset + k * nx + j * my_z->width * nx;
-                memcpy(pisbuff, piin, all_x[i].width * sizeof(complex PRECISION));
+                memcpy(pisbuff, piin, all_x[i].width * sizeof(complex<PRECISION>));
                 pisbuff += all_x[i].width;
             }
         }
@@ -1001,7 +1002,7 @@ void fft2_tpb1(complex PRECISION* in, complex PRECISION* out)
     MPI_Alltoallv(sndbuff, scnt, sdisp, MPI_PRECISION, out, rcnt, rdisp, MPI_PRECISION, hcomm);
 
     //make sure the dealiased wavelengths are 0
-    memset(out + dealias_ky.min * my_x->width * my_z->width, 0, dealias_ky.width * my_x->width * my_z->width * sizeof(complex PRECISION));
+    memset(out + dealias_ky.min * my_x->width * my_z->width, 0, dealias_ky.width * my_x->width * my_z->width * sizeof(complex<PRECISION>));
 
     free(sndbuff);
     free(rcnt);
@@ -1010,10 +1011,10 @@ void fft2_tpb1(complex PRECISION* in, complex PRECISION* out)
     free(sdisp);
 }
 
-void fft2_tpb2(complex PRECISION* in, complex PRECISION* out)
+void fft2_tpb2(complex<PRECISION>* in, complex<PRECISION>* out)
 {
     int i,j,k;
-    complex PRECISION * sndbuff = (complex PRECISION*)malloc(my_kx->width * my_ky->width * nz * sizeof(complex PRECISION));
+    complex<PRECISION> * sndbuff = (complex<PRECISION>*)malloc(my_kx->width * my_ky->width * nz * sizeof(complex<PRECISION>));
     //set up the send/receive data structures
     int * scnt = (int*)malloc(vsize * sizeof(int));
     int * sdisp = (int*)malloc(vsize * sizeof(int));
@@ -1024,8 +1025,8 @@ void fft2_tpb2(complex PRECISION* in, complex PRECISION* out)
     //contiguously through it, and jumping around in in.
     //in = [my_kx->width][my_ky->width][nz]
     //sndbuff = [p][my_kx->width][my_ky->width][pz]
-    complex PRECISION * pisbuff = sndbuff;
-    complex PRECISION *  piin = in;
+    complex<PRECISION> * pisbuff = sndbuff;
+    complex<PRECISION> *  piin = in;
 
     int offset = 0;
     for(i = 0; i < vsize; i++)
@@ -1035,7 +1036,7 @@ void fft2_tpb2(complex PRECISION* in, complex PRECISION* out)
             for(k = 0; k < my_ky->width; k++)
             {
                 piin = in + offset + k * nz + j * my_ky->width * nz;
-                memcpy(pisbuff, piin, all_z[i].width * sizeof(complex PRECISION));
+                memcpy(pisbuff, piin, all_z[i].width * sizeof(complex<PRECISION>));
                 pisbuff += all_z[i].width;
             }
         }
@@ -1079,8 +1080,8 @@ void fft2_tpb2(complex PRECISION* in, complex PRECISION* out)
     MPI_Alltoallv(sndbuff, scnt, sdisp, MPI_PRECISION, out, rcnt, rdisp, MPI_PRECISION, vcomm);
 
     //now move the data so that we have the dealiased wavelengths back
-    memmove(out + (dealias_kx.max+1) * my_ky->width * my_z->width, out + dealias_kx.min * my_ky->width * my_z->width, nhigh * my_ky->width * my_z->width * sizeof(complex PRECISION));
-    memset(out + dealias_kx.min * my_ky->width * my_z->width, 0, dealias_kx.width * my_ky->width * my_z->width * sizeof(complex PRECISION));
+    memmove(out + (dealias_kx.max+1) * my_ky->width * my_z->width, out + dealias_kx.min * my_ky->width * my_z->width, nhigh * my_ky->width * my_z->width * sizeof(complex<PRECISION>));
+    memset(out + dealias_kx.min * my_ky->width * my_z->width, 0, dealias_kx.width * my_ky->width * my_z->width * sizeof(complex<PRECISION>));
 
     free(sndbuff);
     free(rcnt);
@@ -1094,7 +1095,7 @@ void testfft1()
     int i,j,k,l;
     PRECISION  * start = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
     PRECISION * finish = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    complex PRECISION  * comp = (complex PRECISION *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex PRECISION));
+    complex<PRECISION>  * comp = (complex<PRECISION> *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex<PRECISION>));
 
     int len;
     int * ks;
@@ -1120,7 +1121,7 @@ void testfft1()
 
     generateFunc(ks, len, (PRECISION*)start);
 
-    fft1_forward((PRECISION*)start, (complex PRECISION*)comp);
+    fft1_forward((PRECISION*)start, (complex<PRECISION>*)comp);
 
     int match;
     int k1,k2,k3;
@@ -1133,8 +1134,8 @@ void testfft1()
             for(k = 0; k < ndkz; k++)
             {
                 index = k + j*ndkz + i*my_ky->width * ndkz;
-                PRECISION abs = fabs(creal(comp[index])) + fabs(cimag(comp[index]));
-                if(abs > 1e-8)
+                PRECISION mag = abs(comp[index]);
+                if(mag > 1e-8)
                 {
                     //fprintf(stderr, "found: %d %d %d\n", i + my_kx->min, j + my_ky->min, k);
                     match = 0;
@@ -1157,7 +1158,7 @@ void testfft1()
                     if(!match)
                     {
                         fprintf(stderr, "NO MATCH: ");
-                        fprintf(stderr,"%d %d %d %d %e + %e i\n", i + my_kx->min, j + my_ky->min, k, grank, creal(comp[index]), cimag(comp[index]));
+                        fprintf(stderr,"%d %d %d %d %e + %e i\n", i + my_kx->min, j + my_ky->min, k, grank, comp[index].real(), comp[index].imag());
                     }
                 }
             }
@@ -1168,7 +1169,7 @@ void testfft1()
     if(grank == 0)
         fprintf(stderr, "Matched %d out of %d\n", total, len);
 
-    fft1_backward((complex PRECISION*)comp, (PRECISION*)finish);
+    fft1_backward((complex<PRECISION>*)comp, (PRECISION*)finish);
 
     PRECISION err;
     for(i = 0; i < my_z->width; i++)
@@ -1192,7 +1193,7 @@ void testfft2()
     int i,j,k,l;
     PRECISION  * start = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
     PRECISION * finish = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    complex PRECISION  * comp = (complex PRECISION *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex PRECISION));
+    complex<PRECISION>  * comp = (complex<PRECISION> *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex<PRECISION>));
 
     int len;
     int * ks;
@@ -1218,7 +1219,7 @@ void testfft2()
 
     generateFunc(ks, len, (PRECISION*)start);
 
-    fft2_forward((PRECISION*)start, (complex PRECISION*)comp);
+    fft2_forward((PRECISION*)start, (complex<PRECISION>*)comp);
 
     int match;
     int k1,k2,k3;
@@ -1231,8 +1232,8 @@ void testfft2()
             for(k = 0; k < ndkz; k++)
             {
                 index = k + j*ndkz + i*my_ky->width * ndkz;
-                PRECISION abs = fabs(creal(comp[index])) + fabs(cimag(comp[index]));
-                if(abs > 1e-8)
+                PRECISION mag = abs(comp[index]);
+                if(mag > 1e-8)
                 {
                     match = 0;
                     k1 = i + my_kx->min;
@@ -1254,7 +1255,7 @@ void testfft2()
                     if(!match)
                     {
                         fprintf(stderr, "NO MATCH: ");
-                        fprintf(stderr,"%d %d %d %d %e + %e i\n", i + my_kx->min, j + my_ky->min, k, grank, creal(comp[index]), cimag(comp[index]));
+                        fprintf(stderr,"%d %d %d %d %e + %e i\n", i + my_kx->min, j + my_ky->min, k, grank, comp[index].real(), comp[index].imag());
                     }
                 }
             }
@@ -1265,7 +1266,7 @@ void testfft2()
     if(grank == 0)
         fprintf(stderr, "Matched %d out of %d\n", total, len);
 
-    fft2_backward((complex PRECISION*)comp, (PRECISION*)finish);
+    fft2_backward((complex<PRECISION>*)comp, (PRECISION*)finish);
 
     PRECISION err;
     for(i = 0; i < my_z->width; i++)
@@ -1320,7 +1321,7 @@ void repeatfft1(int count)
     int i;
     PRECISION  * start = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
     PRECISION * finish = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    complex PRECISION  * comp = (complex PRECISION *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex PRECISION));
+    complex<PRECISION>  * comp = (complex<PRECISION> *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex<PRECISION>));
 
     int len;
     int * ks;
@@ -1348,8 +1349,8 @@ void repeatfft1(int count)
 
     for(i = 0; i < count; i++)
     {
-        fft1_forward((PRECISION*)start, (complex PRECISION*)comp);
-        fft1_backward((complex PRECISION*)comp, (PRECISION*)finish);
+        fft1_forward((PRECISION*)start, (complex<PRECISION>*)comp);
+        fft1_backward((complex<PRECISION>*)comp, (PRECISION*)finish);
     }
     fftw_cleanup();
 }
@@ -1359,7 +1360,7 @@ void repeatfft2(int count)
     int i;
     PRECISION  * start = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
     PRECISION * finish = (PRECISION *)malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
-    complex PRECISION  * comp = (complex PRECISION *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex PRECISION));
+    complex<PRECISION>  * comp = (complex<PRECISION> *)malloc(my_kx->width * my_ky->width * ndkz *  sizeof(complex<PRECISION>));
 
     int len;
     int * ks;
@@ -1387,8 +1388,8 @@ void repeatfft2(int count)
 
     for(i = 0; i < count; i++)
     {
-        fft2_forward((PRECISION*)start, (complex PRECISION*)comp);
-        fft2_backward((complex PRECISION*)comp, (PRECISION*)finish);
+        fft2_forward((PRECISION*)start, (complex<PRECISION>*)comp);
+        fft2_backward((complex<PRECISION>*)comp, (PRECISION*)finish);
     }
     fftw_cleanup();
 }

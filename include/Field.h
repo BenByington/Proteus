@@ -22,7 +22,7 @@
 #define	_FIELD_H
 
 #include "Precision.h"
-#include <complex.h>
+#include <complex>
 
 #define SPEC 1
 #define SPAT 2
@@ -36,10 +36,10 @@
 typedef struct
 {
     PRECISION * spatial;
-    complex PRECISION * spectral;
-    complex PRECISION * force1;
-    complex PRECISION * force2;
-    complex PRECISION * force3;
+    std::complex<PRECISION> * spectral;
+    std::complex<PRECISION> * force1;
+    std::complex<PRECISION> * force2;
+    std::complex<PRECISION> * force3;
 }*p_field,field;
 
 /*
@@ -55,15 +55,15 @@ typedef struct
 {
     p_field poloidal;
     p_field toroidal;
-    complex PRECISION * mean_x;
-    complex PRECISION * mean_y;
-    complex PRECISION * mean_xf1;
-    complex PRECISION * mean_yf1;
-    complex PRECISION * mean_xf2;
-    complex PRECISION * mean_yf2;
-    complex PRECISION * mean_xf3;
-    complex PRECISION * mean_yf3;
-    complex PRECISION mean_z;
+    std::complex<PRECISION> * mean_x;
+    std::complex<PRECISION> * mean_y;
+    std::complex<PRECISION> * mean_xf1;
+    std::complex<PRECISION> * mean_yf1;
+    std::complex<PRECISION> * mean_xf2;
+    std::complex<PRECISION> * mean_yf2;
+    std::complex<PRECISION> * mean_xf3;
+    std::complex<PRECISION> * mean_yf3;
+    std::complex<PRECISION> mean_z;
 }*p_solenoid, solenoid;
 
 /*

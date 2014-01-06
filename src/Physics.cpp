@@ -29,6 +29,8 @@
 #include <string.h>
 #include <math.h>
 
+using namespace std;
+
 p_vector rhs = 0;
 p_vector temp1 = 0;
 p_vector temp2 = 0;
@@ -241,7 +243,7 @@ void calcForces()
     debug("Calculating forces\n");
 
     //cycle the force pointers for any active equation.
-    complex PRECISION * temp;
+    complex<PRECISION> * temp;
     if(momEquation)
     {
         temp = u->sol->poloidal->force3;
@@ -341,9 +343,9 @@ void calcMomentum()
     else
     {
         //make sure we don't start with garbage
-        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
-        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
-        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
+        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
     }
     
     //Apply hyper diffusion to the boundaries
@@ -359,8 +361,8 @@ void calcMomentum()
     //direction as a function of y and z (to remove nonlinear advection)
     if(momStaticForcing)
     {
-        complex PRECISION * xfield = rhs->x->spectral;
-        complex PRECISION * ffield = forceField->spectral;
+        complex<PRECISION> * xfield = rhs->x->spectral;
+        complex<PRECISION> * ffield = forceField->spectral;
         index = 0;
         for(i = 0; i < spectralCount; i++)
         {
@@ -451,9 +453,9 @@ void calcMomentum()
         partialY(tense->spectral, lor->z->spectral, 1);
 
         //TODO: Find a routine to change to include this factor
-        complex PRECISION * px = lor->x->spectral;
-        complex PRECISION * py = lor->y->spectral;
-        complex PRECISION * pz = lor->z->spectral;
+        complex<PRECISION> * px = lor->x->spectral;
+        complex<PRECISION> * py = lor->y->spectral;
+        complex<PRECISION> * pz = lor->z->spectral;
         int i;
         for(i = 0; i < spectralCount; i++)
         {
@@ -481,8 +483,8 @@ void calcMomentum()
 
     if(buoyancy)
     {
-        complex PRECISION * zfield = rhs->z->spectral;
-        complex PRECISION * tfield = T->spectral;
+        complex<PRECISION> * zfield = rhs->z->spectral;
+        complex<PRECISION> * tfield = T->spectral;
 
         PRECISION factor =  Ra * Pr;
         index = 0;
@@ -527,9 +529,9 @@ void calcMag()
     else
     {
         //make sure we don't start with garbage
-        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex PRECISION));
-        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex PRECISION));
-        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex PRECISION));
+        memset(rhs->x->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+        memset(rhs->y->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
+        memset(rhs->z->spectral, 0, spectralCount * sizeof(complex<PRECISION>));
     }
     
     //Apply hyper diffusion to the boundaries.  Again, this does not currently
@@ -544,8 +546,8 @@ void calcMag()
     //static forcing is currently only in the x direction and a function of y and z
     if(magStaticForcing)
     {
-        complex PRECISION * xfield = rhs->x->spectral;
-        complex PRECISION * ffield = magForceField->spectral;
+        complex<PRECISION> * xfield = rhs->x->spectral;
+        complex<PRECISION> * ffield = magForceField->spectral;
         index = 0;
         for(i = 0; i < spectralCount; i++)
         {
@@ -606,7 +608,7 @@ void calcMag()
  */
 void calcTemp()
 {
-    complex PRECISION * forces = T->force1;
+    complex<PRECISION> * forces = T->force1;
     
     if(tDiff)
     {
@@ -614,7 +616,7 @@ void calcTemp()
     }
     else
     {
-        memset(forces, 0, spectralCount * sizeof(complex PRECISION));
+        memset(forces, 0, spectralCount * sizeof(complex<PRECISION>));
     }
 
     if(tempAdvection)
@@ -705,8 +707,8 @@ void eulerStep()
 {
     int i;
     
-    complex PRECISION * func;
-    complex PRECISION * f1;
+    complex<PRECISION> * func;
+    complex<PRECISION> * f1;
 
     if(momEquation)
     {
@@ -788,9 +790,9 @@ void AB2Step()
 {
     int i;
 
-    complex PRECISION * func;
-    complex PRECISION * f1;
-    complex PRECISION * f2;
+    complex<PRECISION> * func;
+    complex<PRECISION> * f1;
+    complex<PRECISION> * f2;
 
     PRECISION c0 = dt * (0.5 * dt / dt1 + 1);
     PRECISION c1 = -0.5 * dt * dt / dt1;
@@ -889,10 +891,10 @@ void AB3Step()
 {
     int i;
 
-    complex PRECISION * func;
-    complex PRECISION * f1;
-    complex PRECISION * f2;
-    complex PRECISION * f3;
+    complex<PRECISION> * func;
+    complex<PRECISION> * f1;
+    complex<PRECISION> * f2;
+    complex<PRECISION> * f3;
 
     PRECISION c0 =  dt + (dt/dt1)*(dt/(dt1+dt2))*(dt/3.0 + 0.5*(2*dt1+ dt2));
     PRECISION c1 = -(dt/dt1)*(dt/(dt2))*(dt/3.0 + 0.5*(dt1+dt2));
@@ -999,10 +1001,10 @@ displacement displacementByCenter()
 {
     int i;
     displacement ret;
-    complex PRECISION dkz;
-    complex PRECISION dkx;
+    complex<PRECISION> dkz;
+    complex<PRECISION> dkx;
     
-    complex PRECISION * data = B->vec->y->spectral;
+    complex<PRECISION> * data = B->vec->y->spectral;
     PRECISION mean = 0;
     PRECISION weightedMeanX = 0;
     PRECISION weightedMeanZ = 0;
@@ -1011,12 +1013,12 @@ displacement displacementByCenter()
     //uses the mean values of x
     if(my_kx->min == 0)
     {
-        mean = __real__(data[0]);
+        mean = data[0].real();
 		weightedMeanZ = zmx/2.*mean;
         for(i = 1; i < ndkz; i++)
         {
             dkz = dzFactor(i);
-            weightedMeanZ += __real__(data[i] / dkz);
+            weightedMeanZ += (data[i] / dkz).real();
         }
     }
     
@@ -1027,7 +1029,7 @@ displacement displacementByCenter()
     	for(i = 1; i < my_kx->width; i++)
     	{
     	    dkx = dxFactor(i);
-    	    weightedMeanX += 2*__real__(data[ndkz*i] / dkx);
+    	    weightedMeanX += 2*(data[ndkz*i] / dkx).real();
    		}
 	}
 	else
@@ -1035,7 +1037,7 @@ displacement displacementByCenter()
     	for(i = 0; i < my_kx->width; i++)
     	{
     	    dkx = dxFactor(i);
-    	    weightedMeanX += 2*__real__(data[ndkz*i] / dkx);
+    	    weightedMeanX += 2*(data[ndkz*i] / dkx).real();
    		}
     }
     //Root need all the info for the scattered sum

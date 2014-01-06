@@ -24,9 +24,11 @@
 
 #include <stdlib.h>
 
+using namespace std;
+
 void allocateSpectral(p_field f)
 {
-    f->spectral = (complex PRECISION*)fft_malloc(my_ky->width * my_kx->width * ndkz * sizeof(complex PRECISION));
+    f->spectral = (complex<PRECISION>*)fft_malloc(my_ky->width * my_kx->width * ndkz * sizeof(complex<PRECISION>));
 }
 
 void allocateSpatial(p_field f)
@@ -36,9 +38,9 @@ void allocateSpatial(p_field f)
 
 void allocateForce(p_field f)
 {
-    f->force1 = (complex PRECISION*)fft_malloc(spectralCount * sizeof(complex PRECISION));
-    f->force2 = (complex PRECISION*)fft_malloc(spectralCount * sizeof(complex PRECISION));
-    f->force3 = (complex PRECISION*)fft_malloc(spectralCount * sizeof(complex PRECISION));
+    f->force1 = (complex<PRECISION>*)fft_malloc(spectralCount * sizeof(complex<PRECISION>));
+    f->force2 = (complex<PRECISION>*)fft_malloc(spectralCount * sizeof(complex<PRECISION>));
+    f->force3 = (complex<PRECISION>*)fft_malloc(spectralCount * sizeof(complex<PRECISION>));
 }
 
 void eraseSpatial(p_field f)
@@ -98,14 +100,14 @@ p_solenoid newSolenoid()
 
    ret->mean_z = 0;
 
-   ret->mean_x = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_y = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_xf1 = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_yf1 = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_xf2 = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_yf2 = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_xf3 = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
-   ret->mean_yf3 = (complex PRECISION*)malloc(ndkz * sizeof(complex PRECISION));
+   ret->mean_x = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_y = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_xf1 = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_yf1 = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_xf2 = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_yf2 = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_xf3 = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
+   ret->mean_yf3 = (complex<PRECISION>*)malloc(ndkz * sizeof(complex<PRECISION>));
 
    return ret;
 }

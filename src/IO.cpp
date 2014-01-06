@@ -31,6 +31,8 @@
 #include "Numerics.h"
 #include "Communication.h"
 
+using namespace std;
+
 FILE * status = 0;
 
 int scalarCount;
@@ -161,7 +163,7 @@ void testIO()
  *             the cost of the extra transpose required here is probably
  *             negligible, though this should be verified.
  */
-void writeSpatial(field * f, char * name)
+void writeSpatial(field * f, string name)
 {
     int i,j,k,l,m;
     debug("Writing spatial data to file %s\n", name);
@@ -252,8 +254,8 @@ void writeSpatial(field * f, char * name)
 
     debug("Performing parallel file write\n");
     //TODO: revisit MPI_MODE_SEQUENTIAL and MPI_INFO_NULL to make sure these are what we want
-    MPI_File fh;
-    MPI_File_open(fcomm, name, MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
+    MPI::File fh;
+    MPI::File::Open(fcomm, name.c_str(), MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
     debug("MPI File opened successfully\n");
     
     //Calculate displacements for each IO processor into the full file.
@@ -289,7 +291,7 @@ void writeSpatial(field * f, char * name)
  * This function is just the inverse of writeSpatial.  See comments for above
  * function.
  */
-void readSpatial(field * f, char * name)
+void readSpatial(field * f, string name)
 {
     int i,j,k,l,m;
     debug("Reading spatial data from file %s\n", name);
