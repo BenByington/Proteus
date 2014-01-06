@@ -1,5 +1,6 @@
 .SUFFIXES: .c .o .cpp
 
+
 LIBS =  -L/Users/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
 -I/Users/bbyingto/fftw/include
 
