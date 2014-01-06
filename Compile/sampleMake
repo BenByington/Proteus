@@ -3,18 +3,18 @@
 LIBS =  -L/Users/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
 -I/Users/bbyingto/fftw/include
 
-INCL=../src/include/
+INCL=../include/
+SRC = ../src
 
 cc = mpicc 
 CC = mpic++
 
 FASTSSE= -O3
 
-  CCFLAGS = $(FASTSSE)  -I../src/include -I/Users/bbyingto/fftw/include
+  CCFLAGS = $(FASTSSE)  -I${INCL} -I/Users/bbyingto/fftw/include
 # Debug flags
-# CCFLAGS =  -g  -I../src/include -I/cse/grads/bbyingto/fftw/include
+# CCFLAGS =  -g -I${INCL} -I/cse/grads/bbyingto/fftw/include
 
-SRC = ../src
 
 OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
