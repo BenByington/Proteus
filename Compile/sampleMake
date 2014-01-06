@@ -3,7 +3,7 @@
 LIBS =  -L/Users/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
 -I/Users/bbyingto/fftw/include
 
-INCL=../include/
+INCL=../include
 SRC = ../src
 
 cc = mpicc 
@@ -68,11 +68,11 @@ FFTWrapper.o: ${SRC}/FFTWrapper.c
 Communication.o : $(INCL)/Communication.h
 Communication.o : $(INCL)/FFTWrapper.h
 Communication.o : $(INCL)/Environment.h
-Communication.o : $(INCL)/Log.h
+Communication.o : $(INCL)/Logs/Log.h
 Environment.o : $(INCL)/Environment.h
 Environment.o : $(INCL)/LaborDivision.h
 Environment.o : $(INCL)/Communication.h
-Environment.o : $(INCL)/Log.h
+Environment.o : $(INCL)/Logs/Log.h
 Environment.o : $(INCL)/Properties.h
 FFTWrapper.o  : $(INCL)/FFTWrapper.h
 Field.o  : $(INCL)/Field.h
@@ -81,32 +81,32 @@ Field.o  : $(INCL)/FFTWrapper.h
 IO.o  : $(INCL)/IO.h
 IO.o  : $(INCL)/Field.h
 IO.o  : $(INCL)/Environment.h
-IO.o  : $(INCL)/Log.h
+IO.o  : $(INCL)/Logs/Log.h
 IO.o  : $(INCL)/State.h
 IO.o  : $(INCL)/Numerics.h
 IO.o  : $(INCL)/Communication.h
 LaborDivision.o  : $(INCL)/LaborDivision.h
 LaborDivision.o  : $(INCL)/Environment.h
-LaborDivision.o  : $(INCL)/Log.h
-Log.o  : $(INCL)/Log.h
+LaborDivision.o  : $(INCL)/Logs/Log.h
+Log.o  : $(INCL)/Logs/Log.h
 Log.o  : $(INCL)/Environment.h
 Numerics.o  : $(INCL)/Numerics.h
-Numerics.o  : $(INCL)/Log.h
+Numerics.o  : $(INCL)/Logs/Log.h
 Numerics.o  : $(INCL)/Environment.h
 Numerics.o  : $(INCL)/Communication.h
 Physics.o  : $(INCL)/Physics.h
 Physics.o  : $(INCL)/Numerics.h
 Physics.o  : $(INCL)/State.h
-Physics.o  : $(INCL)/Log.h
+Physics.o  : $(INCL)/Logs/Log.h
 Physics.o  : $(INCL)/Communication.h
 Physics.o  : $(INCL)/Environment.h
 Physics.o  : $(INCL)/Field.h
 Physics.o  : $(INCL)/TimeFunctions.h
 Properties.o  : $(INCL)/Properties.h
 Properties.o  : $(INCL)/Environment.h
-Properties.o  : $(INCL)/Log.h
+Properties.o  : $(INCL)/Logs/Log.h
 State.o  : $(INCL)/State.h
-State.o  : $(INCL)/Log.h
+State.o  : $(INCL)/Logs/Log.h
 State.o  : $(INCL)/IO.h
 State.o  : $(INCL)/Environment.h
 State.o  : $(INCL)/Numerics.h
@@ -114,7 +114,7 @@ State.o  : $(INCL)/Communication.h
 State.o  : $(INCL)/Field.h
 TimeFunctions.o  : $(INCL)/TimeFunctions.h
 TimeFunctions.o  : $(INCL)/Environment.h
-TimeFunctions.o  : $(INCL)/Log.h
+TimeFunctions.o  : $(INCL)/Logs/Log.h
 TimeFunctions.o  : $(INCL)/Communication.h
 main.o  : $(INCL)/Field.h
 main.o  : $(INCL)/Communication.h
@@ -125,5 +125,5 @@ main.o  : $(INCL)/State.h
 main.o  : $(INCL)/Physics.h
 main.o  : $(INCL)/Properties.h
 main.o  : $(INCL)/LaborDivision.h
-main.o  : $(INCL)/Log.h
+main.o  : $(INCL)/Logs/Log.h
 
