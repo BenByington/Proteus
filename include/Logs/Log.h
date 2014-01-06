@@ -76,5 +76,5 @@ void endLogging();
 
 //Include one of the log levels here.  The program will default to this level
 //of verbosity.
-#include "LogInfo.h"
+#include "Logs/LogInfo.h"
 

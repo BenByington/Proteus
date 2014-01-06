@@ -19,7 +19,7 @@
 
 #include "Properties.h"
 #include "Environment.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "Physics.h"
 
 #include <fstream>

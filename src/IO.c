@@ -26,7 +26,7 @@
 #include "IO.h"
 #include "Field.h"
 #include "Environment.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "State.h"
 #include "Numerics.h"
 #include "Communication.h"
@@ -754,7 +754,6 @@ void performOutput()
     }
 }
 
-#include "LogTrace.h"
 
 /*
  * This routine is virtually a memory dump.  There is no reason to gather data

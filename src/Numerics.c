@@ -18,7 +18,7 @@
  */
 
 #include "Numerics.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "Environment.h"
 #include "Communication.h"
 #include "State.h"
@@ -978,7 +978,7 @@ extern void minusEq(complex PRECISION * one, complex PRECISION * two)
     }
 }
 
-#include "LogInfo.h"
+#include "Logs/LogInfo.h"
 /*
  * To understand the following three routines, one must understand the data 
  * layout from an FFT operation.  For a basic 1D FFT, the first index of the 

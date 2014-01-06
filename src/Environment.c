@@ -20,7 +20,7 @@
 #include "Environment.h"
 #include "LaborDivision.h"
 #include "Communication.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "Properties.h"
 
 #include <stdio.h>

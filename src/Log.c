@@ -18,7 +18,7 @@
  */
 
 #include "Environment.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include <mpi.h>
 #include <sys/stat.h>
 

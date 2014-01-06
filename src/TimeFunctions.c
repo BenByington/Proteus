@@ -19,7 +19,7 @@
 
 #include "TimeFunctions.h"
 #include "Environment.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "Communication.h"
 
 #include <math.h>

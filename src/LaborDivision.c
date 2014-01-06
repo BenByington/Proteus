@@ -22,7 +22,7 @@
 
 #include "Environment.h"
 #include "LaborDivision.h"
-#include "Log.h"
+#include "Logs/Log.h"
 
 /*
  * This routine is in charge of things related to the size of the problem.

@@ -20,7 +20,7 @@
 #include "Physics.h"
 #include "Numerics.h"
 #include "State.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "Communication.h"
 #include "Environment.h"
 #include "Field.h"

@@ -27,7 +27,7 @@
 #include "Communication.h"
 #include "Environment.h"
 #include "IO.h"
-#include "Log.h"
+#include "Logs/Log.h"
 #include "Numerics.h"
 #include "State.h"
 #include "Physics.h"
