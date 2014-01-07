@@ -61,11 +61,11 @@ typedef struct
 //group.  Processor layout is conceptually thought of as a 2D grid of compute 
 //nodes along with a 1D group of IO nodes that each own integer layers of 
 //compute nodes.
-extern MPI::Intracomm hcomm;  //communication within a given row of compute nodes
-extern MPI::Intracomm vcomm;  //communication within a given column of compute nodes
-extern MPI::Intracomm ccomm;  //communication within the set of all compute nodes
-extern MPI::Intracomm iocomm; //communication with an io node and its compute layer(s)
-extern MPI::Intracomm fcomm;  //Communication between all io nodes
+extern MPI_Comm hcomm;  //communication within a given row of compute nodes
+extern MPI_Comm vcomm;  //communication within a given column of compute nodes
+extern MPI_Comm ccomm;  //communication within the set of all compute nodes
+extern MPI_Comm iocomm; //communication with an io node and its compute layer(s)
+extern MPI_Comm fcomm;  //Communication between all io nodes
 
 //layout info
 extern int hdiv;         //number of compute nodes in a row

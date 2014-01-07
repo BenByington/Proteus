@@ -1,6 +1,5 @@
 .SUFFIXES: .c .o .cpp
 
-
 LIBS =  -L/Users/bbyingto/fftw/lib -lmpi -lfftw3 -lfftw3f\
 -I/Users/bbyingto/fftw/include
 
@@ -15,7 +14,6 @@ FASTSSE= -O3
 # Debug flags
 # CCFLAGS =  -g -I${INCL} -I/cse/grads/bbyingto/fftw/include
 
-
 OBJS =  Communication.o Numerics.o Environment.o Field.o IO.o\
 	LaborDivision.o Log.o main.o Physics.o Properties.o State.o\
         TimeFunctions.o FFTWrapper.o
@@ -24,46 +22,46 @@ proteus: $(OBJS)
 	$(CC) $(CCFLAGS) -o proteus $(OBJS) $(LIBS) 
 
 TimeFunctions.o: ${SRC}/TimeFunctions.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/TimeFunctions.c
+	$(CC) $(CCFLAGS) -c $(SRC)/TimeFunctions.cpp
 
 Communication.o: ${SRC}/Communication.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/Communication.c
+	$(CC) $(CCFLAGS) -c $(SRC)/Communication.cpp
 
 clean:
-	rm -f *.o *.mod imhd
+	rm -f *.o *.mod proteus
 
 Numerics.o: ${SRC}/Numerics.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/Numerics.c
+	$(CC) $(CCFLAGS) -c $(SRC)/Numerics.cpp
 
 Environment.o: ${SRC}/Environment.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/Environment.c
+	$(CC) $(CCFLAGS) -c $(SRC)/Environment.cpp
 
 Field.o: ${SRC}/Field.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/Field.c
+	$(CC) $(CCFLAGS) -c $(SRC)/Field.cpp
 
 IO.o: ${SRC}/IO.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/IO.c
+	$(CC) $(CCFLAGS) -c $(SRC)/IO.cpp
 
 LaborDivision.o: ${SRC}/LaborDivision.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/LaborDivision.c
+	$(CC) $(CCFLAGS) -c $(SRC)/LaborDivision.cpp
 
 Log.o: ${SRC}/Log.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/Log.c
+	$(CC) $(CCFLAGS) -c $(SRC)/Log.cpp
 
 main.o: ${SRC}/main.cpp
 	$(CC) $(CCFLAGS) -c $(SRC)/main.cpp
 
 Physics.o: ${SRC}/Physics.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/Physics.c
+	$(CC) $(CCFLAGS) -c $(SRC)/Physics.cpp
 
 Properties.o: ${SRC}/Properties.cpp
 	$(CC) $(CCFLAGS) -c $(SRC)/Properties.cpp
 
 State.o: ${SRC}/State.cpp
-	$(CC) $(CCFLAGS) -c $(SRC)/State.c
+	$(CC) $(CCFLAGS) -c $(SRC)/State.cpp
 	
 FFTWrapper.o: ${SRC}/FFTWrapper.cpp
-	${CC} $(CCFLAGS) -c $(SRC)/FFTWrapper.c
+	${CC} $(CCFLAGS) -c $(SRC)/FFTWrapper.cpp
 
 Communication.o : $(INCL)/Communication.h
 Communication.o : $(INCL)/FFTWrapper.h

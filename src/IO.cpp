@@ -85,15 +85,25 @@ void testIO()
     }
 
     debug("Writing test IO data to files\n");
-    writeSpatial(f, "Test/x");
-    writeSpatial(f+1, "Test/y");
-    writeSpatial(f+2, "Test/z");
+    char * name1 = new char[15];
+    char * name2 = new char[15];
+    char * name3 = new char[15];
+    strcpy(name1, "Test/x");
+    strcpy(name2, "Test/y");
+    strcpy(name3, "Test/z");
+    writeSpatial(f, name1);
+    writeSpatial(f+1, name2);
+    writeSpatial(f+2, name3);
 
     debug("Reading test IO data from files\n");
-    readSpatial(f2, "Test/x");
-    readSpatial(f2+1, "Test/y");
-    readSpatial(f2+2, "Test/z");
+    readSpatial(f2, name1);
+    readSpatial(f2+1, name2);
+    readSpatial(f2+2, name3);
 
+    delete [] name1;
+    delete [] name2;
+    delete [] name3;
+    
     if(compute_node)
     {
         debug("Checking integrity of data\n");
@@ -163,7 +173,7 @@ void testIO()
  *             the cost of the extra transpose required here is probably
  *             negligible, though this should be verified.
  */
-void writeSpatial(field * f, string name)
+void writeSpatial(field * f, char name[])
 {
     int i,j,k,l,m;
     debug("Writing spatial data to file %s\n", name);
@@ -254,8 +264,8 @@ void writeSpatial(field * f, string name)
 
     debug("Performing parallel file write\n");
     //TODO: revisit MPI_MODE_SEQUENTIAL and MPI_INFO_NULL to make sure these are what we want
-    MPI::File fh;
-    MPI::File::Open(fcomm, name.c_str(), MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
+        MPI_File fh;
+    MPI_File_open(fcomm, name, MPI_MODE_WRONLY | MPI_MODE_CREATE, MPI_INFO_NULL, &fh);
     debug("MPI File opened successfully\n");
     
     //Calculate displacements for each IO processor into the full file.
@@ -275,7 +285,10 @@ void writeSpatial(field * f, string name)
     
     trace("Our view starts at element %d\n", disp);
     trace("Setting view...\n");
-    MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, "native", MPI_INFO_NULL);
+    char * type = new char[20];
+    strcpy(type, "native");
+    MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, type, MPI_INFO_NULL);
+    delete [] type;
     trace("Writing to file...\n");
     MPI_File_write(fh, sndbuff, nx * ny * nz_layers, MPI_PRECISION, MPI_STATUS_IGNORE );
     MPI_File_close(&fh);
@@ -291,7 +304,7 @@ void writeSpatial(field * f, string name)
  * This function is just the inverse of writeSpatial.  See comments for above
  * function.
  */
-void readSpatial(field * f, string name)
+void readSpatial(field * f, char name[])
 {
     int i,j,k,l,m;
     debug("Reading spatial data from file %s\n", name);
@@ -321,14 +334,17 @@ void readSpatial(field * f, string name)
         }
         disp *= nx * ny * sizeof(PRECISION);
         trace("Our file view starts at displacement %d\n", disp);
-        trace("Setting view\n");
-        MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, "native", MPI_INFO_NULL);
+        trace("Setting view\n"); 
+        char * type = new char[20];
+        strcpy(type, "native");
+        MPI_File_set_view(fh, disp, MPI_PRECISION, MPI_PRECISION, type, MPI_INFO_NULL);
+        delete [] type;
         trace("Reading file\n");
         MPI_File_read(fh, sndbuff, nx * ny * nz_layers, MPI_PRECISION, MPI_STATUS_IGNORE );
 
         MPI_File_close(&fh);
-    
 
+        
         debug("transposing the data for scatter to compute nodes\n");
         //rcvbuff is [l][h][vz][hx][y]
         //sndbuff [l][vz][y][h][hx]
@@ -436,7 +452,7 @@ void initIO()
 
         scalarCount = 0;
 
-        scalarData = malloc(numScalar * scalarPerF * sizeof(PRECISION));
+        scalarData = (PRECISION*)malloc(numScalar * scalarPerF * sizeof(PRECISION));
         piScalarData = scalarData;
     }
 }
@@ -788,67 +804,67 @@ void writeCheckpoint()
     {
         sprintf(name,"Checkpoint%d/upol%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->poloidal->spectral, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(u->sol->poloidal->spectral, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/upolf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->poloidal->force1, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(u->sol->poloidal->force1, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/upolf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->poloidal->force2, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(u->sol->poloidal->force2, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/utor%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->toroidal->spectral, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(u->sol->toroidal->spectral, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/utorf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->toroidal->force1, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(u->sol->toroidal->force1, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/utorf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->toroidal->force2, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(u->sol->toroidal->force2, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umx%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->mean_x, sizeof(complex PRECISION), ndkz, out);
+        fwrite(u->sol->mean_x, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umxf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->mean_xf1, sizeof(complex PRECISION), ndkz, out);
+        fwrite(u->sol->mean_xf1, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umxf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->mean_xf2, sizeof(complex PRECISION), ndkz, out);
+        fwrite(u->sol->mean_xf2, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umy%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->mean_y, sizeof(complex PRECISION), ndkz, out);
+        fwrite(u->sol->mean_y, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umyf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->mean_yf1, sizeof(complex PRECISION), ndkz, out);
+        fwrite(u->sol->mean_yf1, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umyf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(u->sol->mean_yf2, sizeof(complex PRECISION), ndkz, out);
+        fwrite(u->sol->mean_yf2, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/umz%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(&(u->sol->mean_z), sizeof(complex PRECISION), 1, out);
+        fwrite(&(u->sol->mean_z), sizeof(complex<PRECISION>), 1, out);
         fclose(out);
     }
 
@@ -856,67 +872,67 @@ void writeCheckpoint()
     {
         sprintf(name,"Checkpoint%d/bpol%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->poloidal->spectral, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(B->sol->poloidal->spectral, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bpolf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->poloidal->force1, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(B->sol->poloidal->force1, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bpolf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->poloidal->force2, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(B->sol->poloidal->force2, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/btor%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->toroidal->spectral, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(B->sol->toroidal->spectral, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/btorf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->toroidal->force1, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(B->sol->toroidal->force1, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/btorf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->toroidal->force2, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(B->sol->toroidal->force2, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmx%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->mean_x, sizeof(complex PRECISION), ndkz, out);
+        fwrite(B->sol->mean_x, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmxf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->mean_xf1, sizeof(complex PRECISION), ndkz, out);
+        fwrite(B->sol->mean_xf1, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmxf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->mean_xf2, sizeof(complex PRECISION), ndkz, out);
+        fwrite(B->sol->mean_xf2, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmy%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->mean_y, sizeof(complex PRECISION), ndkz, out);
+        fwrite(B->sol->mean_y, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmyf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->mean_yf1, sizeof(complex PRECISION), ndkz, out);
+        fwrite(B->sol->mean_yf1, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmyf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(B->sol->mean_yf2, sizeof(complex PRECISION), ndkz, out);
+        fwrite(B->sol->mean_yf2, sizeof(complex<PRECISION>), ndkz, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/bmz%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(&(B->sol->mean_z), sizeof(complex PRECISION), 1, out);
+        fwrite(&(B->sol->mean_z), sizeof(complex<PRECISION>), 1, out);
         fclose(out);
     }
 
@@ -924,17 +940,17 @@ void writeCheckpoint()
     {
         sprintf(name,"Checkpoint%d/T%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(T->spectral, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(T->spectral, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/Tf1%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(T->force1, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(T->force1, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
 
         sprintf(name,"Checkpoint%d/Tf2%d", checkDir, crank);
         out = fopen(name,"w");
-        fwrite(T->force2, sizeof(complex PRECISION), spectralCount, out);
+        fwrite(T->force2, sizeof(complex<PRECISION>), spectralCount, out);
         fclose(out);
     }
     
@@ -1039,67 +1055,67 @@ void readCheckpoint()
         {
             sprintf(name,"Checkpoint%d/upol%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->poloidal->spectral, sizeof(complex PRECISION), spectralCount, in);
+            fread(u->sol->poloidal->spectral, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/upolf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->poloidal->force1, sizeof(complex PRECISION), spectralCount, in);
+            fread(u->sol->poloidal->force1, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/upolf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->poloidal->force2, sizeof(complex PRECISION), spectralCount, in);
+            fread(u->sol->poloidal->force2, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/utor%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->toroidal->spectral, sizeof(complex PRECISION), spectralCount, in);
+            fread(u->sol->toroidal->spectral, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/utorf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->toroidal->force1, sizeof(complex PRECISION), spectralCount, in);
+            fread(u->sol->toroidal->force1, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/utorf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->toroidal->force2, sizeof(complex PRECISION), spectralCount, in);
+            fread(u->sol->toroidal->force2, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umx%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->mean_x, sizeof(complex PRECISION), ndkz, in);
+            fread(u->sol->mean_x, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umxf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->mean_xf1, sizeof(complex PRECISION), ndkz, in);
+            fread(u->sol->mean_xf1, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umxf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->mean_xf2, sizeof(complex PRECISION), ndkz, in);
+            fread(u->sol->mean_xf2, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umy%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->mean_y, sizeof(complex PRECISION), ndkz, in);
+            fread(u->sol->mean_y, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umyf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->mean_yf1, sizeof(complex PRECISION), ndkz, in);
+            fread(u->sol->mean_yf1, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umyf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(u->sol->mean_yf2, sizeof(complex PRECISION), ndkz, in);
+            fread(u->sol->mean_yf2, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/umz%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(&(u->sol->mean_z), sizeof(complex PRECISION), 1, in);
+            fread(&(u->sol->mean_z), sizeof(complex<PRECISION>), 1, in);
             fclose(in);
 
             recomposeSolenoidal(u->sol, u->vec);
@@ -1112,67 +1128,67 @@ void readCheckpoint()
         {
             sprintf(name,"Checkpoint%d/bpol%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->poloidal->spectral, sizeof(complex PRECISION), spectralCount, in);
+            fread(B->sol->poloidal->spectral, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bpolf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->poloidal->force1, sizeof(complex PRECISION), spectralCount, in);
+            fread(B->sol->poloidal->force1, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bpolf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->poloidal->force2, sizeof(complex PRECISION), spectralCount, in);
+            fread(B->sol->poloidal->force2, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/btor%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->toroidal->spectral, sizeof(complex PRECISION), spectralCount, in);
+            fread(B->sol->toroidal->spectral, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/btorf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->toroidal->force1, sizeof(complex PRECISION), spectralCount, in);
+            fread(B->sol->toroidal->force1, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/btorf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->toroidal->force2, sizeof(complex PRECISION), spectralCount, in);
+            fread(B->sol->toroidal->force2, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmx%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->mean_x, sizeof(complex PRECISION), ndkz, in);
+            fread(B->sol->mean_x, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmxf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->mean_xf1, sizeof(complex PRECISION), ndkz, in);
+            fread(B->sol->mean_xf1, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmxf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->mean_xf2, sizeof(complex PRECISION), ndkz, in);
+            fread(B->sol->mean_xf2, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmy%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->mean_y, sizeof(complex PRECISION), ndkz, in);
+            fread(B->sol->mean_y, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmyf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->mean_yf1, sizeof(complex PRECISION), ndkz, in);
+            fread(B->sol->mean_yf1, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmyf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(B->sol->mean_yf2, sizeof(complex PRECISION), ndkz, in);
+            fread(B->sol->mean_yf2, sizeof(complex<PRECISION>), ndkz, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/bmz%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(&(B->sol->mean_z), sizeof(complex PRECISION), 1, in);
+            fread(&(B->sol->mean_z), sizeof(complex<PRECISION>), 1, in);
             fclose(in);
 
             recomposeSolenoidal(B->sol, B->vec);
@@ -1185,17 +1201,17 @@ void readCheckpoint()
         {
             sprintf(name,"Checkpoint%d/T%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(T->spectral, sizeof(complex PRECISION), spectralCount, in);
+            fread(T->spectral, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/Tf1%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(T->force1, sizeof(complex PRECISION), spectralCount, in);
+            fread(T->force1, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             sprintf(name,"Checkpoint%d/Tf2%d", checkDir, crank);
             in = fopen(name,"r");
-            fread(T->force2, sizeof(complex PRECISION), spectralCount, in);
+            fread(T->force2, sizeof(complex<PRECISION>), spectralCount, in);
             fclose(in);
 
             fftBackward(T);

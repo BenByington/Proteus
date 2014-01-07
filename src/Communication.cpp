@@ -212,7 +212,7 @@ void initfft1()
 
     real = (PRECISION*)fft_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
     comp1 = (complex<PRECISION>*)fft_malloc(my_z->width * my_x->width * nky * sizeof(complex<PRECISION>));
-    planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, 1, nky, FFTW_MEASURE);
+    planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, real, 0, 1, ny, comp1, 0, 1, nky, FFTW_MEASURE);
     planb1 = fft_plan_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, 1, nky, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
     fft_free(real);
     fft_free(comp1);
@@ -747,7 +747,7 @@ void initfft2()
 
     real = (PRECISION*)fft_malloc(my_z->width * my_x->width * ny * sizeof(PRECISION));
     comp1 = (complex<PRECISION>*)fft_malloc(nky * my_z->width * my_x->width * sizeof(complex<PRECISION>));
-    planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, (PRECISION *)real, 0, 1, ny, comp1, 0, my_x->width * my_z->width, 1, FFTW_MEASURE);
+    planf1 = fft_plan_r2c(1, &ny, my_x->width * my_z->width, real, 0, 1, ny, comp1, 0, my_x->width * my_z->width, 1, FFTW_MEASURE);
     planb1 = fft_plan_c2r(1, &ny, my_x->width * my_z->width, comp1, 0, my_x->width * my_z->width, 1, (PRECISION*)real, 0, 1, ny, FFTW_MEASURE);
     fft_free(real);
     fft_free(comp1);

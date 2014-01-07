@@ -19,48 +19,49 @@
 
 #include "FFTWrapper.h"
 
+using namespace std;
 
 FFT_PLAN fft_plan_r2c(int rank, const int *n, int howmany,
                           PRECISION *in, const int *inembed,
                           int istride, int idist,
-                          FFT_COMPLEX *out, const int *onembed,
+                          complex<PRECISION> *out, const int *onembed,
                           int ostride, int odist,
                           unsigned flags)
 {
     #ifdef FP
-    return fftwf_plan_many_dft_r2c(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, flags);
+    return fftwf_plan_many_dft_r2c(rank, n, howmany, in, inembed, istride, idist, reinterpret_cast<FFT_COMPLEX*>(out), onembed, ostride, odist, flags);
     #else
-    return fftw_plan_many_dft_r2c(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, flags);
+    return fftw_plan_many_dft_r2c(rank, n, howmany, in, inembed, istride, idist, reinterpret_cast<FFT_COMPLEX*>(out), onembed, ostride, odist, flags);
     #endif
 }
 
 FFT_PLAN fft_plan_c2c(int rank, const int *n, int howmany,
-                      FFT_COMPLEX *in, const int *inembed,
+                      complex<PRECISION> *in, const int *inembed,
                       int istride, int idist,
-                      FFT_COMPLEX *out, const int *onembed,
+                      complex<PRECISION> *out, const int *onembed,
                       int ostride, int odist,
                       int sign, unsigned flags)
 {
 
     #ifdef FP
-    return fftwf_plan_many_dft(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, sign, flags);
+    return fftwf_plan_many_dft(rank, n, howmany, reinterpret_cast<FFT_COMPLEX*>(in), inembed, istride, idist, reinterpret_cast<FFT_COMPLEX*>(out), onembed, ostride, odist, sign, flags);
     #else
-    return fftw_plan_many_dft(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, sign, flags);
+    return fftw_plan_many_dft(rank, n, howmany, reinterpret_cast<FFT_COMPLEX*>(in), inembed, istride, idist, reinterpret_cast<FFT_COMPLEX*>(out), onembed, ostride, odist, sign, flags);
     #endif
 
 }
 
 FFT_PLAN fft_plan_c2r(int rank, const int *n, int howmany,
-                      FFT_COMPLEX *in, const int *inembed,
+                      complex<PRECISION> *in, const int *inembed,
                       int istride, int idist,
                       PRECISION *out, const int *onembed,
                       int ostride, int odist,
                       unsigned flags)
 {
     #ifdef FP
-    return fftwf_plan_many_dft_c2r(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, flags);
+    return fftwf_plan_many_dft_c2r(rank, n, howmany, reinterpret_cast<FFT_COMPLEX*>(in), inembed, istride, idist, out, onembed, ostride, odist, flags);
     #else
-    return fftw_plan_many_dft_c2r(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, flags);
+    return fftw_plan_many_dft_c2r(rank, n, howmany, reinterpret_cast<FFT_COMPLEX*>(in), inembed, istride, idist, out, onembed, ostride, odist, flags);
     #endif
 }
 
@@ -82,30 +83,30 @@ void fft_free(void * data)
     #endif
 }
 
-void fft_execute_r2c(FFT_PLAN plan, PRECISION * in, FFT_COMPLEX * out)
+void fft_execute_r2c(FFT_PLAN plan, PRECISION * in, complex<PRECISION> * out)
 {
     #ifdef FP
-    fftwf_execute_dft_r2c(plan, in, out);
+    fftwf_execute_dft_r2c(plan, in, reinterpret_cast<FFT_COMPLEX*>(out));
     #else
-    fftw_execute_dft_r2c(plan, in, out);
+    fftw_execute_dft_r2c(plan, in, reinterpret_cast<FFT_COMPLEX*>(out));
     #endif
 }
 
-void fft_execute_c2c(FFT_PLAN plan, FFT_COMPLEX * in, FFT_COMPLEX * out)
+void fft_execute_c2c(FFT_PLAN plan, complex<PRECISION> * in, complex<PRECISION> * out)
 {
     #ifdef FP
-    fftwf_execute_dft(plan, in, out);
+    fftwf_execute_dft(plan, reinterpret_cast<FFT_COMPLEX*>(in), reinterpret_cast<FFT_COMPLEX*>(out));
     #else
-    fftw_execute_dft(plan, in, out);
+    fftw_execute_dft(plan, reinterpret_cast<FFT_COMPLEX*>(in), reinterpret_cast<FFT_COMPLEX*>(out));
     #endif
 }
 
-void fft_execute_c2r(FFT_PLAN plan, FFT_COMPLEX * in, PRECISION * out)
+void fft_execute_c2r(FFT_PLAN plan, complex<PRECISION> * in, PRECISION * out)
 {
     #ifdef FP
-    fftwf_execute_dft_c2r(plan, in, out);
+    fftwf_execute_dft_c2r(plan, reinterpret_cast<FFT_COMPLEX*>(in), out);
     #else
-    fftw_execute_dft_c2r(plan, in, out);
+    fftw_execute_dft_c2r(plan, reinterpret_cast<FFT_COMPLEX*>(in), out);
     #endif
 }
 

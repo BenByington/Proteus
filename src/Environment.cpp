@@ -72,11 +72,11 @@ void setupEnvironment()
 
 PRECISION PI;
 
-MPI::Intracomm hcomm;
-MPI::Intracomm vcomm;
-MPI::Intracomm ccomm;
-MPI::Intracomm iocomm;
-MPI::Intracomm fcomm;
+MPI_Comm hcomm;
+MPI_Comm vcomm;
+MPI_Comm ccomm;
+MPI_Comm iocomm;
+MPI_Comm fcomm;
 
 int hdiv;
 int vdiv;

@@ -167,7 +167,7 @@ void lab_initGroups()
     info("io_node flag set to %d\n", io_node);
 
     //grab the global group
-    MPI::Group global =;
+    MPI_Group global;
     MPI_Comm_group(MPI_COMM_WORLD, &global);
 
     
@@ -196,16 +196,15 @@ void lab_initGroups()
 
         trace("Creating slab groups\n");
         //create groups for our horizontal and vertical associations
-        MPI::Group hgroup;
-        MPI::Group vgroup;
-        
-        Group::Range_incl(global, 1, ytrip, &hgroup);
+       MPI_Group hgroup;
+        MPI_Group vgroup;
+        MPI_Group_range_incl(global, 1, ytrip, &hgroup);
         MPI_Group_range_incl(global, 1, ztrip, &vgroup);
 
         trace("Creating communicators for groups\n");
         //get the communicators for our groups
-        MPI::Intracomm::Create(MPI_COMM_WORLD, hgroup, &hcomm);
-        MPI::Intracomm::Create(MPI_COMM_WORLD, vgroup, &vcomm);
+        MPI_Comm_create(MPI_COMM_WORLD, hgroup, &hcomm);
+        MPI_Comm_create(MPI_COMM_WORLD, vgroup, &vcomm);
 
         trace("Getting rank and size for groups\n");
         MPI_Comm_rank(hcomm, &hrank);
