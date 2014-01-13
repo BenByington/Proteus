@@ -20,34 +20,64 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-template <typename Precision>
-class Vector;
+#include "GNode.h"
 
-template <typename Precision> 
+class Vector;
+class Scalar;
+
 class Variable
 {
+protected:
+    Variable();
+    virtual Variable * createVariable() = 0;
+    
 public:
     virtual ~Variable(){}
     
     /*Apply a factor to our variable field*/
-    virtual Variable<Precision> * operator *=(Precision mult) = 0;
-    virtual Variable<Precision> * operator *(Precision mult) = 0;
-    virtual Variable<Precision> * operator /=(Precision mult) = 0;
-    virtual Variable<Precision> * operator /(Precision mult) = 0;
+    Variable * operator *(Scalar * fact);
+    Variable * operator /(Scalar * mult);
     
     /*Arithmetic operations between variable fields*/
-    virtual Variable<Precision> * operator +=(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator +(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator -=(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator -(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator *=(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator *(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator /=(const Variable<Precision> * r) = 0;
-    virtual Variable<Precision> * operator /(const Variable<Precision> * r) = 0;
+    Variable * operator +(Variable * r);
+    Variable * operator -(Variable * r);
+    Variable * operator *(Variable * r);
+    Variable * operator /(Variable * r);
     
-    virtual Vector<Precision> * gradient(bool inplace = false) = 0;
-    virtual Variable<Precision> * laplacian(bool inplace = false) = 0;
+    virtual Vector * gradient() = 0;
+    virtual Variable * laplacian() = 0;
     
+    GNode * op;
+
+private:
+    class ScalarFactor : public GNode
+    {
+        friend class Variable;
+    public:
+        ScalarFactor(Scalar * s, Variable * v);
+        virtual void execute();
+        
+    private:
+        Scalar * sParent;
+        Variable * vParent;
+        
+        enum operations {mul, divide};
+        operations op;
+    };
+    
+    class VariableArithmetic : public GNode
+    {
+        friend class Variable;
+    public:
+        VariableArithmetic(Variable * p1, Variable * p2);
+        virtual void execute();
+    private:
+        Variable * p1;
+        Variable * p2;
+        
+        enum operations {add, sub, mul, divide};
+        operations op;
+    };
 };
 
 #endif

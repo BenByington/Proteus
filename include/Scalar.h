@@ -17,21 +17,15 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef SOLENOID_CARTESIAN_H
-#define SOLENOID_CARTESIAN_H
+#ifndef SCALAR_H
+#define SCALAR_H
 
-#include "Solenoid.h"
+#include "Variable.h"
 
-class SolenoidCart : public Solenoid
+class Scalar : public Variable
 {
 public:
-    virtual ~Solenoid(){}
-    
-    virtual void decompose(Vector * sol);
-    virtual void decomposeCurl(Vector * sol);
-    virtual Vector * recompose();
+    virtual ~Scalar(){}
 };
-
-
 
 #endif

@@ -17,21 +17,24 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef SOLENOID_CARTESIAN_H
-#define SOLENOID_CARTESIAN_H
+#ifndef	GNODE_H
+#define GNODE_H
 
-#include "Solenoid.h"
+#include <vector>
 
-class SolenoidCart : public Solenoid
+class GNode
 {
-public:
-    virtual ~Solenoid(){}
+protected:
     
-    virtual void decompose(Vector * sol);
-    virtual void decomposeCurl(Vector * sol);
-    virtual Vector * recompose();
+std::vector<GNode*> parents; 
+std::vector<GNode*> children;
+
+public:
+    virtual ~GNode(){}
+	
+    virtual void execute() = 0;
+    
+    void addDependency(GNode * p);
 };
-
-
 
 #endif

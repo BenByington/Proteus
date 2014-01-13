@@ -20,25 +20,23 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include "GNode.h"
 #include "Variable.h"
 
-template <typename Precision>
-class Vector
+class Vector : public Variable
 {
 public:
     virtual ~Vector(){}
     
     /*Arithmetic operations between vectors fields*/
-    virtual Vector<Precision> * operator +=(const Vector<Precision> * r) = 0;
-    virtual Vector<Precision> * operator +(const Vector<Precision> * r) = 0;
-    virtual Vector<Precision> * operator -=(const Vector<Precision> * r) = 0;
-    virtual Vector<Precision> * operator -(const Vector<Precision> * r) = 0;
+    virtual Vector * operator +(const Vector * r) = 0;
+    virtual Vector * operator -(const Vector * r) = 0;
     
-    virtual Variable<Precision> * dot(const Vector<Precision> * r) = 0;
-    virtual Vector<Precision> * cross(const Vector<Precision> * r) = 0;
+    virtual Variable * dot(const Vector * r) = 0;
+    virtual Vector * cross(const Vector * r) = 0;
     
-    virtual Variable<Precision> * divergence() = 0;
-    virtual Vector<Precision> * curl() = 0;
+    virtual Variable * divergence() = 0;
+    virtual Vector * curl() = 0;
 };
 
 #endif

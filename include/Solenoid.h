@@ -17,21 +17,20 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef SOLENOID_H
+#define SOLENOID_H
 
 #include "Vector.h"
 #include "Variable.h"
 
-template <typename Precision>
-class Solenoid
+class Solenoid : public Vector
 {
 public:
     virtual ~Solenoid(){}
     
-    virtual void decompose(Vector<Precision> * sol) = 0;
-    virtual void decomposeCurl(Vector<Precision> * sol) = 0;
-    virtual Vector * recompose() = 0;
+    virtual Solenoid * decompose(Vector * sol) = 0;
+    virtual Solenoid * decomposeCurl(Vector * sol) = 0;
+    virtual Solenoid * recompose() = 0;
 };
 
 #endif
