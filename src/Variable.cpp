@@ -84,9 +84,21 @@ Variable * Variable::operator /(Variable * r)
     return ret;
 }
 
+Variable::ScalarFactor::ScalarFactor(Scalar* s, Variable* v)
+{
+    sParent = s;
+    vParent = v;
+}
+
 void Variable::ScalarFactor::execute()
 {
     
+}
+
+Variable::VariableArithmetic::VariableArithmetic(Variable* p1, Variable* p2)
+{
+    this->p1 = p1;
+    this->p2 = p2;
 }
 
 void Variable::VariableArithmetic::execute()
