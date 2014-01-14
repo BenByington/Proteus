@@ -25,18 +25,40 @@
 
 class Vector : public Variable
 {
+protected:
+    Vector();
+    virtual Vector * createVector() = 0;
+    
 public:
     virtual ~Vector(){}
     
     /*Arithmetic operations between vectors fields*/
-    virtual Vector * operator +(const Vector * r) = 0;
-    virtual Vector * operator -(const Vector * r) = 0;
+    Vector * operator +(Vector * r);
+    Vector * operator -(Vector * r);
     
-    virtual Variable * dot(const Vector * r) = 0;
-    virtual Vector * cross(const Vector * r) = 0;
+    Variable * dot(Vector * r);
+    Vector * cross(Vector * r);
     
     virtual Variable * divergence() = 0;
     virtual Vector * curl() = 0;
+
+private:
+    class VectorArithmetic : public GNode
+    {
+        friend class Vector;
+    public:
+        VectorArithmetic(Vector * v1, Vector * v2);
+        virtual void execute();
+        
+    private:
+        Vector * p1;
+        Vector * p2;
+        
+        enum operations {add, sub, dot, cross};
+        operations op;
+    };
+    
+    
 };
 
 #endif
