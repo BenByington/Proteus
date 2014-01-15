@@ -29,7 +29,7 @@ class Variable
 {
 protected:
     Variable();
-    virtual Variable * createVariable() = 0;
+    virtual Variable * createInstance() = 0;
     
 public:
     virtual ~Variable(){}

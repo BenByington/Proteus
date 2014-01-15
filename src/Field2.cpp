@@ -8,7 +8,7 @@ Variable::Variable()
 
 Variable * Variable::operator *(Scalar * fact)
 {
-    Variable * ret = createVariable();
+    Variable * ret = createInstance();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->mul;
     ret->op = node;
@@ -21,7 +21,7 @@ Variable * Variable::operator *(Scalar * fact)
 
 Variable * Variable::operator /(Scalar * fact)
 {
-    Variable * ret = createVariable();
+    Variable * ret = createInstance();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->divide;
     ret->op = node;
@@ -34,7 +34,7 @@ Variable * Variable::operator /(Scalar * fact)
 
 Variable * Variable::operator +(Variable * r)
 {
-    Variable * ret = createVariable();
+    Variable * ret = createInstance();
     VariableArithmetic * node = new VariableArithmetic(r, this);
     node->op = node->add;
     ret->op = node;
@@ -47,7 +47,7 @@ Variable * Variable::operator +(Variable * r)
 
 Variable * Variable::operator -(Variable * r)
 {
-    Variable * ret = createVariable();
+    Variable * ret = createInstance();
     VariableArithmetic * node = new VariableArithmetic(r, this);
     node->op = node->sub;
     ret->op = node;
@@ -60,7 +60,7 @@ Variable * Variable::operator -(Variable * r)
 
 Variable * Variable::operator *(Variable * r)
 {
-    Variable * ret = createVariable();
+    Variable * ret = createInstance();
     VariableArithmetic * node = new VariableArithmetic(r, this);
     node->op = node->mul;
     ret->op = node;
@@ -73,7 +73,7 @@ Variable * Variable::operator *(Variable * r)
 
 Variable * Variable::operator /(Variable * r)
 {
-    Variable * ret = createVariable();
+    Variable * ret = createInstance();
     VariableArithmetic * node = new VariableArithmetic(r, this);
     node->op = node->divide;
     ret->op = node;
