@@ -17,63 +17,61 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef VARIABLE_H
-#define VARIABLE_H
+#ifndef FIELD2_H
+#define FIELD2_H
 
-#include "GNode.h"
+#include "Scalar.h"
 
 class Vector;
-class Scalar;
 
-class Variable
+class Field
 {
 protected:
-    Variable();
-    virtual Variable * createInstance() = 0;
-    
+    Field();
 public:
-    virtual ~Variable(){}
+    virtual ~Field(){}
+    virtual Field * createField() = 0;
     
     /*Apply a factor to our variable field*/
-    Variable * operator *(Scalar * fact);
-    Variable * operator /(Scalar * mult);
+    Field * operator *(Scalar * fact);
+    Field * operator /(Scalar * mult);
     
     /*Arithmetic operations between variable fields*/
-    Variable * operator +(Variable * r);
-    Variable * operator -(Variable * r);
-    Variable * operator *(Variable * r);
-    Variable * operator /(Variable * r);
+    Field * operator +(Field * r);
+    Field * operator -(Field * r);
+    Field * operator *(Field * r);
+    Field * operator /(Field * r);
     
     virtual Vector * gradient() = 0;
-    virtual Variable * laplacian() = 0;
+    virtual Field * laplacian() = 0;
     
     GNode * op;
 
 private:
     class ScalarFactor : public GNode
     {
-        friend class Variable;
+        friend class Field;
     public:
-        ScalarFactor(Scalar * s, Variable * v);
+        ScalarFactor(Scalar * s, Field * v);
         virtual void execute();
         
     private:
         Scalar * sParent;
-        Variable * vParent;
+        Field * vParent;
         
         enum operations {mul, divide};
         operations op;
     };
     
-    class VariableArithmetic : public GNode
+    class FieldArithmetic : public GNode
     {
-        friend class Variable;
+        friend class Field;
     public:
-        VariableArithmetic(Variable * p1, Variable * p2);
+        FieldArithmetic(Field * p1, Field * p2);
         virtual void execute();
     private:
-        Variable * p1;
-        Variable * p2;
+        Field * p1;
+        Field * p2;
         
         enum operations {add, sub, mul, divide};
         operations op;

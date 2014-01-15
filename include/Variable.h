@@ -17,50 +17,25 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef VARIABLE_H
+#define VARIABLE_H
 
 #include "GNode.h"
-#include "Field2.h"
 
-class Vector 
+class Vector;
+class Scalar;
+
+class Variable
 {
 protected:
-    Vector();
+    Variable();
+    virtual Variable * createInstance() = 0;
     
 public:
-    virtual ~Vector(){}
-    virtual Vector * createVector() = 0;
-    virtual Field * createField() = 0;
+    virtual ~Variable(){}
     
-    /*Arithmetic operations between vectors fields*/
-    Vector * operator +(Vector * r);
-    Vector * operator -(Vector * r);
-    
-    Field * dot(Vector * r);
-    Vector * cross(Vector * r);
-    
-    virtual Field * divergence() = 0;
-    virtual Vector * curl() = 0;
-
     GNode * op;
-private:
-    class VectorArithmetic : public GNode
-    {
-        friend class Vector;
-    public:
-        VectorArithmetic(Vector * v1, Vector * v2);
-        virtual void execute();
-        
-    private:
-        Vector * p1;
-        Vector * p2;
-        
-        enum operations {add, sub, dot, cross};
-        operations op;
-    };
-    
-    
+
 };
 
 #endif

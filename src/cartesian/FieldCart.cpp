@@ -17,28 +17,49 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef VECTOR_CARTESIAN_H
-#define VECTOR_CARTESIAN_H
+#include "cartesian/FieldCart.h"
+#include "cartesian/VectorCart.h"
 
-#include "Vector.h"
-
-class VectorCart : public Vector
+FieldCart::FieldCart()
 {
-    friend class FieldCart;
-protected:
-    VectorCart();
-    virtual Vector * createVector();
-    virtual Field * createField();
     
-public:
-    virtual ~VectorCart(){}
-    
-    virtual Field * divergence();
-    virtual Vector * curl();
+}
 
-private:
-    
-    
-};
+Field * FieldCart::createField()
+{
+    return new FieldCart();
+}
 
-#endif
+Field * FieldCart::laplacian()
+{
+    Field * ret = createField();
+    AgnosticDeriv * node = new AgnosticDeriv(this);
+    node->op = node->laplace;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    
+    return ret;
+}
+
+Vector * FieldCart::gradient()
+{
+    Vector * ret = new VectorCart();
+    AgnosticDeriv * node = new AgnosticDeriv(this);
+    node->op = node->grad;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    
+    return ret;
+}
+
+FieldCart::AgnosticDeriv::AgnosticDeriv(FieldCart* v)
+{
+    this->vParent = v;
+}
+
+void FieldCart::AgnosticDeriv::execute()
+{
+    
+}

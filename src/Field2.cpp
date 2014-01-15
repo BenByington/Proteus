@@ -1,14 +1,14 @@
-#include "Variable.h"
+#include "Field2.h"
 #include "Scalar.h"
 
-Variable::Variable()
+Field::Field()
 {
     op = 0;
 }
 
-Variable * Variable::operator *(Scalar * fact)
+Field * Field::operator *(Scalar * fact)
 {
-    Variable * ret = createInstance();
+    Field * ret = createField();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->mul;
     ret->op = node;
@@ -19,9 +19,9 @@ Variable * Variable::operator *(Scalar * fact)
     return ret;
 }
 
-Variable * Variable::operator /(Scalar * fact)
+Field * Field::operator /(Scalar * fact)
 {
-    Variable * ret = createInstance();
+    Field * ret = createField();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->divide;
     ret->op = node;
@@ -32,10 +32,10 @@ Variable * Variable::operator /(Scalar * fact)
     return ret;
 }
 
-Variable * Variable::operator +(Variable * r)
+Field * Field::operator +(Field * r)
 {
-    Variable * ret = createInstance();
-    VariableArithmetic * node = new VariableArithmetic(r, this);
+    Field * ret = createField();
+    FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->add;
     ret->op = node;
     
@@ -45,10 +45,10 @@ Variable * Variable::operator +(Variable * r)
     return ret;
 }
 
-Variable * Variable::operator -(Variable * r)
+Field * Field::operator -(Field * r)
 {
-    Variable * ret = createInstance();
-    VariableArithmetic * node = new VariableArithmetic(r, this);
+    Field * ret = createField();
+    FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->sub;
     ret->op = node;
     
@@ -58,10 +58,10 @@ Variable * Variable::operator -(Variable * r)
     return ret;
 }
 
-Variable * Variable::operator *(Variable * r)
+Field * Field::operator *(Field * r)
 {
-    Variable * ret = createInstance();
-    VariableArithmetic * node = new VariableArithmetic(r, this);
+    Field * ret = createField();
+    FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->mul;
     ret->op = node;
     
@@ -71,10 +71,10 @@ Variable * Variable::operator *(Variable * r)
     return ret;
 }
 
-Variable * Variable::operator /(Variable * r)
+Field * Field::operator /(Field * r)
 {
-    Variable * ret = createInstance();
-    VariableArithmetic * node = new VariableArithmetic(r, this);
+    Field * ret = createField();
+    FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->divide;
     ret->op = node;
     
@@ -84,24 +84,24 @@ Variable * Variable::operator /(Variable * r)
     return ret;
 }
 
-Variable::ScalarFactor::ScalarFactor(Scalar* s, Variable* v)
+Field::ScalarFactor::ScalarFactor(Scalar* s, Field* v)
 {
     sParent = s;
     vParent = v;
 }
 
-void Variable::ScalarFactor::execute()
+void Field::ScalarFactor::execute()
 {
     
 }
 
-Variable::VariableArithmetic::VariableArithmetic(Variable* p1, Variable* p2)
+Field::FieldArithmetic::FieldArithmetic(Field* p1, Field* p2)
 {
     this->p1 = p1;
     this->p2 = p2;
 }
 
-void Variable::VariableArithmetic::execute()
+void Field::FieldArithmetic::execute()
 {
     
 }

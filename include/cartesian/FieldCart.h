@@ -17,50 +17,37 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef Field_CARTESIAN_H
+#define Field_CARTESIAN_H
 
-#include "GNode.h"
 #include "Field2.h"
 
-class Vector 
+class FieldCart : public Field
 {
 protected:
-    Vector();
+    FieldCart();
+    virtual Field * createField();
     
 public:
-    virtual ~Vector(){}
-    virtual Vector * createVector() = 0;
-    virtual Field * createField() = 0;
+    virtual ~FieldCart(){}
     
-    /*Arithmetic operations between vectors fields*/
-    Vector * operator +(Vector * r);
-    Vector * operator -(Vector * r);
-    
-    Field * dot(Vector * r);
-    Vector * cross(Vector * r);
-    
-    virtual Field * divergence() = 0;
-    virtual Vector * curl() = 0;
+    virtual Vector * gradient();
+    virtual Field * laplacian();
 
-    GNode * op;
-private:
-    class VectorArithmetic : public GNode
+private:        
+    class AgnosticDeriv : public GNode
     {
-        friend class Vector;
+        friend class FieldCart;
     public:
-        VectorArithmetic(Vector * v1, Vector * v2);
+        AgnosticDeriv(FieldCart * v);
         virtual void execute();
         
     private:
-        Vector * p1;
-        Vector * p2;
+        FieldCart * vParent;
         
-        enum operations {add, sub, dot, cross};
+        enum operations {grad, laplace};
         operations op;
     };
-    
-    
 };
 
 #endif

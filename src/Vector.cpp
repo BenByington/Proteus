@@ -45,9 +45,9 @@ Vector * Vector::cross(Vector * r)
     return ret;
 }
 
-Variable * Vector::dot(Vector* r)
+Field * Vector::dot(Vector* r)
 {
-    Variable * ret = createVariable();
+    Field * ret = createField();
     VectorArithmetic * node = new VectorArithmetic(this, r);
     node->op = node->dot;
     ret->op = node;

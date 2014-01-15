@@ -21,12 +21,12 @@
 #define SOLENOID_H
 
 #include "Vector.h"
-#include "Variable.h"
 
-class Solenoid : public Vector
+class Solenoid
 {
 public:
     virtual ~Solenoid(){}
+    virtual Solenoid * createSolenoid() = 0;
     
     virtual Solenoid * decompose(Vector * sol) = 0;
     virtual Solenoid * decomposeCurl(Vector * sol) = 0;
