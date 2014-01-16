@@ -22,6 +22,8 @@
 
 #include "GNode.h"
 
+#include <string>
+
 class Field;
 class Solenoid;
 
@@ -56,6 +58,7 @@ private:
     public:
         VectorArithmetic(Vector * v1, Vector * v2);
         virtual void execute();
+        virtual std::string executeText();
         
     private:
         Vector * p1;

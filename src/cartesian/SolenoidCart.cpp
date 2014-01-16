@@ -19,6 +19,8 @@
 
 #include "cartesian/SolenoidCart.h"
 
+using namespace std;
+
 SolenoidCart::SolenoidCart()
 {
     
@@ -38,10 +40,20 @@ Vector * SolenoidCart::recompose()
 
 SolenoidCart::VectorOp::VectorOp(SolenoidCart * s)
 {
-    this->vParent = s;
+    this->sParent = s;
 }
 
 void SolenoidCart::VectorOp::execute()
 {
     
+}
+
+string SolenoidCart::VectorOp::executeText()
+{
+    string opName = "Recompose Vector";
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->sParent->op->getName();
+    
+    return ret;
 }

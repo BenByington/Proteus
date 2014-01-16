@@ -20,6 +20,8 @@
 #include "cartesian/FieldCart.h"
 #include "cartesian/VectorCart.h"
 
+using namespace std;
+
 FieldCart::FieldCart()
 {
     
@@ -57,4 +59,23 @@ FieldCart::AgnosticDeriv::AgnosticDeriv(FieldCart* f)
 void FieldCart::AgnosticDeriv::execute()
 {
     
+}
+
+string FieldCart::AgnosticDeriv::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case grad:
+        opName = "Gradient";
+        break;
+    case laplace:
+        opName = "Laplacian";
+        break;
+    }
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->fParent->op->getName();
+    
+    return ret;
 }

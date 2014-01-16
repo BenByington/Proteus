@@ -22,6 +22,8 @@
 #include "Scalar.h"
 #include "Field2.h"
 
+using namespace std;
+
 Vector::Vector()
 {
     op = 0;
@@ -89,4 +91,29 @@ Vector::VectorArithmetic::VectorArithmetic(Vector* v1, Vector* v2)
 void Vector::VectorArithmetic::execute()
 {
     
+}
+
+string Vector::VectorArithmetic::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case cross:
+        opName = "Cross";
+        break;
+    case dot:
+        opName = "Dot";
+        break;
+    case sub:
+        opName = "Subtract";
+        break;
+    case add:
+        opName = "Add";    
+    }
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->p1->op->getName();
+    ret += " " + this->p2->op->getName();
+    
+    return ret;
 }

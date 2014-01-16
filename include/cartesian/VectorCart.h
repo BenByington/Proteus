@@ -43,7 +43,7 @@ private:
     public:
         AgnosticDeriv(VectorCart * v);
         virtual void execute();
-        
+        virtual std::string executeText();
     private:
         VectorCart * vParent;
         
@@ -57,7 +57,7 @@ private:
     public:
         SolenoidOp(VectorCart * v);
         virtual void execute();
-        
+        virtual std::string executeText();
     private:
         VectorCart * vParent;
         

@@ -22,6 +22,8 @@
 
 #include "Field2.h"
 
+#include <string>
+
 class FieldCart : public Field
 {
 protected:
@@ -40,6 +42,7 @@ private:
     public:
         AgnosticDeriv(FieldCart * f);
         virtual void execute();
+        virtual std::string executeText();
         
     private:
         FieldCart * fParent;

@@ -21,6 +21,8 @@
 #include "cartesian/VectorCart.h"
 #include "cartesian/SolenoidCart.h"
 
+using namespace std;
+
 VectorCart::VectorCart()
 {
     
@@ -84,6 +86,25 @@ void VectorCart::AgnosticDeriv::execute()
     
 }
 
+string VectorCart::AgnosticDeriv::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case curl:
+        opName = "Curl";
+        break;
+    case div:
+        opName = "Divergence";
+        break;
+    }
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->vParent->op->getName();
+    
+    return ret;
+}
+
 VectorCart::SolenoidOp::SolenoidOp(VectorCart* v)
 {
     this->vParent = v;
@@ -92,4 +113,23 @@ VectorCart::SolenoidOp::SolenoidOp(VectorCart* v)
 void VectorCart::SolenoidOp::execute()
 {
     
+}
+
+string VectorCart::SolenoidOp::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case decomp:
+        opName = "Decompose Vector";
+        break;
+    case decompCurl:
+        opName = "Decompose Curled Vector";
+        break;
+    }
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->vParent->op->getName();
+    
+    return ret;
 }

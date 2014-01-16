@@ -55,12 +55,14 @@ private:
     public:
         ScalarFactor(Scalar * s, Field * v);
         virtual void execute();
+        virtual std::string executeText();
         
     private:
         Scalar * sParent;
         Field * vParent;
         
         enum operations {mul, divide};
+        
         operations op;
     };
     
@@ -70,6 +72,7 @@ private:
     public:
         FieldArithmetic(Field * p1, Field * p2);
         virtual void execute();
+        virtual std::string executeText();
     private:
         Field * p1;
         Field * p2;

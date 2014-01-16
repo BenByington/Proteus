@@ -1,6 +1,8 @@
 #include "Field2.h"
 #include "Scalar.h"
 
+using namespace std;
+
 Field::Field()
 {
     op = 0;
@@ -95,6 +97,27 @@ void Field::ScalarFactor::execute()
     
 }
 
+string Field::ScalarFactor::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = "Multiply";
+        break;
+    case divide:
+        opName = "Divide";
+        break;
+    }
+    
+    string ret = getName() + string(" = "); 
+    ret += opName + string(": ") + this->sParent->op->getName();
+    ret += string(" ") + this->vParent->op->getName();
+    
+    
+    return ret;
+}
+
 Field::FieldArithmetic::FieldArithmetic(Field* p1, Field* p2)
 {
     this->p1 = p1;
@@ -104,4 +127,29 @@ Field::FieldArithmetic::FieldArithmetic(Field* p1, Field* p2)
 void Field::FieldArithmetic::execute()
 {
     
+}
+
+string Field::FieldArithmetic::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = "Multiply";
+        break;
+    case divide:
+        opName = "Divide";
+        break;
+    case sub:
+        opName = "Subtract";
+        break;
+    case add:
+        opName = "Add";    
+    }
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->p1->op->getName();
+    ret += " " + this->p2->op->getName();
+    
+    return ret;
 }

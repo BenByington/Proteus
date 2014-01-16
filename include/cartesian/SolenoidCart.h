@@ -39,9 +39,9 @@ private:
     public:
         VectorOp(SolenoidCart * v);
         virtual void execute();
-        
+        virtual std::string executeText();
     private:
-        SolenoidCart * vParent;
+        SolenoidCart * sParent;
         
         enum operations {recompose};
         operations op;

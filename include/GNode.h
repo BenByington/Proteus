@@ -21,6 +21,7 @@
 #define GNODE_H
 
 #include <vector>
+#include <string>
 
 class GNode
 {
@@ -33,8 +34,14 @@ public:
     virtual ~GNode(){}
 	
     virtual void execute() = 0;
+    virtual std::string executeText() = 0;
     
     void addDependency(GNode * p);
+    std::string getName();
+    
+    int myNum;
+protected:
+    static int numNodes;
 };
 
 #endif
