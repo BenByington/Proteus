@@ -28,8 +28,7 @@ class Scalar;
 class Variable
 {
 protected:
-    Variable();
-    virtual Variable * createInstance() = 0;
+    Variable(){};
     
 public:
     virtual ~Variable(){}

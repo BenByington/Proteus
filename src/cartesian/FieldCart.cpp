@@ -19,7 +19,7 @@
 
 #include "cartesian/FieldCart.h"
 #include "cartesian/VectorCart.h"
-
+#include "VariableFactory.h"
 using namespace std;
 
 FieldCart::FieldCart()
@@ -29,7 +29,7 @@ FieldCart::FieldCart()
 
 Field * FieldCart::laplacian()
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->laplace;
     ret->op = node;
@@ -41,7 +41,7 @@ Field * FieldCart::laplacian()
 
 Vector * FieldCart::gradient()
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->grad;
     ret->op = node;

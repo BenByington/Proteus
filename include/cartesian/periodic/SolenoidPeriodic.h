@@ -28,8 +28,6 @@ public:
     SolenoidPeriodic();
     virtual ~SolenoidPeriodic(){}
     
-    virtual Solenoid * createSolenoid();
-    virtual Vector * createVector();
 };
 
 

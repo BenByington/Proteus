@@ -21,6 +21,7 @@
 #include "cartesian/VectorCart.h"
 #include "cartesian/SolenoidCart.h"
 #include "cartesian/TensorCart.h"
+#include "VariableFactory.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ VectorCart::VectorCart()
 
 Field * VectorCart::divergence()
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->div;
     ret->op = node;
@@ -43,7 +44,7 @@ Field * VectorCart::divergence()
 
 Vector * VectorCart::curl()
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->curl;
     ret->op = node;
@@ -55,7 +56,7 @@ Vector * VectorCart::curl()
 
 Tensor * VectorCart::gradient()
 {
-    Tensor * ret = createTensor();
+    Tensor * ret = VariableFactory::createTensor();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->grad;
     ret->op = node;
@@ -67,7 +68,7 @@ Tensor * VectorCart::gradient()
 
 Solenoid * VectorCart::decompose()
 {
-    Solenoid * ret = createSolenoid();
+    Solenoid * ret = VariableFactory::createSolenoid();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->decomp;
     ret->op = node;
@@ -79,7 +80,7 @@ Solenoid * VectorCart::decompose()
 
 Solenoid * VectorCart::decomposeCurl()
 {
-    Solenoid * ret = createSolenoid();
+    Solenoid * ret = VariableFactory::createSolenoid();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->decompCurl;
     ret->op = node;

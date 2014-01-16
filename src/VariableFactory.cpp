@@ -1,5 +1,5 @@
 /*
- * Copywrite 2013-2014 Benjamin Byington
+ * Copywrite 2013 Benjamin Byington
  *
  * This file is part of the IMHD software package
  * 
@@ -17,16 +17,29 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef SCALAR_H
-#define SCALAR_H
+#include "VariableFactory.h"
+#include "cartesian/periodic/FieldPeriodic.h"
+#include "cartesian/periodic/VectorPeriodic.h"
+#include "cartesian/periodic/SolenoidPeriodic.h"
+#include "cartesian/periodic/TensorPeriodic.h"
 
-#include "Variable.h"
-
-class Scalar : public Variable
+Field * VariableFactory::createField()
 {
-public:
-    Scalar(){}
-    virtual ~Scalar(){}
-};
+    return new FieldPeriodic();
+}
 
-#endif
+Vector * VariableFactory::createVector()
+{
+    return new VectorPeriodic();
+}
+
+Solenoid * VariableFactory::createSolenoid()
+{
+    return new SolenoidPeriodic();
+}
+
+Tensor * VariableFactory::createTensor()
+{
+    return new TensorPeriodic();
+}
+

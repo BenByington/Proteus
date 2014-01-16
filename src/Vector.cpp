@@ -22,6 +22,7 @@
 #include "Scalar.h"
 #include "Field2.h"
 #include "Scalar.h"
+#include "VariableFactory.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ Vector::Vector()
 
 Vector * Vector::operator *(Scalar * fact)
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->mul;
     ret->op = node;
@@ -45,7 +46,7 @@ Vector * Vector::operator *(Scalar * fact)
 
 Vector * Vector::operator /(Scalar * fact)
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->divide;
     ret->op = node;
@@ -58,7 +59,7 @@ Vector * Vector::operator /(Scalar * fact)
 
 Vector * Vector::operator +(Vector * r)
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     VectorArithmetic * node = new VectorArithmetic(this, r);
     node->op = node->add;
     ret->op = node;
@@ -71,7 +72,7 @@ Vector * Vector::operator +(Vector * r)
 
 Vector * Vector::operator -(Vector * r)
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     VectorArithmetic * node = new VectorArithmetic(this, r);
     node->op = node->sub;
     ret->op = node;
@@ -84,7 +85,7 @@ Vector * Vector::operator -(Vector * r)
 
 Vector * Vector::cross(Vector * r)
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     VectorArithmetic * node = new VectorArithmetic(this, r);
     node->op = node->cross;
     ret->op = node;
@@ -97,7 +98,7 @@ Vector * Vector::cross(Vector * r)
 
 Field * Vector::dot(Vector* r)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     VectorArithmetic * node = new VectorArithmetic(this, r);
     node->op = node->dot;
     ret->op = node;

@@ -20,20 +20,18 @@
 #ifndef TENSOR_H
 #define	TENSOR_H
 
-#include "GNode.h"
+#include "Variable.h"
 
 class Vector;
 class Scalar;
 
-class Tensor
+class Tensor : public Variable
 {
 protected:
     Tensor();
     
 public:
     virtual ~Tensor(){}
-    virtual Vector * createVector() = 0;
-    virtual Tensor * createTensor() = 0;
     
     Tensor * operator *(Scalar * fact);
     Tensor * operator /(Scalar * mult);
@@ -44,7 +42,6 @@ public:
     
     virtual Vector * divergence() = 0;
     
-    GNode * op;
 private:
     class TensorArithmetic : public GNode
     {

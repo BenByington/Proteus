@@ -28,9 +28,6 @@ class FieldPeriodic : public FieldCart
 public:
     FieldPeriodic();
     virtual ~FieldPeriodic(){}
-    
-    virtual Field * createField();
-    virtual Vector * createVector();
 };
 
 #endif

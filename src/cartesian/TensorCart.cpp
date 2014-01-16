@@ -20,6 +20,7 @@
 
 #include "cartesian/TensorCart.h"
 #include "cartesian/VectorCart.h"
+#include "VariableFactory.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ TensorCart::TensorCart()
 
 Vector * TensorCart::divergence()
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->div;
     ret->op = node;

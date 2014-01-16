@@ -18,7 +18,7 @@
  */
 
 #include "cartesian/SolenoidCart.h"
-
+#include "VariableFactory.h"
 using namespace std;
 
 SolenoidCart::SolenoidCart()
@@ -28,7 +28,7 @@ SolenoidCart::SolenoidCart()
 
 Vector * SolenoidCart::recompose()
 {
-    Vector * ret = createVector();
+    Vector * ret = VariableFactory::createVector();
     VectorOp * node = new VectorOp(this);
     node->op = node->recompose;
     ret->op = node;

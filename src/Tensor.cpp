@@ -21,6 +21,7 @@
 #include "Tensor.h"
 #include "Vector.h"
 #include "Scalar.h"
+#include "VariableFactory.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ Tensor::Tensor()
 
 Tensor * Tensor::operator *(Scalar * fact)
 {
-    Tensor * ret = createTensor();
+    Tensor * ret = VariableFactory::createTensor();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->mul;
     ret->op = node;
@@ -44,7 +45,7 @@ Tensor * Tensor::operator *(Scalar * fact)
 
 Tensor * Tensor::operator /(Scalar * fact)
 {
-    Tensor * ret = createTensor();
+    Tensor * ret = VariableFactory::createTensor();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->divide;
     ret->op = node;
@@ -57,7 +58,7 @@ Tensor * Tensor::operator /(Scalar * fact)
 
 Tensor * Tensor::operator +(Tensor * r)
 {
-    Tensor * ret = createTensor();
+    Tensor * ret = VariableFactory::createTensor();
     TensorArithmetic * node = new TensorArithmetic(this, r);
     node->op = node->add;
     ret->op = node;
@@ -70,7 +71,7 @@ Tensor * Tensor::operator +(Tensor * r)
 
 Tensor * Tensor::operator -(Tensor * r)
 {
-    Tensor * ret = createTensor();
+    Tensor * ret = VariableFactory::createTensor();
     TensorArithmetic * node = new TensorArithmetic(this, r);
     node->op = node->sub;
     ret->op = node;

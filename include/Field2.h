@@ -21,17 +21,16 @@
 #define FIELD2_H
 
 #include "Scalar.h"
+#include "Variable.h"
 
 class Vector;
 
-class Field
+class Field : public Variable
 {
 protected:
     Field();
 public:
     virtual ~Field(){}
-    virtual Field * createField() = 0;
-    virtual Vector * createVector() = 0;
     
     /*Apply a factor to our variable field*/
     Field * operator *(Scalar * fact);
@@ -45,8 +44,6 @@ public:
     
     virtual Vector * gradient() = 0;
     virtual Field * laplacian() = 0;
-    
-    GNode * op;
 
 private:
     class ScalarFactor : public GNode

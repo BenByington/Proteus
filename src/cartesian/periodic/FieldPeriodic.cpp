@@ -18,19 +18,8 @@
  */
 
 #include "cartesian/periodic/FieldPeriodic.h"
-#include "cartesian/periodic/VectorPeriodic.h"
 
 FieldPeriodic::FieldPeriodic()
 {
     
-}
-
-Field * FieldPeriodic::createField()
-{
-    return new FieldPeriodic();
-}
-
-Vector * FieldPeriodic::createVector()
-{
-    return new VectorPeriodic();
 }

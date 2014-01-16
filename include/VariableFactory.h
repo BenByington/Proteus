@@ -1,5 +1,5 @@
 /*
- * Copywrite 2013-2014 Benjamin Byington
+ * Copywrite 2013 Benjamin Byington
  *
  * This file is part of the IMHD software package
  * 
@@ -16,17 +16,25 @@
  * You should have received a copy of the GNU General Public License along 
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
+#ifndef VARIABLEFACTORY_H
+#define	VARIABLEFACTORY_H
 
-#ifndef SCALAR_H
-#define SCALAR_H
+#include "Field2.h"
+#include "Vector.h"
+#include "Solenoid.h"
+#include "Tensor.h"
 
-#include "Variable.h"
-
-class Scalar : public Variable
+class VariableFactory
 {
+private:
+    VariableFactory();
+  
 public:
-    Scalar(){}
-    virtual ~Scalar(){}
+    static Field * createField();
+    static Vector * createVector();
+    static Solenoid * createSolenoid();
+    static Tensor * createTensor();
 };
 
-#endif
+#endif	
+

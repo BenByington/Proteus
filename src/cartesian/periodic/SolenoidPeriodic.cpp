@@ -17,21 +17,9 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "cartesian/SolenoidCart.h"
-#include "cartesian/periodic/VectorPeriodic.h"
 #include "cartesian/periodic/SolenoidPeriodic.h"
 
 SolenoidPeriodic::SolenoidPeriodic()
 {
     
-}
-
-Solenoid * SolenoidPeriodic::createSolenoid()
-{
-    return new SolenoidPeriodic();
-}
-
-Vector * SolenoidPeriodic::createVector()
-{
-    return new VectorPeriodic();
 }

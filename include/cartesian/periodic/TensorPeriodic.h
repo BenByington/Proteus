@@ -29,9 +29,6 @@ public:
     virtual ~TensorPeriodic(){}
     TensorPeriodic();
     
-    virtual Vector * createVector();
-    virtual Tensor * createTensor();
- 
     
 };
 

@@ -20,7 +20,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include "GNode.h"
+#include "Variable.h"
 
 #include <string>
 
@@ -29,17 +29,13 @@ class Solenoid;
 class Tensor;
 class Scalar;
 
-class Vector 
+class Vector : public Variable
 {
 protected:
     Vector();
     
 public:
     virtual ~Vector(){}
-    virtual Vector * createVector() = 0;
-    virtual Field * createField() = 0;
-    virtual Solenoid * createSolenoid() = 0;
-    virtual Tensor * createTensor() = 0;
     
     Vector * operator *(Scalar * fact);
     Vector * operator /(Scalar * mult);
@@ -57,7 +53,6 @@ public:
     virtual Vector * curl() = 0;
     virtual Tensor * gradient() = 0;
 
-    GNode * op;
 private:
     class VectorArithmetic : public GNode
     {

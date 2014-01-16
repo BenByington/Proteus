@@ -18,19 +18,9 @@
  */
 
 #include "cartesian/periodic/TensorPeriodic.h"
-#include "cartesian/periodic/VectorPeriodic.h"
 
 TensorPeriodic::TensorPeriodic()
 {
     
 }
 
-Tensor * TensorPeriodic::createTensor()
-{
-    return new TensorPeriodic();
-}
-
-Vector * TensorPeriodic::createVector()
-{
-    return new VectorPeriodic();
-}

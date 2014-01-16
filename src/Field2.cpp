@@ -1,5 +1,6 @@
 #include "Field2.h"
 #include "Scalar.h"
+#include "VariableFactory.h"
 
 using namespace std;
 
@@ -10,7 +11,7 @@ Field::Field()
 
 Field * Field::operator *(Scalar * fact)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->mul;
     ret->op = node;
@@ -23,7 +24,7 @@ Field * Field::operator *(Scalar * fact)
 
 Field * Field::operator /(Scalar * fact)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     ScalarFactor * node = new ScalarFactor(fact, this);
     node->op = node->divide;
     ret->op = node;
@@ -36,7 +37,7 @@ Field * Field::operator /(Scalar * fact)
 
 Field * Field::operator +(Field * r)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->add;
     ret->op = node;
@@ -49,7 +50,7 @@ Field * Field::operator +(Field * r)
 
 Field * Field::operator -(Field * r)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->sub;
     ret->op = node;
@@ -62,7 +63,7 @@ Field * Field::operator -(Field * r)
 
 Field * Field::operator *(Field * r)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->mul;
     ret->op = node;
@@ -75,7 +76,7 @@ Field * Field::operator *(Field * r)
 
 Field * Field::operator /(Field * r)
 {
-    Field * ret = createField();
+    Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
     node->op = node->divide;
     ret->op = node;

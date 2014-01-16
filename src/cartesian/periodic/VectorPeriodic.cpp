@@ -18,31 +18,8 @@
  */
 
 #include "cartesian/periodic/VectorPeriodic.h"
-#include "cartesian/periodic/FieldPeriodic.h"
-#include "cartesian/periodic/SolenoidPeriodic.h"
-#include "cartesian/periodic/TensorPeriodic.h"
 
 VectorPeriodic::VectorPeriodic()
 {
     
-}
-
-Vector * VectorPeriodic::createVector()
-{
-    return new VectorPeriodic();
-}
-
-Field * VectorPeriodic::createField()
-{
-    return new FieldPeriodic();
-}
-
-Solenoid * VectorPeriodic::createSolenoid()
-{
-    return new SolenoidPeriodic();
-}
-
-Tensor * VectorPeriodic::createTensor()
-{
-    return new TensorPeriodic();
 }
