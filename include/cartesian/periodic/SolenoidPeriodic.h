@@ -17,35 +17,19 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef SOLENOID_CARTESIAN_H
-#define SOLENOID_CARTESIAN_H
+#ifndef SOLENOID_PERIODIC_H
+#define SOLENOID_PERIODIC_H
 
-#include "Solenoid.h"
+#include "cartesian/SolenoidCart.h"
 
-class SolenoidCart : public Solenoid
+class SolenoidPeriodic : public SolenoidCart
 {
-protected:
-    SolenoidCart();
-        
 public:
-    virtual ~SolenoidCart(){}
+    SolenoidPeriodic();
+    virtual ~SolenoidPeriodic(){}
     
-    virtual Vector * recompose();
-    
-private:
-    class VectorOp : public GNode
-    {
-        friend class SolenoidCart;
-    public:
-        VectorOp(SolenoidCart * v);
-        virtual void execute();
-        
-    private:
-        SolenoidCart * vParent;
-        
-        enum operations {recompose};
-        operations op;
-    };
+    virtual Solenoid * createSolenoid();
+    virtual Vector * createVector();
 };
 
 
