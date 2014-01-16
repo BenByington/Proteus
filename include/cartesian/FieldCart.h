@@ -26,7 +26,6 @@ class FieldCart : public Field
 {
 protected:
     FieldCart();
-    virtual Field * createField();
     
 public:
     virtual ~FieldCart(){}
@@ -39,11 +38,11 @@ private:
     {
         friend class FieldCart;
     public:
-        AgnosticDeriv(FieldCart * v);
+        AgnosticDeriv(FieldCart * f);
         virtual void execute();
         
     private:
-        FieldCart * vParent;
+        FieldCart * fParent;
         
         enum operations {grad, laplace};
         operations op;

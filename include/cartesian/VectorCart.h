@@ -27,18 +27,43 @@ class VectorCart : public Vector
     friend class FieldCart;
 protected:
     VectorCart();
-    virtual Vector * createVector();
-    virtual Field * createField();
-    
+        
 public:
     virtual ~VectorCart(){}
     
+    virtual Solenoid * decompose();
+    virtual Solenoid * decomposeCurl();
     virtual Field * divergence();
     virtual Vector * curl();
 
 private:
+    class AgnosticDeriv : public GNode
+    {
+        friend class VectorCart;
+    public:
+        AgnosticDeriv(VectorCart * v);
+        virtual void execute();
+        
+    private:
+        VectorCart * vParent;
+        
+        enum operations {div, curl};
+        operations op;
+    };
     
+    class SolenoidOp : public GNode
+    {
+        friend class VectorCart;
+    public:
+        SolenoidOp(VectorCart * v);
+        virtual void execute();
+        
+    private:
+        VectorCart * vParent;
+        
+        enum operations {decomp, decompCurl};
+        operations op;
+    };
     
 };
-
 #endif

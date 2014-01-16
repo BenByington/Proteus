@@ -25,11 +25,6 @@ FieldCart::FieldCart()
     
 }
 
-Field * FieldCart::createField()
-{
-    return new FieldCart();
-}
-
 Field * FieldCart::laplacian()
 {
     Field * ret = createField();
@@ -44,7 +39,7 @@ Field * FieldCart::laplacian()
 
 Vector * FieldCart::gradient()
 {
-    Vector * ret = new VectorCart();
+    Vector * ret = createVector();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->grad;
     ret->op = node;
@@ -54,9 +49,9 @@ Vector * FieldCart::gradient()
     return ret;
 }
 
-FieldCart::AgnosticDeriv::AgnosticDeriv(FieldCart* v)
+FieldCart::AgnosticDeriv::AgnosticDeriv(FieldCart* f)
 {
-    this->vParent = v;
+    this->fParent = f;
 }
 
 void FieldCart::AgnosticDeriv::execute()

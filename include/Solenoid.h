@@ -27,10 +27,11 @@ class Solenoid
 public:
     virtual ~Solenoid(){}
     virtual Solenoid * createSolenoid() = 0;
+    virtual Vector * createVector() = 0;
     
-    virtual Solenoid * decompose(Vector * sol) = 0;
-    virtual Solenoid * decomposeCurl(Vector * sol) = 0;
-    virtual Solenoid * recompose() = 0;
+    virtual Vector * recompose() = 0;
+    
+    GNode * op;
 };
 
 #endif

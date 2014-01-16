@@ -31,6 +31,7 @@ protected:
 public:
     virtual ~Field(){}
     virtual Field * createField() = 0;
+    virtual Vector * createVector() = 0;
     
     /*Apply a factor to our variable field*/
     Field * operator *(Scalar * fact);

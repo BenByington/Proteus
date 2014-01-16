@@ -25,11 +25,25 @@
 class SolenoidCart : public Solenoid
 {
 public:
-    virtual ~Solenoid(){}
+    SolenoidCart();
+    virtual ~SolenoidCart(){}
     
-    virtual void decompose(Vector * sol);
-    virtual void decomposeCurl(Vector * sol);
     virtual Vector * recompose();
+    
+private:
+    class VectorOp : public GNode
+    {
+        friend class SolenoidCart;
+    public:
+        VectorOp(SolenoidCart * v);
+        virtual void execute();
+        
+    private:
+        SolenoidCart * vParent;
+        
+        enum operations {recompose};
+        operations op;
+    };
 };
 
 

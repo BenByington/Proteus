@@ -5,5 +5,5 @@ using namespace std;
 void GNode::addDependency(GNode * p)
 {
     parents.push_back(p);
-    p->children->push_back(this);
+    p->children.push_back(this);
 }

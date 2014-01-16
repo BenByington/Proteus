@@ -21,7 +21,9 @@
 #define VECTOR_H
 
 #include "GNode.h"
-#include "Field2.h"
+
+class Field;
+class Solenoid;
 
 class Vector 
 {
@@ -32,6 +34,7 @@ public:
     virtual ~Vector(){}
     virtual Vector * createVector() = 0;
     virtual Field * createField() = 0;
+    virtual Solenoid * createSolenoid() = 0;
     
     /*Arithmetic operations between vectors fields*/
     Vector * operator +(Vector * r);
@@ -40,6 +43,8 @@ public:
     Field * dot(Vector * r);
     Vector * cross(Vector * r);
     
+    virtual Solenoid * decompose() = 0;
+    virtual Solenoid * decomposeCurl() = 0;
     virtual Field * divergence() = 0;
     virtual Vector * curl() = 0;
 
