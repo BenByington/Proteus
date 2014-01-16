@@ -26,6 +26,7 @@
 
 class Field;
 class Solenoid;
+class Tensor;
 
 class Vector 
 {
@@ -37,6 +38,7 @@ public:
     virtual Vector * createVector() = 0;
     virtual Field * createField() = 0;
     virtual Solenoid * createSolenoid() = 0;
+    virtual Tensor * createTensor() = 0;
     
     /*Arithmetic operations between vectors fields*/
     Vector * operator +(Vector * r);
@@ -49,6 +51,7 @@ public:
     virtual Solenoid * decomposeCurl() = 0;
     virtual Field * divergence() = 0;
     virtual Vector * curl() = 0;
+    virtual Tensor * gradient() = 0;
 
     GNode * op;
 private:

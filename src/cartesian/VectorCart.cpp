@@ -20,6 +20,7 @@
 #include "cartesian/FieldCart.h"
 #include "cartesian/VectorCart.h"
 #include "cartesian/SolenoidCart.h"
+#include "cartesian/TensorCart.h"
 
 using namespace std;
 
@@ -52,10 +53,22 @@ Vector * VectorCart::curl()
     return ret;
 }
 
+Tensor * VectorCart::gradient()
+{
+    Tensor * ret = createTensor();
+    AgnosticDeriv * node = new AgnosticDeriv(this);
+    node->op = node->grad;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    
+    return ret;
+}
+
 Solenoid * VectorCart::decompose()
 {
     Solenoid * ret = createSolenoid();
-    SolenoidOp * node = new SolenoidOp(this);
+    AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->decomp;
     ret->op = node;
     
@@ -67,7 +80,7 @@ Solenoid * VectorCart::decompose()
 Solenoid * VectorCart::decomposeCurl()
 {
     Solenoid * ret = createSolenoid();
-    SolenoidOp * node = new SolenoidOp(this);
+    AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->decompCurl;
     ret->op = node;
     
@@ -97,29 +110,9 @@ string VectorCart::AgnosticDeriv::executeText()
     case div:
         opName = "Divergence";
         break;
-    }
-    
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->vParent->op->getName();
-    
-    return ret;
-}
-
-VectorCart::SolenoidOp::SolenoidOp(VectorCart* v)
-{
-    this->vParent = v;
-}
-
-void VectorCart::SolenoidOp::execute()
-{
-    
-}
-
-string VectorCart::SolenoidOp::executeText()
-{
-    string opName;
-    switch(op)
-    {
+    case grad:
+        opName = "Gradient";
+        break;
     case decomp:
         opName = "Decompose Vector";
         break;

@@ -1,3 +1,4 @@
+
 /*
  * Copywrite 2013-2014 Benjamin Byington
  *
@@ -17,32 +18,44 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "cartesian/periodic/VectorPeriodic.h"
-#include "cartesian/periodic/FieldPeriodic.h"
-#include "cartesian/periodic/SolenoidPeriodic.h"
-#include "cartesian/periodic/TensorPeriodic.h"
+#include "cartesian/TensorCart.h"
+#include "cartesian/VectorCart.h"
 
-VectorPeriodic::VectorPeriodic()
+using namespace std;
+
+TensorCart::TensorCart()
 {
     
 }
 
-Vector * VectorPeriodic::createVector()
+Vector * TensorCart::divergence()
 {
-    return new VectorPeriodic();
+    Vector * ret = createVector();
+    AgnosticDeriv * node = new AgnosticDeriv(this);
+    node->op = node->div;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    
+    return ret;
 }
 
-Field * VectorPeriodic::createField()
+TensorCart::AgnosticDeriv::AgnosticDeriv(TensorCart* v)
 {
-    return new FieldPeriodic();
+    this->vParent = v;
 }
 
-Solenoid * VectorPeriodic::createSolenoid()
+void TensorCart::AgnosticDeriv::execute()
 {
-    return new SolenoidPeriodic();
+    
 }
 
-Tensor * VectorPeriodic::createTensor()
+string TensorCart::AgnosticDeriv::executeText()
 {
-    return new TensorPeriodic();
+    string opName = "Divergence";
+    
+    string ret = getName() + " = "; 
+    ret += opName + ": " + this->vParent->op->getName();
+    
+    return ret;
 }

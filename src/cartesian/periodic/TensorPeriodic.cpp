@@ -17,32 +17,20 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "cartesian/periodic/VectorPeriodic.h"
-#include "cartesian/periodic/FieldPeriodic.h"
-#include "cartesian/periodic/SolenoidPeriodic.h"
 #include "cartesian/periodic/TensorPeriodic.h"
+#include "cartesian/periodic/VectorPeriodic.h"
 
-VectorPeriodic::VectorPeriodic()
+TensorPeriodic::TensorPeriodic()
 {
     
 }
 
-Vector * VectorPeriodic::createVector()
-{
-    return new VectorPeriodic();
-}
-
-Field * VectorPeriodic::createField()
-{
-    return new FieldPeriodic();
-}
-
-Solenoid * VectorPeriodic::createSolenoid()
-{
-    return new SolenoidPeriodic();
-}
-
-Tensor * VectorPeriodic::createTensor()
+Tensor * TensorPeriodic::createTensor()
 {
     return new TensorPeriodic();
+}
+
+Vector * TensorPeriodic::createVector()
+{
+    return new VectorPeriodic();
 }

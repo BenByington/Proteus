@@ -37,6 +37,10 @@
 int benchmark(char * propFile);
 int execute(char * propFile);
 
+#include "cartesian/periodic/FieldPeriodic.h"
+#include "cartesian/periodic/VectorPeriodic.h"
+#include "cartesian/periodic/SolenoidPeriodic.h"
+#include "cartesian/periodic/TensorPeriodic.h"
 
 /*
  * This is the main driving routine.  Doesn't do much save initialize MPI and
@@ -44,6 +48,10 @@ int execute(char * propFile);
  */
 int main(int argc, char** argv)
 {
+    FieldPeriodic temp1();
+    VectorPeriodic temp2();
+    SolenoidPeriodic temp3();
+    TensorPeriodic temp4();
     int status;
 
     //Start up MPI

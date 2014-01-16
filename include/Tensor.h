@@ -17,40 +17,49 @@
  * with IMHD.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef VECTOR_CARTESIAN_H
-#define VECTOR_CARTESIAN_H
+#ifndef TENSOR_H
+#define	TENSOR_H
 
-#include "Vector.h"
+#include "GNode.h"
 
-class VectorCart : public Vector
+class Vector;
+
+class Tensor
 {
-    //friend class FieldCart;
 protected:
-    VectorCart();
-        
-public:
-    virtual ~VectorCart(){}
+    Tensor();
     
-    virtual Solenoid * decompose();
-    virtual Solenoid * decomposeCurl();
-    virtual Field * divergence();
-    virtual Vector * curl();
-    virtual Tensor * gradient();
-
+public:
+    virtual ~Tensor(){}
+    virtual Vector * createVector() = 0;
+    virtual Tensor * createTensor() = 0;
+    
+    /*Arithmetic operations between vectors fields*/
+    Tensor * operator +(Tensor * r);
+    Tensor * operator -(Tensor * r);
+    
+    virtual Vector * divergence() = 0;
+    
+    GNode * op;
 private:
-    class AgnosticDeriv : public GNode
+    class TensorArithmetic : public GNode
     {
-        friend class VectorCart;
+        friend class Tensor;
     public:
-        AgnosticDeriv(VectorCart * v);
+        TensorArithmetic(Tensor * v1, Tensor * v2);
         virtual void execute();
         virtual std::string executeText();
-    private:
-        VectorCart * vParent;
         
-        enum operations {div, curl, grad, decomp, decompCurl};
+    private:
+        Tensor * p1;
+        Tensor * p2;
+        
+        enum operations {add, sub};
         operations op;
     };
     
+    
 };
-#endif
+
+#endif	/* TENSOR_H */
+

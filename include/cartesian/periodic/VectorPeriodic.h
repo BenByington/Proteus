@@ -32,6 +32,7 @@ public:
     virtual Vector * createVector();
     virtual Field * createField();
     virtual Solenoid * createSolenoid();
+    virtual Tensor * createTensor();
     
 };
 #endif
