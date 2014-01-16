@@ -20,12 +20,39 @@
 
 #include "Tensor.h"
 #include "Vector.h"
+#include "Scalar.h"
 
 using namespace std;
 
 Tensor::Tensor()
 {
     op = 0;
+}
+
+Tensor * Tensor::operator *(Scalar * fact)
+{
+    Tensor * ret = createTensor();
+    ScalarFactor * node = new ScalarFactor(fact, this);
+    node->op = node->mul;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(fact->op);
+    
+    return ret;
+}
+
+Tensor * Tensor::operator /(Scalar * fact)
+{
+    Tensor * ret = createTensor();
+    ScalarFactor * node = new ScalarFactor(fact, this);
+    node->op = node->divide;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(fact->op);
+    
+    return ret;
 }
 
 Tensor * Tensor::operator +(Tensor * r)
@@ -81,6 +108,38 @@ string Tensor::TensorArithmetic::executeText()
     string ret = getName() + " = "; 
     ret += opName + ": " + this->p1->op->getName();
     ret += " " + this->p2->op->getName();
+    
+    return ret;
+}
+
+Tensor::ScalarFactor::ScalarFactor(Scalar* s, Tensor * v)
+{
+    sParent = s;
+    vParent = v;
+}
+
+void Tensor::ScalarFactor::execute()
+{
+    
+}
+
+string Tensor::ScalarFactor::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = "Multiply";
+        break;
+    case divide:
+        opName = "Divide";
+        break;
+    }
+    
+    string ret = getName() + string(" = "); 
+    ret += opName + string(": ") + this->sParent->op->getName();
+    ret += string(" ") + this->vParent->op->getName();
+    
     
     return ret;
 }

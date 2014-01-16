@@ -27,6 +27,7 @@
 class Field;
 class Solenoid;
 class Tensor;
+class Scalar;
 
 class Vector 
 {
@@ -39,6 +40,9 @@ public:
     virtual Field * createField() = 0;
     virtual Solenoid * createSolenoid() = 0;
     virtual Tensor * createTensor() = 0;
+    
+    Vector * operator *(Scalar * fact);
+    Vector * operator /(Scalar * mult);
     
     /*Arithmetic operations between vectors fields*/
     Vector * operator +(Vector * r);
@@ -71,7 +75,21 @@ private:
         operations op;
     };
     
-    
+    class ScalarFactor : public GNode
+    {
+        friend class Vector;
+    public:
+        ScalarFactor(Scalar * s, Vector * v);
+        virtual void execute();
+        virtual std::string executeText();
+        
+    private:
+        Scalar * sParent;
+        Vector* vParent;
+        
+        enum operations {mul, divide};        
+        operations op;
+    };
 };
 
 #endif

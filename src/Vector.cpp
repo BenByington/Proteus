@@ -21,12 +21,39 @@
 #include "Vector.h"
 #include "Scalar.h"
 #include "Field2.h"
+#include "Scalar.h"
 
 using namespace std;
 
 Vector::Vector()
 {
     op = 0;
+}
+
+Vector * Vector::operator *(Scalar * fact)
+{
+    Vector * ret = createVector();
+    ScalarFactor * node = new ScalarFactor(fact, this);
+    node->op = node->mul;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(fact->op);
+    
+    return ret;
+}
+
+Vector * Vector::operator /(Scalar * fact)
+{
+    Vector * ret = createVector();
+    ScalarFactor * node = new ScalarFactor(fact, this);
+    node->op = node->divide;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(fact->op);
+    
+    return ret;
 }
 
 Vector * Vector::operator +(Vector * r)
@@ -114,6 +141,38 @@ string Vector::VectorArithmetic::executeText()
     string ret = getName() + " = "; 
     ret += opName + ": " + this->p1->op->getName();
     ret += " " + this->p2->op->getName();
+    
+    return ret;
+}
+
+Vector::ScalarFactor::ScalarFactor(Scalar* s, Vector * v)
+{
+    sParent = s;
+    vParent = v;
+}
+
+void Vector::ScalarFactor::execute()
+{
+    
+}
+
+string Vector::ScalarFactor::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = "Multiply";
+        break;
+    case divide:
+        opName = "Divide";
+        break;
+    }
+    
+    string ret = getName() + string(" = "); 
+    ret += opName + string(": ") + this->sParent->op->getName();
+    ret += string(" ") + this->vParent->op->getName();
+    
     
     return ret;
 }

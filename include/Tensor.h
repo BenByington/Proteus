@@ -23,6 +23,7 @@
 #include "GNode.h"
 
 class Vector;
+class Scalar;
 
 class Tensor
 {
@@ -33,6 +34,9 @@ public:
     virtual ~Tensor(){}
     virtual Vector * createVector() = 0;
     virtual Tensor * createTensor() = 0;
+    
+    Tensor * operator *(Scalar * fact);
+    Tensor * operator /(Scalar * mult);
     
     /*Arithmetic operations between vectors fields*/
     Tensor * operator +(Tensor * r);
@@ -58,7 +62,21 @@ private:
         operations op;
     };
     
-    
+    class ScalarFactor : public GNode
+    {
+        friend class Tensor;
+    public:
+        ScalarFactor(Scalar * s, Tensor * v);
+        virtual void execute();
+        virtual std::string executeText();
+        
+    private:
+        Scalar * sParent;
+        Tensor * vParent;
+        
+        enum operations {mul, divide};        
+        operations op;
+    };
 };
 
 #endif	/* TENSOR_H */
