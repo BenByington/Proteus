@@ -41,6 +41,7 @@ int execute(char * propFile);
 #include "cartesian/periodic/VectorPeriodic.h"
 #include "cartesian/periodic/SolenoidPeriodic.h"
 #include "cartesian/periodic/TensorPeriodic.h"
+#include "TestRunner.h"
 
 /*
  * This is the main driving routine.  Doesn't do much save initialize MPI and
@@ -48,6 +49,9 @@ int execute(char * propFile);
  */
 int main(int argc, char** argv)
 {
+    runTests();
+    return 0;
+    
     FieldPeriodic temp1();
     VectorPeriodic temp2();
     SolenoidPeriodic temp3();
