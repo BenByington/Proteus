@@ -28,7 +28,16 @@ class Scalar;
 class Variable
 {
 protected:
-    Variable(){};
+    Variable(){op = new nop();}
+    
+    class nop : public GNode
+    {
+        friend class Variable;
+    public:
+        nop(){};
+        virtual void execute(){};
+        virtual std::string executeText(){return std::string("");}
+    };
     
 public:
     virtual ~Variable(){}
