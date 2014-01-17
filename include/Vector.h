@@ -46,6 +46,7 @@ public:
     
     Field * dot(Vector * r);
     Vector * cross(Vector * r);
+    Tensor * outter(Vector * r);
     
     virtual Solenoid * decompose() = 0;
     virtual Solenoid * decomposeCurl() = 0;
@@ -67,7 +68,7 @@ private:
         Vector * p1;
         Vector * p2;
         
-        enum operations {add, sub, dot, cross};
+        enum operations {add, sub, dot, cross, outter};
         operations op;
     };
     

@@ -110,6 +110,20 @@ Field * Vector::dot(Vector* r)
     
 }
 
+Tensor * Vector::outter(Vector* r)
+{
+    Tensor * ret = VariableFactory::createTensor();
+    VectorArithmetic * node = new VectorArithmetic(this, r);
+    node->op = node->outter;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(r->op);
+    
+    return ret;
+    
+}
+
 Vector::VectorArithmetic::VectorArithmetic(Vector* v1, Vector* v2)
 {
     this->p1 = v1;
