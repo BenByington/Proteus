@@ -54,6 +54,18 @@ Vector * VectorCart::curl()
     return ret;
 }
 
+Vector * VectorCart::laplacian()
+{
+    Vector * ret = VariableFactory::createVector();
+    AgnosticDeriv * node = new AgnosticDeriv(this);
+    node->op = node->laplace;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    
+    return ret;
+}
+
 Tensor * VectorCart::gradient()
 {
     Tensor * ret = VariableFactory::createTensor();

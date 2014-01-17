@@ -36,6 +36,7 @@ public:
     virtual Field * divergence();
     virtual Vector * curl();
     virtual Tensor * gradient();
+    virtual Vector * laplacian();
 
 private:
     class AgnosticDeriv : public GNode
@@ -48,7 +49,7 @@ private:
     private:
         VectorCart * vParent;
         
-        enum operations {div, curl, grad, decomp, decompCurl};
+        enum operations {div, curl, grad, laplace, decomp, decompCurl};
         operations op;
     };
     

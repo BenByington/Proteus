@@ -52,6 +52,7 @@ public:
     virtual Field * divergence() = 0;
     virtual Vector * curl() = 0;
     virtual Tensor * gradient() = 0;
+    virtual Vector * laplacian() = 0;
 
 private:
     class VectorArithmetic : public GNode
