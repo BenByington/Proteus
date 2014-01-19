@@ -37,12 +37,12 @@ protected:
 public:
     virtual ~Vector(){}
     
-    Vector * operator *(Scalar * fact);
-    Vector * operator /(Scalar * mult);
+    Vector * multiply(Scalar * fact);
+    Vector * divide(Scalar * mult);
     
     /*Arithmetic operations between vectors fields*/
-    Vector * operator +(Vector * r);
-    Vector * operator -(Vector * r);
+    Vector * add(Vector * r);
+    Vector * subtract(Vector * r);
     
     Field * dot(Vector * r);
     Vector * cross(Vector * r);

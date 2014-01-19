@@ -9,7 +9,7 @@ Field::Field()
     op = 0;
 }
 
-Field * Field::operator *(Scalar * fact)
+Field * Field::multiply(Scalar * fact)
 {
     Field * ret = VariableFactory::createField();
     ScalarFactor * node = new ScalarFactor(fact, this);
@@ -22,7 +22,7 @@ Field * Field::operator *(Scalar * fact)
     return ret;
 }
 
-Field * Field::operator /(Scalar * fact)
+Field * Field::divide(Scalar * fact)
 {
     Field * ret = VariableFactory::createField();
     ScalarFactor * node = new ScalarFactor(fact, this);
@@ -35,7 +35,7 @@ Field * Field::operator /(Scalar * fact)
     return ret;
 }
 
-Field * Field::operator +(Field * r)
+Field * Field::add(Field * r)
 {
     Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
@@ -48,7 +48,7 @@ Field * Field::operator +(Field * r)
     return ret;
 }
 
-Field * Field::operator -(Field * r)
+Field * Field::subtract(Field * r)
 {
     Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
@@ -61,7 +61,7 @@ Field * Field::operator -(Field * r)
     return ret;
 }
 
-Field * Field::operator *(Field * r)
+Field * Field::multiply(Field * r)
 {
     Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);
@@ -74,7 +74,7 @@ Field * Field::operator *(Field * r)
     return ret;
 }
 
-Field * Field::operator /(Field * r)
+Field * Field::divide(Field * r)
 {
     Field * ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, this);

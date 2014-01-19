@@ -31,7 +31,7 @@ Vector::Vector()
     op = 0;
 }
 
-Vector * Vector::operator *(Scalar * fact)
+Vector * Vector::multiply(Scalar * fact)
 {
     Vector * ret = VariableFactory::createVector();
     ScalarFactor * node = new ScalarFactor(fact, this);
@@ -44,7 +44,7 @@ Vector * Vector::operator *(Scalar * fact)
     return ret;
 }
 
-Vector * Vector::operator /(Scalar * fact)
+Vector * Vector::divide(Scalar * fact)
 {
     Vector * ret = VariableFactory::createVector();
     ScalarFactor * node = new ScalarFactor(fact, this);
@@ -57,7 +57,7 @@ Vector * Vector::operator /(Scalar * fact)
     return ret;
 }
 
-Vector * Vector::operator +(Vector * r)
+Vector * Vector::add(Vector * r)
 {
     Vector * ret = VariableFactory::createVector();
     VectorArithmetic * node = new VectorArithmetic(this, r);
@@ -70,7 +70,7 @@ Vector * Vector::operator +(Vector * r)
     return ret;
 }
 
-Vector * Vector::operator -(Vector * r)
+Vector * Vector::subtract(Vector * r)
 {
     Vector * ret = VariableFactory::createVector();
     VectorArithmetic * node = new VectorArithmetic(this, r);

@@ -30,7 +30,7 @@ Tensor::Tensor()
     op = 0;
 }
 
-Tensor * Tensor::operator *(Scalar * fact)
+Tensor * Tensor::multiply(Scalar * fact)
 {
     Tensor * ret = VariableFactory::createTensor();
     ScalarFactor * node = new ScalarFactor(fact, this);
@@ -43,7 +43,7 @@ Tensor * Tensor::operator *(Scalar * fact)
     return ret;
 }
 
-Tensor * Tensor::operator /(Scalar * fact)
+Tensor * Tensor::divide(Scalar * fact)
 {
     Tensor * ret = VariableFactory::createTensor();
     ScalarFactor * node = new ScalarFactor(fact, this);
@@ -56,7 +56,7 @@ Tensor * Tensor::operator /(Scalar * fact)
     return ret;
 }
 
-Tensor * Tensor::operator +(Tensor * r)
+Tensor * Tensor::add(Tensor * r)
 {
     Tensor * ret = VariableFactory::createTensor();
     TensorArithmetic * node = new TensorArithmetic(this, r);
@@ -69,7 +69,7 @@ Tensor * Tensor::operator +(Tensor * r)
     return ret;
 }
 
-Tensor * Tensor::operator -(Tensor * r)
+Tensor * Tensor::subtract(Tensor * r)
 {
     Tensor * ret = VariableFactory::createTensor();
     TensorArithmetic * node = new TensorArithmetic(this, r);

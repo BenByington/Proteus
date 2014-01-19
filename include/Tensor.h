@@ -33,12 +33,12 @@ protected:
 public:
     virtual ~Tensor(){}
     
-    Tensor * operator *(Scalar * fact);
-    Tensor * operator /(Scalar * mult);
+    Tensor * multiply(Scalar * fact);
+    Tensor * divide(Scalar * mult);
     
     /*Arithmetic operations between vectors fields*/
-    Tensor * operator +(Tensor * r);
-    Tensor * operator -(Tensor * r);
+    Tensor * add(Tensor * r);
+    Tensor * subtract(Tensor * r);
     
     virtual Vector * divergence() = 0;
     

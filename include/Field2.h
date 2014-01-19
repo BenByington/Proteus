@@ -33,14 +33,14 @@ public:
     virtual ~Field(){}
     
     /*Apply a factor to our variable field*/
-    Field * operator *(Scalar * fact);
-    Field * operator /(Scalar * mult);
+    Field * multiply(Scalar * fact);
+    Field * divide(Scalar * mult);
     
     /*Arithmetic operations between variable fields*/
-    Field * operator +(Field * r);
-    Field * operator -(Field * r);
-    Field * operator *(Field * r);
-    Field * operator /(Field * r);
+    Field * add(Field * r);
+    Field * subtract(Field * r);
+    Field * multiply(Field * r);
+    Field * divide(Field * r);
     
     virtual Vector * gradient() = 0;
     virtual Field * laplacian() = 0;
