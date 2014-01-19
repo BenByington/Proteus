@@ -40,6 +40,9 @@ public:
     Vector * multiply(Scalar * fact);
     Vector * divide(Scalar * mult);
     
+    Vector * multiply(Field * f);
+    Vector * divide(Field * f);
+    
     /*Arithmetic operations between vectors fields*/
     Vector * add(Vector * r);
     Vector * subtract(Vector * r);
@@ -82,6 +85,22 @@ private:
         
     private:
         Scalar * sParent;
+        Vector* vParent;
+        
+        enum operations {mul, divide};        
+        operations op;
+    };
+    
+    class FieldFactor : public GNode
+    {
+        friend class Vector;
+    public:
+        FieldFactor(Field * f, Vector * v);
+        virtual void execute();
+        virtual std::string executeText();
+        
+    private:
+        Field * fParent;
         Vector* vParent;
         
         enum operations {mul, divide};        

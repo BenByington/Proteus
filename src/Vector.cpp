@@ -28,7 +28,6 @@ using namespace std;
 
 Vector::Vector()
 {
-    op = 0;
 }
 
 Vector * Vector::multiply(Scalar * fact)
@@ -48,6 +47,32 @@ Vector * Vector::divide(Scalar * fact)
 {
     Vector * ret = VariableFactory::createVector();
     ScalarFactor * node = new ScalarFactor(fact, this);
+    node->op = node->divide;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(fact->op);
+    
+    return ret;
+}
+
+Vector * Vector::multiply(Field * fact)
+{
+    Vector * ret = VariableFactory::createVector();
+    FieldFactor * node = new FieldFactor(fact, this);
+    node->op = node->mul;
+    ret->op = node;
+    
+    node->addDependency(this->op);
+    node->addDependency(fact->op);
+    
+    return ret;
+}
+
+Vector * Vector::divide(Field * fact)
+{
+    Vector * ret = VariableFactory::createVector();
+    FieldFactor * node = new FieldFactor(fact, this);
     node->op = node->divide;
     ret->op = node;
     
@@ -186,6 +211,38 @@ string Vector::ScalarFactor::executeText()
     
     string ret = getName() + string(" = "); 
     ret += opName + string(": ") + this->sParent->op->getName();
+    ret += string(" ") + this->vParent->op->getName();
+    
+    
+    return ret;
+}
+
+Vector::FieldFactor::FieldFactor(Field * s, Vector * v)
+{
+    fParent = s;
+    vParent = v;
+}
+
+void Vector::FieldFactor::execute()
+{
+    
+}
+
+string Vector::FieldFactor::executeText()
+{
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = "Multiply";
+        break;
+    case divide:
+        opName = "Divide";
+        break;
+    }
+    
+    string ret = getName() + string(" = "); 
+    ret += opName + string(": ") + this->fParent->op->getName();
     ret += string(" ") + this->vParent->op->getName();
     
     

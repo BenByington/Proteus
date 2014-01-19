@@ -6,7 +6,6 @@ using namespace std;
 
 Field::Field()
 {
-    op = 0;
 }
 
 Field * Field::multiply(Scalar * fact)
