@@ -27,9 +27,9 @@ FieldCart::FieldCart()
     
 }
 
-Field * FieldCart::laplacian()
+shared_ptr<Field> FieldCart::laplacian()
 {
-    Field * ret = VariableFactory::createField();
+    shared_ptr<Field> ret = VariableFactory::createField();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->laplace;
     ret->op = node;
@@ -39,9 +39,9 @@ Field * FieldCart::laplacian()
     return ret;
 }
 
-Vector * FieldCart::gradient()
+shared_ptr<Vector> FieldCart::gradient()
 {
-    Vector * ret = VariableFactory::createVector();
+    shared_ptr<Vector> ret = VariableFactory::createVector();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->grad;
     ret->op = node;

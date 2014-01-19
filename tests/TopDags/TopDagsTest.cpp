@@ -26,6 +26,10 @@
 #include "Solenoid.h"
 #include "Scalar.h"
 
+#include <memory>
+
+using namespace std;
+
 TopDagsTest::TopDagsTest()
 {
     
@@ -33,26 +37,34 @@ TopDagsTest::TopDagsTest()
 
 void TopDagsTest::setup()
 {
-    Vector * B = VariableFactory::createVector();
-    Vector * u = VariableFactory::createVector();
-    Field * T = VariableFactory::createField();
+    shared_ptr<Vector> B = VariableFactory::createVector();
+    shared_ptr<Vector> u = VariableFactory::createVector();
+    shared_ptr<Field> T = VariableFactory::createField();
+
+    shared_ptr<Vector> hatz = VariableFactory::createVector();
     
-    Scalar * Rm = new Scalar();
-    Scalar * Re = new Scalar();
-    Scalar * Beta = new Scalar();
-    Scalar * Buoy = new Scalar();
-    Scalar * kappa = new Scalar();
+    shared_ptr<Scalar> Pr = VariableFactory::createScalar();
+    shared_ptr<Scalar> Pm = VariableFactory::createScalar();
+    shared_ptr<Scalar> Ra = VariableFactory::createScalar();
+    shared_ptr<Scalar> alpha = VariableFactory::createScalar();
+    shared_ptr<Scalar> Beta = VariableFactory::createScalar();
     
-    Vector * db = ((u->cross(B))->curl())->operator +(B->laplacian()->operator *(Rm));
-    Vector * du = u->laplacian()->operator *(Re);  //diffusion
+    shared_ptr<Vector> db = ((u->cross(B))->curl())->add(B->laplacian()->multiply(Pr)->divide(Pm));
+    shared_ptr<Vector> du = u->laplacian()->multiply(Pr);  //diffusion
     
-    Tensor * tens = B->outter(B);
-    tens = tens->operator -(u->outter(u));
+    shared_ptr<Tensor> tens = B->outter(B)->multiply(alpha);
+    tens = tens->subtract(u->outter(u));
     
-    du = du->operator +(tens->divergence()); //advection and lorentz
+    du = du->add(tens->divergence()); //advection and lorentz
+    shared_ptr<Field> buoy = T->multiply(Pr)->multiply(Ra)->add(B->dot(B)->divide(Beta));
+    du = du->add(hatz->multiply(buoy));
     
+    shared_ptr<Field> dt = T->laplacian()->add(hatz->dot(u));
+    dt = dt->add(u->multiply(T)->divergence());
     
-    Vector * dT = T->laplacian() * kappa;
+    shared_ptr<Solenoid> bs = db->decompose();
+    shared_ptr<Solenoid> us = du->decomposeCurl();
+    
 }
 
 void TopDagsTest::cleanup()

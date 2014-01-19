@@ -32,8 +32,8 @@ protected:
 public:
     virtual ~FieldCart(){}
     
-    virtual Vector * gradient();
-    virtual Field * laplacian();
+    virtual std::shared_ptr<Vector> gradient();
+    virtual std::shared_ptr<Field> laplacian();
 
 private:        
     class AgnosticDeriv : public GNode

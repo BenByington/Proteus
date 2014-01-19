@@ -19,10 +19,13 @@
 #ifndef VARIABLEFACTORY_H
 #define	VARIABLEFACTORY_H
 
+#include "Scalar.h"
 #include "Field2.h"
 #include "Vector.h"
 #include "Solenoid.h"
 #include "Tensor.h"
+
+#include <memory>
 
 class VariableFactory
 {
@@ -30,10 +33,11 @@ private:
     VariableFactory();
   
 public:
-    static Field * createField();
-    static Vector * createVector();
-    static Solenoid * createSolenoid();
-    static Tensor * createTensor();
+    static std::shared_ptr<Scalar> createScalar();
+    static std::shared_ptr<Field> createField();
+    static std::shared_ptr<Vector> createVector();
+    static std::shared_ptr<Solenoid> createSolenoid();
+    static std::shared_ptr<Tensor> createTensor();
 };
 
 #endif	

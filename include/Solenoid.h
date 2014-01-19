@@ -23,12 +23,14 @@
 #include "Vector.h"
 #include "Variable.h"
 
-class Solenoid : public Variable
+#include <memory>
+
+class Solenoid : public Variable, public std::enable_shared_from_this<Solenoid>
 {
 public:
     virtual ~Solenoid(){}
     
-    virtual Vector * recompose() = 0;
+    virtual std::shared_ptr<Vector> recompose() = 0;
     
 };
 

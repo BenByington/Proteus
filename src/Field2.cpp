@@ -8,10 +8,10 @@ Field::Field()
 {
 }
 
-Field * Field::multiply(Scalar * fact)
+shared_ptr<Field> Field::multiply(shared_ptr<Scalar> fact)
 {
-    Field * ret = VariableFactory::createField();
-    ScalarFactor * node = new ScalarFactor(fact, this);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
     node->op = node->mul;
     ret->op = node;
     
@@ -21,10 +21,10 @@ Field * Field::multiply(Scalar * fact)
     return ret;
 }
 
-Field * Field::divide(Scalar * fact)
+shared_ptr<Field> Field::divide(shared_ptr<Scalar> fact)
 {
-    Field * ret = VariableFactory::createField();
-    ScalarFactor * node = new ScalarFactor(fact, this);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
     node->op = node->divide;
     ret->op = node;
     
@@ -34,10 +34,10 @@ Field * Field::divide(Scalar * fact)
     return ret;
 }
 
-Field * Field::add(Field * r)
+shared_ptr<Field> Field::add(shared_ptr<Field> r)
 {
-    Field * ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, this);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
     node->op = node->add;
     ret->op = node;
     
@@ -47,10 +47,10 @@ Field * Field::add(Field * r)
     return ret;
 }
 
-Field * Field::subtract(Field * r)
+shared_ptr<Field> Field::subtract(shared_ptr<Field> r)
 {
-    Field * ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, this);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
     node->op = node->sub;
     ret->op = node;
     
@@ -60,10 +60,10 @@ Field * Field::subtract(Field * r)
     return ret;
 }
 
-Field * Field::multiply(Field * r)
+shared_ptr<Field> Field::multiply(shared_ptr<Field> r)
 {
-    Field * ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, this);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
     node->op = node->mul;
     ret->op = node;
     
@@ -73,10 +73,10 @@ Field * Field::multiply(Field * r)
     return ret;
 }
 
-Field * Field::divide(Field * r)
+shared_ptr<Field> Field::divide(shared_ptr<Field> r)
 {
-    Field * ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, this);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
     node->op = node->divide;
     ret->op = node;
     
@@ -86,7 +86,7 @@ Field * Field::divide(Field * r)
     return ret;
 }
 
-Field::ScalarFactor::ScalarFactor(Scalar* s, Field* v)
+Field::ScalarFactor::ScalarFactor(shared_ptr<Scalar> s, shared_ptr<Field> v)
 {
     sParent = s;
     vParent = v;
@@ -118,7 +118,7 @@ string Field::ScalarFactor::executeText()
     return ret;
 }
 
-Field::FieldArithmetic::FieldArithmetic(Field* p1, Field* p2)
+Field::FieldArithmetic::FieldArithmetic(shared_ptr<Field> p1, shared_ptr<Field> p2)
 {
     this->p1 = p1;
     this->p2 = p2;

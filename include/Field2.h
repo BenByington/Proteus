@@ -23,9 +23,11 @@
 #include "Scalar.h"
 #include "Variable.h"
 
+#include <memory>
+
 class Vector;
 
-class Field : public Variable
+class Field : public Variable, public std::enable_shared_from_this<Field>
 {
 protected:
     Field();
@@ -33,30 +35,30 @@ public:
     virtual ~Field(){}
     
     /*Apply a factor to our variable field*/
-    Field * multiply(Scalar * fact);
-    Field * divide(Scalar * mult);
+    std::shared_ptr<Field> multiply(std::shared_ptr<Scalar> fact);
+    std::shared_ptr<Field> divide(std::shared_ptr<Scalar> mult);
     
     /*Arithmetic operations between variable fields*/
-    Field * add(Field * r);
-    Field * subtract(Field * r);
-    Field * multiply(Field * r);
-    Field * divide(Field * r);
+    std::shared_ptr<Field> add(std::shared_ptr<Field> r);
+    std::shared_ptr<Field> subtract(std::shared_ptr<Field> r);
+    std::shared_ptr<Field> multiply(std::shared_ptr<Field> r);
+    std::shared_ptr<Field> divide(std::shared_ptr<Field> r);
     
-    virtual Vector * gradient() = 0;
-    virtual Field * laplacian() = 0;
+    virtual std::shared_ptr<Vector> gradient() = 0;
+    virtual std::shared_ptr<Field> laplacian() = 0;
 
 private:
     class ScalarFactor : public GNode
     {
         friend class Field;
     public:
-        ScalarFactor(Scalar * s, Field * v);
+        ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Field> v);
         virtual void execute();
         virtual std::string executeText();
         
     private:
-        Scalar * sParent;
-        Field * vParent;
+        std::shared_ptr<Scalar> sParent;
+        std::shared_ptr<Field> vParent;
         
         enum operations {mul, divide};
         
@@ -67,12 +69,12 @@ private:
     {
         friend class Field;
     public:
-        FieldArithmetic(Field * p1, Field * p2);
+        FieldArithmetic(std::shared_ptr<Field> p1, std::shared_ptr<Field> p2);
         virtual void execute();
         virtual std::string executeText();
     private:
-        Field * p1;
-        Field * p2;
+        std::shared_ptr<Field> p1;
+        std::shared_ptr<Field> p2;
         
         enum operations {add, sub, mul, divide};
         operations op;

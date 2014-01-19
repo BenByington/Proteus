@@ -23,23 +23,31 @@
 #include "cartesian/periodic/SolenoidPeriodic.h"
 #include "cartesian/periodic/TensorPeriodic.h"
 
-Field * VariableFactory::createField()
+#include <memory>
+
+using namespace std;
+
+shared_ptr<Field> VariableFactory::createField()
 {
-    return new FieldPeriodic();
+    return shared_ptr<Field>(new FieldPeriodic());
 }
 
-Vector * VariableFactory::createVector()
+shared_ptr<Vector> VariableFactory::createVector()
 {
-    return new VectorPeriodic();
+    return shared_ptr<Vector>(new VectorPeriodic());
 }
 
-Solenoid * VariableFactory::createSolenoid()
+shared_ptr<Solenoid> VariableFactory::createSolenoid()
 {
-    return new SolenoidPeriodic();
+    return shared_ptr<Solenoid>(new SolenoidPeriodic());
 }
 
-Tensor * VariableFactory::createTensor()
+shared_ptr<Tensor> VariableFactory::createTensor()
 {
-    return new TensorPeriodic();
+    return shared_ptr<Tensor>(new TensorPeriodic());
 }
 
+shared_ptr<Scalar> VariableFactory::createScalar()
+{
+    return shared_ptr<Scalar>(new Scalar());
+}

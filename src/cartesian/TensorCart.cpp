@@ -29,9 +29,9 @@ TensorCart::TensorCart()
     
 }
 
-Vector * TensorCart::divergence()
+shared_ptr<Vector> TensorCart::divergence()
 {
-    Vector * ret = VariableFactory::createVector();
+    shared_ptr<Vector> ret = VariableFactory::createVector();
     AgnosticDeriv * node = new AgnosticDeriv(this);
     node->op = node->div;
     ret->op = node;

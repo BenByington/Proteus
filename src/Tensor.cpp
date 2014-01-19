@@ -30,10 +30,10 @@ Tensor::Tensor()
     op = 0;
 }
 
-Tensor * Tensor::multiply(Scalar * fact)
+shared_ptr<Tensor> Tensor::multiply(shared_ptr<Scalar> fact)
 {
-    Tensor * ret = VariableFactory::createTensor();
-    ScalarFactor * node = new ScalarFactor(fact, this);
+    shared_ptr<Tensor> ret = VariableFactory::createTensor();
+    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
     node->op = node->mul;
     ret->op = node;
     
@@ -43,10 +43,10 @@ Tensor * Tensor::multiply(Scalar * fact)
     return ret;
 }
 
-Tensor * Tensor::divide(Scalar * fact)
+shared_ptr<Tensor> Tensor::divide(shared_ptr<Scalar> fact)
 {
-    Tensor * ret = VariableFactory::createTensor();
-    ScalarFactor * node = new ScalarFactor(fact, this);
+    shared_ptr<Tensor> ret = VariableFactory::createTensor();
+    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
     node->op = node->divide;
     ret->op = node;
     
@@ -56,10 +56,10 @@ Tensor * Tensor::divide(Scalar * fact)
     return ret;
 }
 
-Tensor * Tensor::add(Tensor * r)
+shared_ptr<Tensor> Tensor::add(shared_ptr<Tensor> r)
 {
-    Tensor * ret = VariableFactory::createTensor();
-    TensorArithmetic * node = new TensorArithmetic(this, r);
+    shared_ptr<Tensor> ret = VariableFactory::createTensor();
+    TensorArithmetic * node = new TensorArithmetic(shared_from_this(), r);
     node->op = node->add;
     ret->op = node;
     
@@ -69,10 +69,10 @@ Tensor * Tensor::add(Tensor * r)
     return ret;
 }
 
-Tensor * Tensor::subtract(Tensor * r)
+shared_ptr<Tensor> Tensor::subtract(shared_ptr<Tensor> r)
 {
-    Tensor * ret = VariableFactory::createTensor();
-    TensorArithmetic * node = new TensorArithmetic(this, r);
+    shared_ptr<Tensor> ret = VariableFactory::createTensor();
+    TensorArithmetic * node = new TensorArithmetic(shared_from_this(), r);
     node->op = node->sub;
     ret->op = node;
     
@@ -83,7 +83,7 @@ Tensor * Tensor::subtract(Tensor * r)
 }
 
 
-Tensor::TensorArithmetic::TensorArithmetic(Tensor* v1, Tensor* v2)
+Tensor::TensorArithmetic::TensorArithmetic(shared_ptr<Tensor> v1, shared_ptr<Tensor> v2)
 {
     this->p1 = v1;
     this->p2 = v2;
@@ -113,7 +113,7 @@ string Tensor::TensorArithmetic::executeText()
     return ret;
 }
 
-Tensor::ScalarFactor::ScalarFactor(Scalar* s, Tensor * v)
+Tensor::ScalarFactor::ScalarFactor(shared_ptr<Scalar> s, shared_ptr<Tensor> v)
 {
     sParent = s;
     vParent = v;

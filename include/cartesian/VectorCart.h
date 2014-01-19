@@ -31,23 +31,25 @@ protected:
 public:
     virtual ~VectorCart(){}
     
-    virtual Solenoid * decompose();
-    virtual Solenoid * decomposeCurl();
-    virtual Field * divergence();
-    virtual Vector * curl();
-    virtual Tensor * gradient();
-    virtual Vector * laplacian();
+    virtual std::shared_ptr<Solenoid> decompose();
+    virtual std::shared_ptr<Solenoid> decomposeCurl();
+    virtual std::shared_ptr<Field> divergence();
+    virtual std::shared_ptr<Vector> curl();
+    virtual std::shared_ptr<Tensor> gradient();
+    virtual std::shared_ptr<Vector> laplacian();
 
 private:
+    std::shared_ptr<VectorCart> getShared();
+    
     class AgnosticDeriv : public GNode
     {
         friend class VectorCart;
     public:
-        AgnosticDeriv(VectorCart * v);
+        AgnosticDeriv(std::shared_ptr<VectorCart> v);
         virtual void execute();
         virtual std::string executeText();
     private:
-        VectorCart * vParent;
+        std::shared_ptr<VectorCart> vParent;
         
         enum operations {div, curl, grad, laplace, decomp, decompCurl};
         operations op;

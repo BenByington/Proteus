@@ -30,10 +30,10 @@ Vector::Vector()
 {
 }
 
-Vector * Vector::multiply(Scalar * fact)
+shared_ptr<Vector> Vector::multiply(shared_ptr<Scalar> fact)
 {
-    Vector * ret = VariableFactory::createVector();
-    ScalarFactor * node = new ScalarFactor(fact, this);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
     node->op = node->mul;
     ret->op = node;
     
@@ -43,10 +43,10 @@ Vector * Vector::multiply(Scalar * fact)
     return ret;
 }
 
-Vector * Vector::divide(Scalar * fact)
+shared_ptr<Vector> Vector::divide(shared_ptr<Scalar> fact)
 {
-    Vector * ret = VariableFactory::createVector();
-    ScalarFactor * node = new ScalarFactor(fact, this);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
     node->op = node->divide;
     ret->op = node;
     
@@ -56,10 +56,10 @@ Vector * Vector::divide(Scalar * fact)
     return ret;
 }
 
-Vector * Vector::multiply(Field * fact)
+shared_ptr<Vector> Vector::multiply(shared_ptr<Field> fact)
 {
-    Vector * ret = VariableFactory::createVector();
-    FieldFactor * node = new FieldFactor(fact, this);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    FieldFactor * node = new FieldFactor(fact, shared_from_this());
     node->op = node->mul;
     ret->op = node;
     
@@ -69,10 +69,10 @@ Vector * Vector::multiply(Field * fact)
     return ret;
 }
 
-Vector * Vector::divide(Field * fact)
+shared_ptr<Vector> Vector::divide(shared_ptr<Field> fact)
 {
-    Vector * ret = VariableFactory::createVector();
-    FieldFactor * node = new FieldFactor(fact, this);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    FieldFactor * node = new FieldFactor(fact, shared_from_this());
     node->op = node->divide;
     ret->op = node;
     
@@ -82,10 +82,10 @@ Vector * Vector::divide(Field * fact)
     return ret;
 }
 
-Vector * Vector::add(Vector * r)
+shared_ptr<Vector> Vector::add(shared_ptr<Vector> r)
 {
-    Vector * ret = VariableFactory::createVector();
-    VectorArithmetic * node = new VectorArithmetic(this, r);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
     node->op = node->add;
     ret->op = node;
     
@@ -95,10 +95,10 @@ Vector * Vector::add(Vector * r)
     return ret;
 }
 
-Vector * Vector::subtract(Vector * r)
+shared_ptr<Vector> Vector::subtract(shared_ptr<Vector> r)
 {
-    Vector * ret = VariableFactory::createVector();
-    VectorArithmetic * node = new VectorArithmetic(this, r);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
     node->op = node->sub;
     ret->op = node;
     
@@ -108,10 +108,10 @@ Vector * Vector::subtract(Vector * r)
     return ret;
 }
 
-Vector * Vector::cross(Vector * r)
+shared_ptr<Vector> Vector::cross(shared_ptr<Vector> r)
 {
-    Vector * ret = VariableFactory::createVector();
-    VectorArithmetic * node = new VectorArithmetic(this, r);
+    shared_ptr<Vector> ret = VariableFactory::createVector();
+    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
     node->op = node->cross;
     ret->op = node;
     
@@ -121,10 +121,10 @@ Vector * Vector::cross(Vector * r)
     return ret;
 }
 
-Field * Vector::dot(Vector* r)
+shared_ptr<Field> Vector::dot(shared_ptr<Vector> r)
 {
-    Field * ret = VariableFactory::createField();
-    VectorArithmetic * node = new VectorArithmetic(this, r);
+    shared_ptr<Field> ret = VariableFactory::createField();
+    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
     node->op = node->dot;
     ret->op = node;
     
@@ -135,10 +135,10 @@ Field * Vector::dot(Vector* r)
     
 }
 
-Tensor * Vector::outter(Vector* r)
+shared_ptr<Tensor> Vector::outter(shared_ptr<Vector> r)
 {
-    Tensor * ret = VariableFactory::createTensor();
-    VectorArithmetic * node = new VectorArithmetic(this, r);
+    shared_ptr<Tensor> ret = VariableFactory::createTensor();
+    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
     node->op = node->outter;
     ret->op = node;
     
@@ -149,7 +149,7 @@ Tensor * Vector::outter(Vector* r)
     
 }
 
-Vector::VectorArithmetic::VectorArithmetic(Vector* v1, Vector* v2)
+Vector::VectorArithmetic::VectorArithmetic(shared_ptr<Vector> v1, shared_ptr<Vector> v2)
 {
     this->p1 = v1;
     this->p2 = v2;
@@ -185,7 +185,7 @@ string Vector::VectorArithmetic::executeText()
     return ret;
 }
 
-Vector::ScalarFactor::ScalarFactor(Scalar* s, Vector * v)
+Vector::ScalarFactor::ScalarFactor(shared_ptr<Scalar> s, shared_ptr<Vector> v)
 {
     sParent = s;
     vParent = v;
@@ -217,7 +217,7 @@ string Vector::ScalarFactor::executeText()
     return ret;
 }
 
-Vector::FieldFactor::FieldFactor(Field * s, Vector * v)
+Vector::FieldFactor::FieldFactor(shared_ptr<Field> s, shared_ptr<Vector> v)
 {
     fParent = s;
     vParent = v;

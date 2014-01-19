@@ -22,10 +22,12 @@
 
 #include "Variable.h"
 
+#include <memory>
+
 class Vector;
 class Scalar;
 
-class Tensor : public Variable
+class Tensor : public Variable, public std::enable_shared_from_this<Tensor>
 {
 protected:
     Tensor();
@@ -33,27 +35,27 @@ protected:
 public:
     virtual ~Tensor(){}
     
-    Tensor * multiply(Scalar * fact);
-    Tensor * divide(Scalar * mult);
+    std::shared_ptr<Tensor> multiply(std::shared_ptr<Scalar> fact);
+    std::shared_ptr<Tensor> divide(std::shared_ptr<Scalar> mult);
     
     /*Arithmetic operations between vectors fields*/
-    Tensor * add(Tensor * r);
-    Tensor * subtract(Tensor * r);
+    std::shared_ptr<Tensor> add(std::shared_ptr<Tensor> r);
+    std::shared_ptr<Tensor> subtract(std::shared_ptr<Tensor> r);
     
-    virtual Vector * divergence() = 0;
+    virtual std::shared_ptr<Vector> divergence() = 0;
     
 private:
     class TensorArithmetic : public GNode
     {
         friend class Tensor;
     public:
-        TensorArithmetic(Tensor * v1, Tensor * v2);
+        TensorArithmetic(std::shared_ptr<Tensor> v1, std::shared_ptr<Tensor> v2);
         virtual void execute();
         virtual std::string executeText();
         
     private:
-        Tensor * p1;
-        Tensor * p2;
+        std::shared_ptr<Tensor> p1;
+        std::shared_ptr<Tensor> p2;
         
         enum operations {add, sub};
         operations op;
@@ -63,13 +65,13 @@ private:
     {
         friend class Tensor;
     public:
-        ScalarFactor(Scalar * s, Tensor * v);
+        ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> v);
         virtual void execute();
         virtual std::string executeText();
         
     private:
-        Scalar * sParent;
-        Tensor * vParent;
+        std::shared_ptr<Scalar> sParent;
+        std::shared_ptr<Tensor> vParent;
         
         enum operations {mul, divide};        
         operations op;

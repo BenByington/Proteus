@@ -23,13 +23,14 @@
 #include "Variable.h"
 
 #include <string>
+#include <memory>
 
 class Field;
 class Solenoid;
 class Tensor;
 class Scalar;
 
-class Vector : public Variable
+class Vector : public Variable, public std::enable_shared_from_this<Vector>
 {
 protected:
     Vector();
@@ -37,39 +38,39 @@ protected:
 public:
     virtual ~Vector(){}
     
-    Vector * multiply(Scalar * fact);
-    Vector * divide(Scalar * mult);
+    std::shared_ptr<Vector> multiply(std::shared_ptr<Scalar> fact);
+    std::shared_ptr<Vector> divide(std::shared_ptr<Scalar> mult);
     
-    Vector * multiply(Field * f);
-    Vector * divide(Field * f);
+    std::shared_ptr<Vector> multiply(std::shared_ptr<Field> f);
+    std::shared_ptr<Vector> divide(std::shared_ptr<Field> f);
     
     /*Arithmetic operations between vectors fields*/
-    Vector * add(Vector * r);
-    Vector * subtract(Vector * r);
+    std::shared_ptr<Vector> add(std::shared_ptr<Vector> r);
+    std::shared_ptr<Vector> subtract(std::shared_ptr<Vector> r);
     
-    Field * dot(Vector * r);
-    Vector * cross(Vector * r);
-    Tensor * outter(Vector * r);
+    std::shared_ptr<Field> dot(std::shared_ptr<Vector> r);
+    std::shared_ptr<Vector> cross(std::shared_ptr<Vector> r);
+    std::shared_ptr<Tensor> outter(std::shared_ptr<Vector> r);
     
-    virtual Solenoid * decompose() = 0;
-    virtual Solenoid * decomposeCurl() = 0;
-    virtual Field * divergence() = 0;
-    virtual Vector * curl() = 0;
-    virtual Tensor * gradient() = 0;
-    virtual Vector * laplacian() = 0;
+    virtual std::shared_ptr<Solenoid> decompose() = 0;
+    virtual std::shared_ptr<Solenoid> decomposeCurl() = 0;
+    virtual std::shared_ptr<Field> divergence() = 0;
+    virtual std::shared_ptr<Vector> curl() = 0;
+    virtual std::shared_ptr<Tensor> gradient() = 0;
+    virtual std::shared_ptr<Vector> laplacian() = 0;
 
 private:
     class VectorArithmetic : public GNode
     {
         friend class Vector;
     public:
-        VectorArithmetic(Vector * v1, Vector * v2);
+        VectorArithmetic(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
         virtual void execute();
         virtual std::string executeText();
         
     private:
-        Vector * p1;
-        Vector * p2;
+        std::shared_ptr<Vector> p1;
+        std::shared_ptr<Vector> p2;
         
         enum operations {add, sub, dot, cross, outter};
         operations op;
@@ -79,13 +80,13 @@ private:
     {
         friend class Vector;
     public:
-        ScalarFactor(Scalar * s, Vector * v);
+        ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v);
         virtual void execute();
         virtual std::string executeText();
         
     private:
-        Scalar * sParent;
-        Vector* vParent;
+        std::shared_ptr<Scalar> sParent;
+        std::shared_ptr<Vector> vParent;
         
         enum operations {mul, divide};        
         operations op;
@@ -95,13 +96,13 @@ private:
     {
         friend class Vector;
     public:
-        FieldFactor(Field * f, Vector * v);
+        FieldFactor(std::shared_ptr<Field> f, std::shared_ptr<Vector> v);
         virtual void execute();
         virtual std::string executeText();
         
     private:
-        Field * fParent;
-        Vector* vParent;
+        std::shared_ptr<Field> fParent;
+        std::shared_ptr<Vector> vParent;
         
         enum operations {mul, divide};        
         operations op;

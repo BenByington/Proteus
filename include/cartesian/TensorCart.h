@@ -30,7 +30,7 @@ protected:
 public:
     virtual ~TensorCart(){}
     
-    virtual Vector * divergence();
+    virtual std::shared_ptr<Vector> divergence();
 
 private:
     class AgnosticDeriv : public GNode

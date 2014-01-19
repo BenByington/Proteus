@@ -30,18 +30,20 @@ protected:
 public:
     virtual ~SolenoidCart(){}
     
-    virtual Vector * recompose();
+    virtual std::shared_ptr<Vector> recompose();
     
 private:
+    std::shared_ptr<SolenoidCart> getShared();
+    
     class VectorOp : public GNode
     {
         friend class SolenoidCart;
     public:
-        VectorOp(SolenoidCart * v);
+        VectorOp(std::shared_ptr<SolenoidCart> v);
         virtual void execute();
         virtual std::string executeText();
     private:
-        SolenoidCart * sParent;
+        std::shared_ptr<SolenoidCart> sParent;
         
         enum operations {recompose};
         operations op;
