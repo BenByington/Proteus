@@ -1,6 +1,6 @@
 
 /*
- * Copywrite 2013-2014 Benjamin Byington
+ * Copyright 2013-2014 Benjamin Byington
  *
  * This file is part of the Proteus software package
  * 
