@@ -192,10 +192,10 @@ void Vector::VectorArithmetic::setOp(operations o)
     switch(op)
     {
     case cross:
-        opName = " X ";
+        opName = string("\u2A2f");
         break;
     case dot:
-        opName = " . ";
+        opName = string("\u00B7");
         break;
     case sub:
         opName = " - ";
