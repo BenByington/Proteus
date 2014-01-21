@@ -47,7 +47,7 @@ private:
     public:
         AgnosticDeriv(std::shared_ptr<VectorCart> v);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
     private:
         std::shared_ptr<VectorCart> vParent;
         

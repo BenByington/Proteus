@@ -51,12 +51,11 @@ void TensorCart::AgnosticDeriv::execute()
     
 }
 
-string TensorCart::AgnosticDeriv::executeText()
+string TensorCart::AgnosticDeriv::getDependString()
 {
     string opName = "Divergence";
     
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->vParent->op->getName();
+    string ret = opName + ": " + this->vParent->op->getID();
     
     return ret;
 }

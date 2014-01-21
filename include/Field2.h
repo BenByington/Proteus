@@ -50,33 +50,34 @@ public:
 private:
     class ScalarFactor : public GNode
     {
-        friend class Field;
     public:
         ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Field> v);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
         
+        enum operations {mul, divide};
+        void setOp(operations o);
     private:
         std::shared_ptr<Scalar> sParent;
         std::shared_ptr<Field> vParent;
-        
-        enum operations {mul, divide};
         
         operations op;
     };
     
     class FieldArithmetic : public GNode
     {
-        friend class Field;
     public:
         FieldArithmetic(std::shared_ptr<Field> p1, std::shared_ptr<Field> p2);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
+        
+        enum operations {add, sub, mul, divide};
+        void setOp(operations o);
     private:
         std::shared_ptr<Field> p1;
         std::shared_ptr<Field> p2;
         
-        enum operations {add, sub, mul, divide};
+        
         operations op;
     };
 };

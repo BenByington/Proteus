@@ -51,3 +51,39 @@ shared_ptr<Scalar> VariableFactory::createScalar()
 {
     return shared_ptr<Scalar>(new Scalar());
 }
+
+
+shared_ptr<Field> VariableFactory::declareField(string name)
+{
+    shared_ptr<Field> ret = shared_ptr<Field>(new FieldPeriodic());
+    ret->op->setLabel(name);
+    return ret;
+}
+
+shared_ptr<Vector> VariableFactory::declareVector(string name)
+{
+    shared_ptr<Vector> ret = shared_ptr<Vector>(new VectorPeriodic());
+    ret->op->setLabel(name);
+    return ret;
+}
+
+shared_ptr<Solenoid> VariableFactory::declareSolenoid(string name)
+{
+    shared_ptr<Solenoid> ret = shared_ptr<Solenoid>(new SolenoidPeriodic());
+    ret->op->setLabel(name);
+    return ret;
+}
+
+shared_ptr<Tensor> VariableFactory::declareTensor(string name)
+{
+    shared_ptr<Tensor> ret = shared_ptr<Tensor>(new TensorPeriodic());
+    ret->op->setLabel(name);
+    return ret;
+}
+
+shared_ptr<Scalar> VariableFactory::declareScalar(string name)
+{
+    shared_ptr<Scalar> ret = shared_ptr<Scalar>(new Scalar());
+    ret->op->setLabel(name);
+    return ret;
+}

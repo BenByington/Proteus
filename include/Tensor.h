@@ -51,7 +51,7 @@ private:
     public:
         TensorArithmetic(std::shared_ptr<Tensor> v1, std::shared_ptr<Tensor> v2);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
         
     private:
         std::shared_ptr<Tensor> p1;
@@ -67,7 +67,7 @@ private:
     public:
         ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> v);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
         
     private:
         std::shared_ptr<Scalar> sParent;

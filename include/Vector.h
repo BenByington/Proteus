@@ -62,49 +62,53 @@ public:
 private:
     class VectorArithmetic : public GNode
     {
-        friend class Vector;
+  //      friend class Vector;
     public:
         VectorArithmetic(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
+        
+        enum operations {add, sub, dot, cross, outter};
+        void setOp(operations o);
         
     private:
         std::shared_ptr<Vector> p1;
         std::shared_ptr<Vector> p2;
         
-        enum operations {add, sub, dot, cross, outter};
         operations op;
     };
     
     class ScalarFactor : public GNode
     {
-        friend class Vector;
     public:
         ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
+        
+        enum operations {mul, divide};
+        void setOp(operations o);
         
     private:
         std::shared_ptr<Scalar> sParent;
         std::shared_ptr<Vector> vParent;
-        
-        enum operations {mul, divide};        
+                
         operations op;
     };
     
     class FieldFactor : public GNode
     {
-        friend class Vector;
     public:
         FieldFactor(std::shared_ptr<Field> f, std::shared_ptr<Vector> v);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
+        
+        enum operations {mul, divide};  
+        void setOp(operations o);
         
     private:
         std::shared_ptr<Field> fParent;
         std::shared_ptr<Vector> vParent;
-        
-        enum operations {mul, divide};        
+              
         operations op;
     };
 };

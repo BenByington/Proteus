@@ -25,6 +25,7 @@
 #include "Field.h"
 #include "Solenoid.h"
 #include "Scalar.h"
+#include "ExecutionGraph.h"
 
 #include <memory>
 
@@ -37,17 +38,28 @@ TopDagsTest::TopDagsTest()
 
 void TopDagsTest::setup()
 {
-    shared_ptr<Vector> B = VariableFactory::createVector();
-    shared_ptr<Vector> u = VariableFactory::createVector();
-    shared_ptr<Field> T = VariableFactory::createField();
+    shared_ptr<Vector> B = VariableFactory::declareVector("B");
+    shared_ptr<Vector> u = VariableFactory::declareVector("u");
+    shared_ptr<Field> T = VariableFactory::declareField("T");
 
-    shared_ptr<Vector> hatz = VariableFactory::createVector();
+    shared_ptr<Vector> hatz = VariableFactory::declareVector("z_hat");
     
-    shared_ptr<Scalar> Pr = VariableFactory::createScalar();
-    shared_ptr<Scalar> Pm = VariableFactory::createScalar();
-    shared_ptr<Scalar> Ra = VariableFactory::createScalar();
-    shared_ptr<Scalar> alpha = VariableFactory::createScalar();
-    shared_ptr<Scalar> Beta = VariableFactory::createScalar();
+    shared_ptr<Scalar> Pr = VariableFactory::declareScalar("Pr");
+    shared_ptr<Scalar> Pm = VariableFactory::declareScalar("Pm");
+    shared_ptr<Scalar> Ra = VariableFactory::declareScalar("Ra");
+    shared_ptr<Scalar> alpha = VariableFactory::declareScalar("alpha");
+    shared_ptr<Scalar> Beta = VariableFactory::declareScalar("Beta");
+    
+    ExecutionGraph * g = new ExecutionGraph();
+    g->registerHead(B->op);
+    g->registerHead(u->op);
+    g->registerHead(T->op);
+    g->registerHead(Pr->op);
+    g->registerHead(Pm->op);
+    g->registerHead(Ra->op);
+    g->registerHead(alpha->op);
+    g->registerHead(Beta->op);
+    g->registerHead(hatz->op);
     
     shared_ptr<Vector> db = ((u->cross(B))->curl())->add(B->laplacian()->multiply(Pr)->divide(Pm));
     shared_ptr<Vector> du = u->laplacian()->multiply(Pr);  //diffusion
@@ -65,6 +77,7 @@ void TopDagsTest::setup()
     shared_ptr<Solenoid> bs = db->decompose();
     shared_ptr<Solenoid> us = du->decomposeCurl();
     
+    g->execute();
 }
 
 void TopDagsTest::cleanup()

@@ -26,6 +26,7 @@
 #include "Tensor.h"
 
 #include <memory>
+#include <string>
 
 class VariableFactory
 {
@@ -38,6 +39,12 @@ public:
     static std::shared_ptr<Vector> createVector();
     static std::shared_ptr<Solenoid> createSolenoid();
     static std::shared_ptr<Tensor> createTensor();
+    
+    static std::shared_ptr<Scalar> declareScalar(std::string name);
+    static std::shared_ptr<Field> declareField(std::string name);
+    static std::shared_ptr<Vector> declareVector(std::string name);
+    static std::shared_ptr<Solenoid> declareSolenoid(std::string name);
+    static std::shared_ptr<Tensor> declareTensor(std::string name);
 };
 
 #endif	

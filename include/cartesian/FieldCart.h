@@ -42,7 +42,7 @@ private:
     public:
         AgnosticDeriv(FieldCart * f);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
         
     private:
         FieldCart * fParent;

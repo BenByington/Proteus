@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 Benjamin Byington
+ * Copyright 2013 Benjamin Byington
  *
  * This file is part of the Proteus software package
  * 
@@ -17,39 +17,29 @@
  * with Proteus.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#ifndef SOLENOID_CARTESIAN_H
-#define SOLENOID_CARTESIAN_H
+#ifndef EXECUTIONGRAPH_H
+#define	EXECUTIONGRAPH_H
 
-#include "Solenoid.h"
+#include "GNode.h"
 
-class SolenoidCart : public Solenoid
+#include <vector>
+#include <queue>
+
+class ExecutionGraph final
 {
-protected:
-    SolenoidCart();
-        
 public:
-    virtual ~SolenoidCart(){}
+    ExecutionGraph();
+    ~ExecutionGraph(){};
     
-    virtual std::shared_ptr<Vector> recompose();
-    
+    void execute();
+    void registerHead(GNode * h);
 private:
-    std::shared_ptr<SolenoidCart> getShared();
+    void linearize();
+    bool linearized;
     
-    class VectorOp : public GNode
-    {
-        friend class SolenoidCart;
-    public:
-        VectorOp(std::shared_ptr<SolenoidCart> v);
-        virtual void execute();
-        virtual std::string getDependString();
-    private:
-        std::shared_ptr<SolenoidCart> sParent;
-        
-        enum operations {recompose};
-        operations op;
-    };
+    std::vector<GNode*> order;
+    std::priority_queue<GNode*> ready;
 };
 
+#endif	/* EXECUTIONGRAPH_H */
 
-
-#endif

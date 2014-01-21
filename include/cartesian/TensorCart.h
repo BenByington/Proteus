@@ -39,7 +39,7 @@ private:
     public:
         AgnosticDeriv(TensorCart * v);
         virtual void execute();
-        virtual std::string executeText();
+        virtual std::string getDependString();
     private:
         TensorCart * vParent;
         

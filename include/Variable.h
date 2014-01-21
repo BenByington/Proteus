@@ -36,7 +36,7 @@ protected:
     public:
         nop(){};
         virtual void execute(){};
-        virtual std::string executeText(){return std::string("");}
+        virtual std::string getDependString(){return "";}
     };
     
 public:

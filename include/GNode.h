@@ -20,28 +20,35 @@
 #ifndef	GNODE_H
 #define GNODE_H
 
-#include <vector>
+#include <list>
 #include <string>
 
 class GNode
 {
 protected:
     
-std::vector<GNode*> parents; 
-std::vector<GNode*> children;
+std::list<GNode*> parents; 
+std::list<GNode*> children;
 
 public:
     virtual ~GNode(){}
 	
     virtual void execute() = 0;
-    virtual std::string executeText() = 0;
+    std::string executeText();
     
     void addDependency(GNode * p);
-    std::string getName();
+    std::list<GNode*> resolveDependency();
+    std::string getLabel();
+    std::string getID();
+    virtual std::string getDependString() = 0;
     
-    int myNum;
+    void setNum(int n);
+    void setLabel(std::string s);
+    
 protected:
-    static int numNodes;
+    GNode();
+    int myNum;
+    std::string label;
 };
 
 #endif

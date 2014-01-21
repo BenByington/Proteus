@@ -94,7 +94,7 @@ void Tensor::TensorArithmetic::execute()
     
 }
 
-string Tensor::TensorArithmetic::executeText()
+string Tensor::TensorArithmetic::getDependString()
 {
     string opName;
     switch(op)
@@ -106,9 +106,8 @@ string Tensor::TensorArithmetic::executeText()
         opName = "Add";    
     }
     
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->p1->op->getName();
-    ret += " " + this->p2->op->getName();
+    string ret = opName + ": " + this->p1->op->getID();
+    ret += " " + this->p2->op->getID();
     
     return ret;
 }
@@ -124,7 +123,7 @@ void Tensor::ScalarFactor::execute()
     
 }
 
-string Tensor::ScalarFactor::executeText()
+string Tensor::ScalarFactor::getDependString()
 {
     string opName;
     switch(op)
@@ -137,9 +136,8 @@ string Tensor::ScalarFactor::executeText()
         break;
     }
     
-    string ret = getName() + string(" = "); 
-    ret += opName + string(": ") + this->sParent->op->getName();
-    ret += string(" ") + this->vParent->op->getName();
+    string ret = opName + string(": ") + this->sParent->op->getID();
+    ret += string(" ") + this->vParent->op->getID();
     
     
     return ret;

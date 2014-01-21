@@ -48,20 +48,18 @@ int execute(char * propFile);
  * a few other things, and then call the main execution loop.
  */
 int main(int argc, char** argv)
-{
-    runTests();
-    return 0;
-    
-    FieldPeriodic temp1();
-    VectorPeriodic temp2();
-    SolenoidPeriodic temp3();
-    TensorPeriodic temp4();
+{   
     int status;
 
     //Start up MPI
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &grank);
     MPI_Comm_size(MPI_COMM_WORLD, &gsize);
+    
+    initLogging();
+ 
+    runTests();
+    return 0;
     
     //Ensure correct calling signature.  Note: Benchmarking is not currently
     //operative.
@@ -75,8 +73,6 @@ int main(int argc, char** argv)
     }
 
     srand(time(0));
-
-    initLogging();
     
     if(argc == 2)
         status = execute(argv[1]);

@@ -12,7 +12,7 @@ shared_ptr<Field> Field::multiply(shared_ptr<Scalar> fact)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
     ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->op = node->mul;
+    node->setOp(node->mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -25,7 +25,7 @@ shared_ptr<Field> Field::divide(shared_ptr<Scalar> fact)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
     ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->op = node->divide;
+    node->setOp(node->divide);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -38,7 +38,7 @@ shared_ptr<Field> Field::add(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->op = node->add;
+    node->setOp(node->add);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -51,7 +51,7 @@ shared_ptr<Field> Field::subtract(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->op = node->sub;
+    node->setOp(node->sub);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -64,7 +64,7 @@ shared_ptr<Field> Field::multiply(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->op = node->mul;
+    node->setOp(node->mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -77,7 +77,7 @@ shared_ptr<Field> Field::divide(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
     FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->op = node->divide;
+    node->setOp(node->divide);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -97,7 +97,7 @@ void Field::ScalarFactor::execute()
     
 }
 
-string Field::ScalarFactor::executeText()
+string Field::ScalarFactor::getDependString()
 {
     string opName;
     switch(op)
@@ -110,12 +110,29 @@ string Field::ScalarFactor::executeText()
         break;
     }
     
-    string ret = getName() + string(" = "); 
-    ret += opName + string(": ") + this->sParent->op->getName();
-    ret += string(" ") + this->vParent->op->getName();
+    string ret = opName + string(": ") + this->sParent->op->getID();
+    ret += string(" ") + this->vParent->op->getID();
     
     
     return ret;
+}
+
+void Field::ScalarFactor::setOp(operations o)
+{
+    op = o;
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = " * ";
+        break;
+    case divide:
+        opName = " / ";
+        break;
+    }
+    
+    label = "(" + vParent->op->getLabel() + opName + sParent->op->getLabel() + ")";
+    
 }
 
 Field::FieldArithmetic::FieldArithmetic(shared_ptr<Field> p1, shared_ptr<Field> p2)
@@ -129,7 +146,7 @@ void Field::FieldArithmetic::execute()
     
 }
 
-string Field::FieldArithmetic::executeText()
+string Field::FieldArithmetic::getDependString()
 {
     string opName;
     switch(op)
@@ -147,9 +164,31 @@ string Field::FieldArithmetic::executeText()
         opName = "Add";    
     }
     
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->p1->op->getName();
-    ret += " " + this->p2->op->getName();
+    string ret = opName + ": " + this->p1->op->getID();
+    ret += " " + this->p2->op->getID();
     
     return ret;
+}
+
+void Field::FieldArithmetic::setOp(operations o)
+{
+    op = o;
+    string opName;
+    switch(op)
+    {
+    case mul:
+        opName = " * ";
+        break;
+    case divide:
+        opName = " / ";
+        break;
+    case sub:
+        opName = " - ";
+        break;
+    case add:
+        opName = " + ";    
+    }
+    
+    label = "(" + p1->op->getLabel() + opName + p2->op->getLabel() + ")";
+    
 }

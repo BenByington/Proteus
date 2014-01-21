@@ -61,7 +61,7 @@ void FieldCart::AgnosticDeriv::execute()
     
 }
 
-string FieldCart::AgnosticDeriv::executeText()
+string FieldCart::AgnosticDeriv::getDependString()
 {
     string opName;
     switch(op)
@@ -74,8 +74,7 @@ string FieldCart::AgnosticDeriv::executeText()
         break;
     }
     
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->fParent->op->getName();
+    string ret = opName + ": " + this->fParent->op->getID();
     
     return ret;
 }

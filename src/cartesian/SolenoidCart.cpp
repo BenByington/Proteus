@@ -48,12 +48,11 @@ void SolenoidCart::VectorOp::execute()
     
 }
 
-string SolenoidCart::VectorOp::executeText()
+string SolenoidCart::VectorOp::getDependString()
 {
     string opName = "Recompose Vector";
     
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->sParent->op->getName();
+    string ret = opName + ": " + this->sParent->op->getID();
     return ret;
 }
 

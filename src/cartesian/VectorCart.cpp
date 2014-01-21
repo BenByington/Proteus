@@ -112,7 +112,7 @@ void VectorCart::AgnosticDeriv::execute()
     
 }
 
-string VectorCart::AgnosticDeriv::executeText()
+string VectorCart::AgnosticDeriv::getDependString()
 {
     string opName;
     switch(op)
@@ -134,8 +134,7 @@ string VectorCart::AgnosticDeriv::executeText()
         break;
     }
     
-    string ret = getName() + " = "; 
-    ret += opName + ": " + this->vParent->op->getName();
+    string ret = opName + ": " + this->vParent->op->getID();
     
     return ret;
 }
