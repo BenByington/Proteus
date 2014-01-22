@@ -37,7 +37,7 @@ shared_ptr<TensorCart> TensorCart::getShared()
 shared_ptr<Vector> TensorCart::divergence()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    Div * node = new Div(getShared());
+    OperatorTier2<Tensor> * node = new OperatorTier2<Tensor>(shared_from_this(),OperatorTier2<Tensor>::div);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -45,5 +45,3 @@ shared_ptr<Vector> TensorCart::divergence()
     return ret;
 }
 
-TensorCart::Div::Div(std::shared_ptr<TensorCart> v)
-        : OperatorTier2(v->op, div) {}

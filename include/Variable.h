@@ -83,52 +83,62 @@ protected:
         BinaryOp();
     };
     
+    template <class T>
     class OperatorTier1 : public UnaryOp
     {
     public:
         enum operation {decompose, decomposeCurl, recompose};
-        OperatorTier1(GNode * left, operation op);
+        OperatorTier1(std::shared_ptr<T> left, operation op);
         virtual ~OperatorTier1(){};
+        virtual void execute();
     private:
         OperatorTier1();
     };
     
+    template <class T>
     class OperatorTier2 : public UnaryOp
     {
     public:
         enum operation {div, grad, curl, laplace};
-        OperatorTier2(GNode * left, operation op);
+        OperatorTier2(std::shared_ptr<T> left, operation op);
         virtual ~OperatorTier2(){};
+        virtual void execute();
     private:
         OperatorTier2();
     };
     
+    template <class T1, class T2>
     class OperatorTier3 : public BinaryOp
     {
     public:
         enum operation {mul, divide, dot};
-        OperatorTier3(GNode * left, GNode * right, operation op);
+        OperatorTier3(std::shared_ptr<T1> left, std::shared_ptr<T2> right, operation op);
         virtual ~OperatorTier3(){};
+        virtual void execute();
     private:
         OperatorTier3();
     };
     
+    template <class T1, class T2>
     class OperatorTier4 : public BinaryOp
     {
     public:
         enum operation {cross, outer};
-        OperatorTier4(GNode * left, GNode * right, operation op);
+        OperatorTier4(std::shared_ptr<T1> left, std::shared_ptr<T2> right, operation op);
         virtual ~OperatorTier4(){};
+        virtual void execute();
     private:
         OperatorTier4();
     };
     
+    template <class T1, class T2>
     class OperatorTier5 : public BinaryOp
     {
     public:
         enum operation {add, sub};
-        OperatorTier5(GNode * left, GNode * right, operation op);
+        OperatorTier5(std::shared_ptr<T1> left, std::shared_ptr<T2> right, operation op);
         virtual ~OperatorTier5(){};
+        virtual void execute();
     private:
         OperatorTier5();
     };

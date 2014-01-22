@@ -41,47 +41,5 @@ public:
 private:
     std::shared_ptr<VectorCart> getShared();
     
-    class Div : public Vector::OperatorTier2
-    {
-    public:
-        Div(std::shared_ptr<VectorCart> v);
-        virtual void execute() {}
-    };
-    
-    class Grad : public Vector::OperatorTier2
-    {
-    public:
-        Grad(std::shared_ptr<VectorCart> v);
-        virtual void execute() {}
-    };
-    
-    class Curl : public Vector::OperatorTier2
-    {
-    public:
-        Curl(std::shared_ptr<VectorCart> v);
-        virtual void execute() {}
-    };
-    
-    class Laplacian : public Vector::OperatorTier2
-    {
-    public:
-        Laplacian(std::shared_ptr<VectorCart> v);
-        virtual void execute() {}
-    };
-    
-    class Decompose : public Vector::OperatorTier1
-    {
-    public:
-        Decompose(std::shared_ptr<VectorCart> v);
-        virtual void execute() {}
-    };
-    
-    class DecomposeCurl : public Vector::OperatorTier1
-    {
-    public:
-        DecomposeCurl(std::shared_ptr<VectorCart> v);
-        virtual void execute() {}
-    };
-    
 };
 #endif

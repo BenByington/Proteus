@@ -33,8 +33,7 @@ Vector::Vector()
 shared_ptr<Vector> Vector::multiply(shared_ptr<Scalar> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    ScalarMul * node = new ScalarMul(fact, shared_from_this());
-//    node->setOp(node->mul);
+    OperatorTier3<Scalar,Vector> * node = new OperatorTier3<Scalar,Vector>(fact, shared_from_this(),OperatorTier3<Scalar,Vector>::mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -46,7 +45,7 @@ shared_ptr<Vector> Vector::multiply(shared_ptr<Scalar> fact)
 shared_ptr<Vector> Vector::divide(shared_ptr<Scalar> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    ScalarDiv * node = new ScalarDiv(fact, shared_from_this());
+    OperatorTier3<Scalar,Vector> * node = new OperatorTier3<Scalar,Vector>(fact, shared_from_this(),OperatorTier3<Scalar,Vector>::divide);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -58,7 +57,7 @@ shared_ptr<Vector> Vector::divide(shared_ptr<Scalar> fact)
 shared_ptr<Vector> Vector::multiply(shared_ptr<Field> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    FieldMul * node = new FieldMul(fact, shared_from_this());
+    OperatorTier3<Field,Vector> * node = new OperatorTier3<Field,Vector>(fact, shared_from_this(),OperatorTier3<Field,Vector>::mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -70,7 +69,7 @@ shared_ptr<Vector> Vector::multiply(shared_ptr<Field> fact)
 shared_ptr<Vector> Vector::divide(shared_ptr<Field> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    FieldDiv * node = new FieldDiv(fact, shared_from_this());
+    OperatorTier3<Field,Vector> * node = new OperatorTier3<Field,Vector>(fact, shared_from_this(),OperatorTier3<Field,Vector>::divide);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -82,7 +81,8 @@ shared_ptr<Vector> Vector::divide(shared_ptr<Field> fact)
 shared_ptr<Vector> Vector::add(shared_ptr<Vector> r)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorAdd * node = new VectorAdd(shared_from_this(), r);
+    OperatorTier5<Vector,Vector> * node = new OperatorTier5<Vector,Vector>(shared_from_this(),r,OperatorTier5<Vector,Vector>::add);
+
     ret->op = node;
     
     node->addDependency(this->op);
@@ -94,7 +94,7 @@ shared_ptr<Vector> Vector::add(shared_ptr<Vector> r)
 shared_ptr<Vector> Vector::subtract(shared_ptr<Vector> r)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorSub * node = new VectorSub(shared_from_this(), r);
+    OperatorTier5<Vector,Vector> * node = new OperatorTier5<Vector,Vector>(shared_from_this(),r,OperatorTier5<Vector,Vector>::sub);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -106,7 +106,7 @@ shared_ptr<Vector> Vector::subtract(shared_ptr<Vector> r)
 shared_ptr<Vector> Vector::cross(shared_ptr<Vector> r)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorCross * node = new VectorCross(shared_from_this(), r);
+    OperatorTier4<Vector,Vector> * node = new OperatorTier4<Vector,Vector>(shared_from_this(),r,OperatorTier4<Vector,Vector>::cross);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -118,7 +118,7 @@ shared_ptr<Vector> Vector::cross(shared_ptr<Vector> r)
 shared_ptr<Field> Vector::dot(shared_ptr<Vector> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    VectorDot * node = new VectorDot(shared_from_this(), r);
+    OperatorTier3<Vector,Vector> * node = new OperatorTier3<Vector,Vector>(shared_from_this(),r,OperatorTier3<Vector,Vector>::dot);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -131,7 +131,7 @@ shared_ptr<Field> Vector::dot(shared_ptr<Vector> r)
 shared_ptr<Tensor> Vector::outter(shared_ptr<Vector> r)
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    VectorOuter * node = new VectorOuter(shared_from_this(), r);
+    OperatorTier4<Vector,Vector> * node = new OperatorTier4<Vector,Vector>(shared_from_this(),r,OperatorTier4<Vector,Vector>::outer);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -140,30 +140,3 @@ shared_ptr<Tensor> Vector::outter(shared_ptr<Vector> r)
     return ret;
     
 }
-
-Vector::ScalarMul::ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v)
-       : OperatorTier3(s->op, v->op, mul) {}
-
-Vector::ScalarDiv::ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v)
-       : OperatorTier3(s->op, v->op, divide) {}
-
-Vector::FieldMul::FieldMul(std::shared_ptr<Field> f, std::shared_ptr<Vector> v)
-       : OperatorTier3(f->op, v->op, mul) {}
-
-Vector::FieldDiv::FieldDiv(std::shared_ptr<Field> f, std::shared_ptr<Vector> v)
-       : OperatorTier3(f->op, v->op, divide) {}
-
-Vector::VectorAdd::VectorAdd(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
-       : OperatorTier5(v1->op, v2->op, add) {}
-
-Vector::VectorSub::VectorSub(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
-       : OperatorTier5(v1->op, v2->op, sub) {}
-
-Vector::VectorCross::VectorCross(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
-       : OperatorTier4(v1->op, v2->op, cross) {}
-
-Vector::VectorOuter::VectorOuter(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
-       : OperatorTier4(v1->op, v2->op, outer) {}
-
-Vector::VectorDot::VectorDot(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
-       : OperatorTier3(v1->op, v2->op, dot) {}

@@ -37,20 +37,6 @@ public:
 
 private:
     std::shared_ptr<FieldCart> getShared();
-    
-    class Grad : public OperatorTier2
-    {
-    public:
-        Grad(std::shared_ptr<FieldCart> v);
-        virtual void execute() {}
-    };
-    
-    class Laplacian : public OperatorTier2
-    {
-    public:
-        Laplacian(std::shared_ptr<FieldCart> v);
-        virtual void execute() {}
-    };
 };
 
 #endif

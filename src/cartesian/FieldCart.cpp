@@ -35,7 +35,7 @@ shared_ptr<FieldCart> FieldCart::getShared()
 shared_ptr<Field> FieldCart::laplacian()
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    Laplacian * node = new Laplacian(getShared());
+    OperatorTier2<Field> * node = new OperatorTier2<Field>(shared_from_this(),OperatorTier2<Field>::laplace);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -46,16 +46,10 @@ shared_ptr<Field> FieldCart::laplacian()
 shared_ptr<Vector> FieldCart::gradient()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    Grad * node = new Grad(getShared());
+    OperatorTier2<Field> * node = new OperatorTier2<Field>(shared_from_this(),OperatorTier2<Field>::grad);
     ret->op = node;
     
     node->addDependency(this->op);
     
     return ret;
 }
-
-FieldCart::Grad::Grad(std::shared_ptr<FieldCart> v)
-        : OperatorTier2(v->op, grad) {}
-
-FieldCart::Laplacian::Laplacian(std::shared_ptr<FieldCart> v)
-        : OperatorTier2(v->op, laplace) {}

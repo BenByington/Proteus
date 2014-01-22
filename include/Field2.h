@@ -47,48 +47,6 @@ public:
     virtual std::shared_ptr<Vector> gradient() = 0;
     virtual std::shared_ptr<Field> laplacian() = 0;
 
-private:
-    class ScalarMul : public Field::OperatorTier3
-    {
-    public:
-        ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Field> f);
-        virtual void execute() {}
-    };
-    
-    class ScalarDiv : public Field::OperatorTier3
-    {
-    public:
-        ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Field> f);
-        virtual void execute() {}
-    };
-    
-    class FieldMul : public Field::OperatorTier3
-    {
-    public:
-        FieldMul(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2);
-        virtual void execute() {}
-    };
-    
-    class FieldDiv : public Field::OperatorTier3
-    {
-    public:
-        FieldDiv(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2);
-        virtual void execute() {}
-    };
-    
-    class FieldAdd : public Field::OperatorTier5
-    {
-    public:
-        FieldAdd(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2);
-        virtual void execute() {}
-    };
-    
-    class FieldSub : public Field::OperatorTier5
-    {
-    public:
-        FieldSub(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2);
-        virtual void execute() {}
-    };
 };
 
 #endif

@@ -34,16 +34,7 @@ public:
 
 private:
     std::shared_ptr<TensorCart> getShared();
-    
-    class Div : public OperatorTier2
-    {
-    public:
-        Div(std::shared_ptr<TensorCart> v);
-        virtual void execute() {}
-    };
-    
-
-    
+       
 };
 #endif	/* TENSORCART_H */
 

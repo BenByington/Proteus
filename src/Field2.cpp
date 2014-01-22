@@ -11,7 +11,7 @@ Field::Field()
 shared_ptr<Field> Field::multiply(shared_ptr<Scalar> fact)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    ScalarMul * node = new ScalarMul(fact, shared_from_this());
+    OperatorTier3<Scalar,Field> * node = new OperatorTier3<Scalar,Field>(fact,shared_from_this(),OperatorTier3<Scalar,Field>::mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -23,7 +23,7 @@ shared_ptr<Field> Field::multiply(shared_ptr<Scalar> fact)
 shared_ptr<Field> Field::divide(shared_ptr<Scalar> fact)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    ScalarDiv * node = new ScalarDiv(fact, shared_from_this());
+    OperatorTier3<Field,Scalar> * node = new OperatorTier3<Field,Scalar>(shared_from_this(),fact,OperatorTier3<Field,Scalar>::divide);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -35,7 +35,7 @@ shared_ptr<Field> Field::divide(shared_ptr<Scalar> fact)
 shared_ptr<Field> Field::add(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldAdd * node = new FieldAdd(r, shared_from_this());
+    OperatorTier5<Field,Field> * node = new OperatorTier5<Field,Field>(shared_from_this(),r,OperatorTier5<Field,Field>::add);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -47,7 +47,7 @@ shared_ptr<Field> Field::add(shared_ptr<Field> r)
 shared_ptr<Field> Field::subtract(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldSub * node = new FieldSub(r, shared_from_this());
+    OperatorTier5<Field,Field> * node = new OperatorTier5<Field,Field>(shared_from_this(),r,OperatorTier5<Field,Field>::sub);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -59,7 +59,7 @@ shared_ptr<Field> Field::subtract(shared_ptr<Field> r)
 shared_ptr<Field> Field::multiply(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldMul * node = new FieldMul(r, shared_from_this());
+    OperatorTier3<Field,Field> * node = new OperatorTier3<Field,Field>(shared_from_this(),r,OperatorTier3<Field,Field>::mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -71,7 +71,7 @@ shared_ptr<Field> Field::multiply(shared_ptr<Field> r)
 shared_ptr<Field> Field::divide(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldDiv * node = new FieldDiv(r, shared_from_this());
+    OperatorTier3<Field,Field> * node = new OperatorTier3<Field,Field>(shared_from_this(),r,OperatorTier3<Field,Field>::divide);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -79,21 +79,3 @@ shared_ptr<Field> Field::divide(shared_ptr<Field> r)
     
     return ret;
 }
-
-Field::ScalarMul::ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Field> f)
-        : OperatorTier3(f->op, s->op, mul) {}
-
-Field::ScalarDiv::ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Field> f)
-        : OperatorTier3(f->op, s->op, divide) {}
-
-Field::FieldMul::FieldMul(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
-        : OperatorTier3(f1->op, f2->op, mul) {}
-
-Field::FieldDiv::FieldDiv(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
-        : OperatorTier3(f1->op, f2->op, divide) {}
-
-Field::FieldAdd::FieldAdd(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
-        : OperatorTier5(f1->op, f2->op, add) {}
-
-Field::FieldSub::FieldSub(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
-        : OperatorTier5(f1->op, f2->op, sub) {}

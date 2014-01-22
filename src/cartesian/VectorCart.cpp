@@ -38,7 +38,7 @@ shared_ptr<VectorCart> VectorCart::getShared()
 shared_ptr<Field> VectorCart::divergence()
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    Div * node = new Div(getShared());
+    OperatorTier2<Vector> * node = new OperatorTier2<Vector>(shared_from_this(),OperatorTier2<Vector>::div);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -49,7 +49,7 @@ shared_ptr<Field> VectorCart::divergence()
 shared_ptr<Vector> VectorCart::curl()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    Curl * node = new Curl(getShared());
+    OperatorTier2<Vector> * node = new OperatorTier2<Vector>(shared_from_this(),OperatorTier2<Vector>::curl);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -60,7 +60,7 @@ shared_ptr<Vector> VectorCart::curl()
 shared_ptr<Vector> VectorCart::laplacian()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    Laplacian * node = new Laplacian(getShared());
+    OperatorTier2<Vector> * node = new OperatorTier2<Vector>(shared_from_this(),OperatorTier2<Vector>::laplace);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -71,7 +71,7 @@ shared_ptr<Vector> VectorCart::laplacian()
 shared_ptr<Tensor> VectorCart::gradient()
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    Grad * node = new Grad(getShared());
+    OperatorTier2<Vector> * node = new OperatorTier2<Vector>(shared_from_this(),OperatorTier2<Vector>::grad);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -82,7 +82,7 @@ shared_ptr<Tensor> VectorCart::gradient()
 shared_ptr<Solenoid> VectorCart::decompose()
 {
     shared_ptr<Solenoid> ret = VariableFactory::createSolenoid();
-    Decompose * node = new Decompose(getShared());
+    OperatorTier1<Vector> * node = new OperatorTier1<Vector>(shared_from_this(),OperatorTier1<Vector>::decompose);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -93,28 +93,9 @@ shared_ptr<Solenoid> VectorCart::decompose()
 shared_ptr<Solenoid> VectorCart::decomposeCurl()
 {
     shared_ptr<Solenoid> ret = VariableFactory::createSolenoid();
-    DecomposeCurl * node = new DecomposeCurl(getShared());
-    ret->op = node;
+    OperatorTier1<Vector> * node = new OperatorTier1<Vector>(shared_from_this(),OperatorTier1<Vector>::decomposeCurl);ret->op = node;
     
     node->addDependency(this->op);
     
     return ret;
 }
-
-VectorCart::Div::Div(std::shared_ptr<VectorCart> v)
-        : VectorCart::OperatorTier2(v->op, div) {}
-
-VectorCart::Grad::Grad(std::shared_ptr<VectorCart> v)
-        : VectorCart::OperatorTier2(v->op, grad) {}
-
-VectorCart::Curl::Curl(std::shared_ptr<VectorCart> v)
-        : VectorCart::OperatorTier2(v->op, curl) {}
-
-VectorCart::Laplacian::Laplacian(std::shared_ptr<VectorCart> v)
-        : VectorCart::OperatorTier2(v->op, laplace) {}
-
-VectorCart::Decompose::Decompose(std::shared_ptr<VectorCart> v)
-        : VectorCart::OperatorTier1(v->op, decompose) {}
-
-VectorCart::DecomposeCurl::DecomposeCurl(std::shared_ptr<VectorCart> v)
-        : VectorCart::OperatorTier1(v->op, decomposeCurl) {}

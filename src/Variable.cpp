@@ -18,6 +18,12 @@
  */
 
 #include "Variable.h"
+#include "Scalar.h"
+#include "Vector.h"
+#include "Tensor.h"
+#include "Solenoid.h"
+#include "Field2.h"
+#include "Logs/Log.h"
 
 using namespace std;
 
@@ -83,8 +89,11 @@ void Variable::BinaryOp::updateLabel()
     setLabel(label);
 }
 
-Variable::OperatorTier1::OperatorTier1(GNode * left, operation op) : Variable::UnaryOp(left)
+template<class T>
+Variable::OperatorTier1<T>::OperatorTier1(shared_ptr<T> left, operation op) : Variable::UnaryOp(left->op)
 {
+    static_assert(std::is_base_of<Variable,T>::value,"Must use Variable class\n");
+    
     presedence = 1;
     switch(op)
     {
@@ -102,8 +111,11 @@ Variable::OperatorTier1::OperatorTier1(GNode * left, operation op) : Variable::U
     }
 }
 
-Variable::OperatorTier2::OperatorTier2(GNode * left, operation op) : Variable::UnaryOp(left)
+template <class T>
+Variable::OperatorTier2<T>::OperatorTier2(shared_ptr<T> left, operation op) : Variable::UnaryOp(left->op)
 {
+    static_assert(std::is_base_of<Variable,T>::value,"Must use Variable class\n");
+    
     presedence = 2;
     switch(op)
     {
@@ -125,9 +137,13 @@ Variable::OperatorTier2::OperatorTier2(GNode * left, operation op) : Variable::U
     }
 }
 
-Variable::OperatorTier3::OperatorTier3(GNode * left, GNode * right, operation op) 
-         : Variable::BinaryOp(left, right)
+template<class T1, class T2>
+Variable::OperatorTier3<T1,T2>::OperatorTier3(shared_ptr<T1> left, shared_ptr<T2> right, operation op) 
+         : Variable::BinaryOp(left->op, right->op)
 {
+    
+    static_assert(std::is_base_of<Variable,T1>::value,"Must use Variable class\n");
+    static_assert(std::is_base_of<Variable,T2>::value,"Must use Variable class\n");
     presedence = 3;
     switch(op)
     {
@@ -146,9 +162,13 @@ Variable::OperatorTier3::OperatorTier3(GNode * left, GNode * right, operation op
     }
 }
 
-Variable::OperatorTier4::OperatorTier4(GNode * left, GNode * right, operation op)
-         : Variable::BinaryOp(left, right)
+template<class T1, class T2>
+Variable::OperatorTier4<T1,T2>::OperatorTier4(shared_ptr<T1> left, shared_ptr<T2> right, operation op)
+         : Variable::BinaryOp(left->op, right->op)
 {
+    static_assert(std::is_base_of<Variable,T1>::value,"Must use Variable class\n");
+    static_assert(std::is_base_of<Variable,T2>::value,"Must use Variable class\n");
+    
     presedence = 4;
     switch(op)
     {
@@ -162,9 +182,12 @@ Variable::OperatorTier4::OperatorTier4(GNode * left, GNode * right, operation op
     }
 }
 
-Variable::OperatorTier5::OperatorTier5(GNode * left,  GNode * right, operation op)
-         : Variable::BinaryOp(left, right)
+template<class T1, class T2>
+Variable::OperatorTier5<T1,T2>::OperatorTier5(shared_ptr<T1> left,  shared_ptr<T2> right, operation op)
+         : Variable::BinaryOp(left->op, right->op)
 {
+    static_assert(std::is_base_of<Variable,T1>::value,"Must use Variable class\n");
+    static_assert(std::is_base_of<Variable,T2>::value,"Must use Variable class\n");
     
     presedence = 5;
     switch(op)
@@ -178,3 +201,52 @@ Variable::OperatorTier5::OperatorTier5(GNode * left,  GNode * right, operation o
             opSym = "-";
     }
 }
+
+template <class T>
+void Variable::OperatorTier1<T>::execute()
+{
+    error("execute method not implemented!");
+}
+
+template <class T>
+void Variable::OperatorTier2<T>::execute()
+{
+    error("execute method not implemented!");
+}
+
+template <class T1, class T2>
+void Variable::OperatorTier3<T1,T2>::execute()
+{
+    error("execute method not implemented!");
+}
+
+template <class T1, class T2>
+void Variable::OperatorTier4<T1,T2>::execute()
+{
+    error("execute method not implemented!");
+}
+
+template <class T1, class T2>
+void Variable::OperatorTier5<T1,T2>::execute()
+{
+    error("execute method not implemented!");
+}
+
+template class Variable::OperatorTier1<Vector>;
+template class Variable::OperatorTier1<Tensor>;
+template class Variable::OperatorTier1<Solenoid>;
+template class Variable::OperatorTier2<Field>;
+template class Variable::OperatorTier2<Vector>;
+template class Variable::OperatorTier2<Tensor>;
+template class Variable::OperatorTier3<Scalar,Vector>;
+template class Variable::OperatorTier3<Scalar,Field>;
+template class Variable::OperatorTier3<Scalar,Tensor>;
+template class Variable::OperatorTier3<Field,Scalar>;
+template class Variable::OperatorTier3<Field,Field>;
+template class Variable::OperatorTier3<Field,Vector>;
+template class Variable::OperatorTier3<Field,Tensor>;
+template class Variable::OperatorTier3<Vector,Vector>;
+template class Variable::OperatorTier4<Vector,Vector>;
+template class Variable::OperatorTier5<Field,Field>;
+template class Variable::OperatorTier5<Vector,Vector>;
+template class Variable::OperatorTier5<Tensor,Tensor>;

@@ -34,13 +34,10 @@ shared_ptr<SolenoidCart> SolenoidCart::getShared()
 std::shared_ptr<Vector> SolenoidCart::recompose()
 {
     std::shared_ptr<Vector> ret = VariableFactory::createVector();
-    Recompose * node = new Recompose(getShared());
+    OperatorTier1<Solenoid> * node = new OperatorTier1<Solenoid>(shared_from_this(),OperatorTier1<Solenoid>::recompose);
     ret->op = node;
     
     node->addDependency(this->op);
     
     return ret;
 }
-
-SolenoidCart::Recompose::Recompose(std::shared_ptr<SolenoidCart> v)
-        : OperatorTier1(v->op, recompose) {}

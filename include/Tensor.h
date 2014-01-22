@@ -43,36 +43,6 @@ public:
     std::shared_ptr<Tensor> subtract(std::shared_ptr<Tensor> r);
     
     virtual std::shared_ptr<Vector> divergence() = 0;
-    
-private:
-    class ScalarMul : public OperatorTier3
-    {
-    public:
-        ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> t);
-        virtual void execute() {}
-    };
-    
-    class ScalarDiv : public OperatorTier3
-    {
-    public:
-        ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> t);
-        virtual void execute() {}
-    };
-
-    class TensorAdd : public OperatorTier5
-    {
-    public:
-        TensorAdd(std::shared_ptr<Tensor> t1, std::shared_ptr<Tensor> t2);
-        virtual void execute() {}
-    };
-    
-    class TensorSub : public OperatorTier5
-    {
-    public:
-        TensorSub(std::shared_ptr<Tensor> t1, std::shared_ptr<Tensor> t2);
-        virtual void execute() {}
-    };
-    
 };
 
 #endif	/* TENSOR_H */

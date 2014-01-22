@@ -34,14 +34,7 @@ public:
     
 private:
     std::shared_ptr<SolenoidCart> getShared();
-    
-    class Recompose : public OperatorTier1
-    {
-    public:
-        Recompose(std::shared_ptr<SolenoidCart> v);
-        virtual void execute() {}
-    };
-    
+       
 };
 
 
