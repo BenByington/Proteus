@@ -34,21 +34,23 @@ public:
     virtual ~GNode(){}
 	
     virtual void execute() = 0;
-    std::string executeText();
+    virtual std::string executeText();
     
     void addDependency(GNode * p);
     std::list<GNode*> resolveDependency();
     std::string getLabel();
     std::string getID();
-    virtual std::string getDependString() = 0;
     
     void setNum(int n);
     void setLabel(std::string s);
+    
+    int getPresedence(){return presedence;}
     
 protected:
     GNode();
     int myNum;
     std::string label;
+    int presedence;
 };
 
 #endif

@@ -10,6 +10,7 @@ using namespace std;
 
 GNode::GNode() : label("")
 {
+    presedence = 0;
 }
 
 void GNode::setLabel(std::string s)
@@ -74,7 +75,9 @@ list<GNode*> GNode::resolveDependency()
 
 string GNode::executeText()
 {
-    string ret = getID() + " = " + getDependString() + " -- [ " + getLabel() + " ]";
+    //this->updateLabel();
+   
+    string ret = getID() + " " + getLabel(); //+ " = " + getDependString() + " -- [ " + getLabel() + " ]";
     
     return ret;
 }

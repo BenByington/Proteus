@@ -22,6 +22,8 @@
 
 #include "GNode.h"
 
+#include <memory>
+
 class Vector;
 class Scalar;
 
@@ -29,14 +31,106 @@ class Variable
 {
 protected:
     Variable(){op = new nop();}
-    
-    class nop : public GNode
+
+    class MathNode : public GNode
     {
-        friend class Variable;
+    public:
+        virtual std::string executeText();
+        virtual std::string getDependString() = 0;
+        virtual void updateLabel() = 0;
+        ~MathNode(){}
+    protected:
+        MathNode();
+        
+        std::string opName;
+        std::string opSym;
+    };
+    
+    class nop : public MathNode
+    {
     public:
         nop(){};
+        virtual ~nop(){}
         virtual void execute(){};
         virtual std::string getDependString(){return "";}
+        virtual void updateLabel(){};
+    };
+    
+    class UnaryOp : public MathNode
+    {
+    public:
+        virtual std::string getDependString();
+        virtual void updateLabel();
+        virtual ~UnaryOp(){}
+    protected:
+        UnaryOp(GNode * a);
+        GNode * r;
+    private:
+        UnaryOp();
+    };
+    
+    class BinaryOp : public MathNode
+    {
+    public:
+        virtual std::string getDependString();
+        virtual void updateLabel();
+        virtual ~BinaryOp(){}
+    protected:
+        BinaryOp(GNode * a, GNode * b);
+        GNode * l;
+        GNode * r;
+    private:
+        BinaryOp();
+    };
+    
+    class OperatorTier1 : public UnaryOp
+    {
+    public:
+        enum operation {decompose, decomposeCurl, recompose};
+        OperatorTier1(GNode * left, operation op);
+        virtual ~OperatorTier1(){};
+    private:
+        OperatorTier1();
+    };
+    
+    class OperatorTier2 : public UnaryOp
+    {
+    public:
+        enum operation {div, grad, curl, laplace};
+        OperatorTier2(GNode * left, operation op);
+        virtual ~OperatorTier2(){};
+    private:
+        OperatorTier2();
+    };
+    
+    class OperatorTier3 : public BinaryOp
+    {
+    public:
+        enum operation {mul, divide, dot};
+        OperatorTier3(GNode * left, GNode * right, operation op);
+        virtual ~OperatorTier3(){};
+    private:
+        OperatorTier3();
+    };
+    
+    class OperatorTier4 : public BinaryOp
+    {
+    public:
+        enum operation {cross, outer};
+        OperatorTier4(GNode * left, GNode * right, operation op);
+        virtual ~OperatorTier4(){};
+    private:
+        OperatorTier4();
+    };
+    
+    class OperatorTier5 : public BinaryOp
+    {
+    public:
+        enum operation {add, sub};
+        OperatorTier5(GNode * left, GNode * right, operation op);
+        virtual ~OperatorTier5(){};
+    private:
+        OperatorTier5();
     };
     
 public:

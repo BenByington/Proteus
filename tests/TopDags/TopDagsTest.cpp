@@ -47,8 +47,8 @@ void TopDagsTest::setup()
     shared_ptr<Scalar> Pr = VariableFactory::declareScalar("Pr");
     shared_ptr<Scalar> Pm = VariableFactory::declareScalar("Pm");
     shared_ptr<Scalar> Ra = VariableFactory::declareScalar("Ra");
-    shared_ptr<Scalar> alpha = VariableFactory::declareScalar("alpha");
-    shared_ptr<Scalar> Beta = VariableFactory::declareScalar("Beta");
+    shared_ptr<Scalar> alpha = VariableFactory::declareScalar("\u03b1");
+    shared_ptr<Scalar> Beta = VariableFactory::declareScalar("\u03b2");
     
     ExecutionGraph * g = new ExecutionGraph();
     g->registerHead(B->op);

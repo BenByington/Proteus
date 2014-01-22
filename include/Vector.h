@@ -60,56 +60,67 @@ public:
     virtual std::shared_ptr<Vector> laplacian() = 0;
 
 private:
-    class VectorArithmetic : public GNode
+    class ScalarMul : public Vector::OperatorTier3
     {
-  //      friend class Vector;
     public:
-        VectorArithmetic(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
-        virtual void execute();
-        virtual std::string getDependString();
-        
-        enum operations {add, sub, dot, cross, outter};
-        void setOp(operations o);
-        
-    private:
-        std::shared_ptr<Vector> p1;
-        std::shared_ptr<Vector> p2;
-        
-        operations op;
+        ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v);
+        virtual void execute() {}
     };
     
-    class ScalarFactor : public GNode
+    class ScalarDiv : public Vector::OperatorTier3
     {
     public:
-        ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v);
-        virtual void execute();
-        virtual std::string getDependString();
-        
-        enum operations {mul, divide};
-        void setOp(operations o);
-        
-    private:
-        std::shared_ptr<Scalar> sParent;
-        std::shared_ptr<Vector> vParent;
-                
-        operations op;
+        ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v);
+        virtual void execute() {}
     };
     
-    class FieldFactor : public GNode
+    class VectorDot : public Vector::OperatorTier3
     {
     public:
-        FieldFactor(std::shared_ptr<Field> f, std::shared_ptr<Vector> v);
-        virtual void execute();
-        virtual std::string getDependString();
-        
-        enum operations {mul, divide};  
-        void setOp(operations o);
-        
-    private:
-        std::shared_ptr<Field> fParent;
-        std::shared_ptr<Vector> vParent;
-              
-        operations op;
+        VectorDot(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
+        virtual void execute() {}
+    };
+    
+    class VectorCross : public Vector::OperatorTier4
+    {
+    public:
+        VectorCross(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
+        virtual void execute() {}
+    };
+    
+    class VectorOuter : public Vector::OperatorTier4
+    {
+    public:
+        VectorOuter(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
+        virtual void execute() {}
+    };
+    
+    class VectorAdd : public Vector::OperatorTier5
+    {
+    public:
+        VectorAdd(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
+        virtual void execute() {}
+    };
+    
+    class VectorSub : public Vector::OperatorTier5
+    {
+    public:
+        VectorSub(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2);
+        virtual void execute() {}
+    };
+    
+    class FieldMul : public Vector::OperatorTier3
+    {
+    public:
+        FieldMul(std::shared_ptr<Field> f, std::shared_ptr<Vector> v);
+        virtual void execute() {}
+    };
+    
+    class FieldDiv : public Vector::OperatorTier3
+    {
+    public:
+        FieldDiv(std::shared_ptr<Field> f, std::shared_ptr<Vector> v);
+        virtual void execute() {}
     };
 };
 

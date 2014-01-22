@@ -33,19 +33,16 @@ public:
     virtual std::shared_ptr<Vector> divergence();
 
 private:
-    class AgnosticDeriv : public GNode
+    std::shared_ptr<TensorCart> getShared();
+    
+    class Div : public OperatorTier2
     {
-        friend class TensorCart;
     public:
-        AgnosticDeriv(TensorCart * v);
-        virtual void execute();
-        virtual std::string getDependString();
-    private:
-        TensorCart * vParent;
-        
-        enum operations {div};
-        operations op;
+        Div(std::shared_ptr<TensorCart> v);
+        virtual void execute() {}
     };
+    
+
     
 };
 #endif	/* TENSORCART_H */

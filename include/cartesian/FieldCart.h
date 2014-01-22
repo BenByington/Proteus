@@ -35,20 +35,21 @@ public:
     virtual std::shared_ptr<Vector> gradient();
     virtual std::shared_ptr<Field> laplacian();
 
-private:        
-    class AgnosticDeriv : public GNode
+private:
+    std::shared_ptr<FieldCart> getShared();
+    
+    class Grad : public OperatorTier2
     {
-        friend class FieldCart;
     public:
-        AgnosticDeriv(FieldCart * f);
-        virtual void execute();
-        virtual std::string getDependString();
-        
-    private:
-        FieldCart * fParent;
-        
-        enum operations {grad, laplace};
-        operations op;
+        Grad(std::shared_ptr<FieldCart> v);
+        virtual void execute() {}
+    };
+    
+    class Laplacian : public OperatorTier2
+    {
+    public:
+        Laplacian(std::shared_ptr<FieldCart> v);
+        virtual void execute() {}
     };
 };
 

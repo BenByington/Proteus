@@ -45,37 +45,34 @@ public:
     virtual std::shared_ptr<Vector> divergence() = 0;
     
 private:
-    class TensorArithmetic : public GNode
+    class ScalarMul : public OperatorTier3
     {
-        friend class Tensor;
     public:
-        TensorArithmetic(std::shared_ptr<Tensor> v1, std::shared_ptr<Tensor> v2);
-        virtual void execute();
-        virtual std::string getDependString();
-        
-    private:
-        std::shared_ptr<Tensor> p1;
-        std::shared_ptr<Tensor> p2;
-        
-        enum operations {add, sub};
-        operations op;
+        ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> t);
+        virtual void execute() {}
     };
     
-    class ScalarFactor : public GNode
+    class ScalarDiv : public OperatorTier3
     {
-        friend class Tensor;
     public:
-        ScalarFactor(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> v);
-        virtual void execute();
-        virtual std::string getDependString();
-        
-    private:
-        std::shared_ptr<Scalar> sParent;
-        std::shared_ptr<Tensor> vParent;
-        
-        enum operations {mul, divide};        
-        operations op;
+        ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> t);
+        virtual void execute() {}
     };
+
+    class TensorAdd : public OperatorTier5
+    {
+    public:
+        TensorAdd(std::shared_ptr<Tensor> t1, std::shared_ptr<Tensor> t2);
+        virtual void execute() {}
+    };
+    
+    class TensorSub : public OperatorTier5
+    {
+    public:
+        TensorSub(std::shared_ptr<Tensor> t1, std::shared_ptr<Tensor> t2);
+        virtual void execute() {}
+    };
+    
 };
 
 #endif	/* TENSOR_H */

@@ -27,11 +27,15 @@ FieldCart::FieldCart()
     
 }
 
+shared_ptr<FieldCart> FieldCart::getShared()
+{
+    return static_pointer_cast<FieldCart>(shared_from_this());
+}
+
 shared_ptr<Field> FieldCart::laplacian()
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    AgnosticDeriv * node = new AgnosticDeriv(this);
-    node->op = node->laplace;
+    Laplacian * node = new Laplacian(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -42,8 +46,7 @@ shared_ptr<Field> FieldCart::laplacian()
 shared_ptr<Vector> FieldCart::gradient()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    AgnosticDeriv * node = new AgnosticDeriv(this);
-    node->op = node->grad;
+    Grad * node = new Grad(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -51,30 +54,8 @@ shared_ptr<Vector> FieldCart::gradient()
     return ret;
 }
 
-FieldCart::AgnosticDeriv::AgnosticDeriv(FieldCart* f)
-{
-    this->fParent = f;
-}
+FieldCart::Grad::Grad(std::shared_ptr<FieldCart> v)
+        : OperatorTier2(v->op, grad) {}
 
-void FieldCart::AgnosticDeriv::execute()
-{
-    
-}
-
-string FieldCart::AgnosticDeriv::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case grad:
-        opName = "Gradient";
-        break;
-    case laplace:
-        opName = "Laplacian";
-        break;
-    }
-    
-    string ret = opName + ": " + this->fParent->op->getID();
-    
-    return ret;
-}
+FieldCart::Laplacian::Laplacian(std::shared_ptr<FieldCart> v)
+        : OperatorTier2(v->op, laplace) {}

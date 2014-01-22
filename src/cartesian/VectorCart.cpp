@@ -30,11 +30,15 @@ VectorCart::VectorCart()
     
 }
 
+shared_ptr<VectorCart> VectorCart::getShared()
+{
+    return static_pointer_cast<VectorCart>(shared_from_this());
+}
+
 shared_ptr<Field> VectorCart::divergence()
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    AgnosticDeriv * node = new AgnosticDeriv(getShared());
-    node->op = node->div;
+    Div * node = new Div(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -45,8 +49,7 @@ shared_ptr<Field> VectorCart::divergence()
 shared_ptr<Vector> VectorCart::curl()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    AgnosticDeriv * node = new AgnosticDeriv(getShared());
-    node->op = node->curl;
+    Curl * node = new Curl(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -57,8 +60,7 @@ shared_ptr<Vector> VectorCart::curl()
 shared_ptr<Vector> VectorCart::laplacian()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    AgnosticDeriv * node = new AgnosticDeriv(getShared());
-    node->op = node->laplace;
+    Laplacian * node = new Laplacian(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -69,8 +71,7 @@ shared_ptr<Vector> VectorCart::laplacian()
 shared_ptr<Tensor> VectorCart::gradient()
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    AgnosticDeriv * node = new AgnosticDeriv(getShared());
-    node->op = node->grad;
+    Grad * node = new Grad(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -81,8 +82,7 @@ shared_ptr<Tensor> VectorCart::gradient()
 shared_ptr<Solenoid> VectorCart::decompose()
 {
     shared_ptr<Solenoid> ret = VariableFactory::createSolenoid();
-    AgnosticDeriv * node = new AgnosticDeriv(getShared());
-    node->op = node->decomp;
+    Decompose * node = new Decompose(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -93,8 +93,7 @@ shared_ptr<Solenoid> VectorCart::decompose()
 shared_ptr<Solenoid> VectorCart::decomposeCurl()
 {
     shared_ptr<Solenoid> ret = VariableFactory::createSolenoid();
-    AgnosticDeriv * node = new AgnosticDeriv(getShared());
-    node->op = node->decompCurl;
+    DecomposeCurl * node = new DecomposeCurl(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -102,44 +101,20 @@ shared_ptr<Solenoid> VectorCart::decomposeCurl()
     return ret;
 }
 
-VectorCart::AgnosticDeriv::AgnosticDeriv(shared_ptr<VectorCart> v)
-{
-    this->vParent = v;
-}
+VectorCart::Div::Div(std::shared_ptr<VectorCart> v)
+        : VectorCart::OperatorTier2(v->op, div) {}
 
-void VectorCart::AgnosticDeriv::execute()
-{
-    
-}
+VectorCart::Grad::Grad(std::shared_ptr<VectorCart> v)
+        : VectorCart::OperatorTier2(v->op, grad) {}
 
-string VectorCart::AgnosticDeriv::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case curl:
-        opName = "Curl";
-        break;
-    case div:
-        opName = "Divergence";
-        break;
-    case grad:
-        opName = "Gradient";
-        break;
-    case decomp:
-        opName = "Decompose Vector";
-        break;
-    case decompCurl:
-        opName = "Decompose Curled Vector";
-        break;
-    }
-    
-    string ret = opName + ": " + this->vParent->op->getID();
-    
-    return ret;
-}
+VectorCart::Curl::Curl(std::shared_ptr<VectorCart> v)
+        : VectorCart::OperatorTier2(v->op, curl) {}
 
-shared_ptr<VectorCart> VectorCart::getShared()
-{
-    return static_pointer_cast<VectorCart>(shared_from_this());
-}
+VectorCart::Laplacian::Laplacian(std::shared_ptr<VectorCart> v)
+        : VectorCart::OperatorTier2(v->op, laplace) {}
+
+VectorCart::Decompose::Decompose(std::shared_ptr<VectorCart> v)
+        : VectorCart::OperatorTier1(v->op, decompose) {}
+
+VectorCart::DecomposeCurl::DecomposeCurl(std::shared_ptr<VectorCart> v)
+        : VectorCart::OperatorTier1(v->op, decomposeCurl) {}

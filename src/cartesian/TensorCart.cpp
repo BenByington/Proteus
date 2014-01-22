@@ -29,11 +29,15 @@ TensorCart::TensorCart()
     
 }
 
+shared_ptr<TensorCart> TensorCart::getShared()
+{
+    return static_pointer_cast<TensorCart>(shared_from_this());
+}
+
 shared_ptr<Vector> TensorCart::divergence()
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    AgnosticDeriv * node = new AgnosticDeriv(this);
-    node->op = node->div;
+    Div * node = new Div(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -41,21 +45,5 @@ shared_ptr<Vector> TensorCart::divergence()
     return ret;
 }
 
-TensorCart::AgnosticDeriv::AgnosticDeriv(TensorCart* v)
-{
-    this->vParent = v;
-}
-
-void TensorCart::AgnosticDeriv::execute()
-{
-    
-}
-
-string TensorCart::AgnosticDeriv::getDependString()
-{
-    string opName = "Divergence";
-    
-    string ret = opName + ": " + this->vParent->op->getID();
-    
-    return ret;
-}
+TensorCart::Div::Div(std::shared_ptr<TensorCart> v)
+        : OperatorTier2(v->op, div) {}

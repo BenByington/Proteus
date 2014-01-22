@@ -26,11 +26,15 @@ SolenoidCart::SolenoidCart()
     
 }
 
+shared_ptr<SolenoidCart> SolenoidCart::getShared()
+{
+    return static_pointer_cast<SolenoidCart>(shared_from_this());
+}
+
 std::shared_ptr<Vector> SolenoidCart::recompose()
 {
     std::shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorOp * node = new VectorOp(getShared());
-    node->op = node->recompose;
+    Recompose * node = new Recompose(getShared());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -38,25 +42,5 @@ std::shared_ptr<Vector> SolenoidCart::recompose()
     return ret;
 }
 
-SolenoidCart::VectorOp::VectorOp(std::shared_ptr<SolenoidCart> s)
-{
-    this->sParent = s;
-}
-
-void SolenoidCart::VectorOp::execute()
-{
-    
-}
-
-string SolenoidCart::VectorOp::getDependString()
-{
-    string opName = "Recompose Vector";
-    
-    string ret = opName + ": " + this->sParent->op->getID();
-    return ret;
-}
-
-shared_ptr<SolenoidCart> SolenoidCart::getShared()
-{
-    return static_pointer_cast<SolenoidCart>(shared_from_this());
-}
+SolenoidCart::Recompose::Recompose(std::shared_ptr<SolenoidCart> v)
+        : OperatorTier1(v->op, recompose) {}

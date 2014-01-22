@@ -11,8 +11,7 @@ Field::Field()
 shared_ptr<Field> Field::multiply(shared_ptr<Scalar> fact)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->setOp(node->mul);
+    ScalarMul * node = new ScalarMul(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -24,8 +23,7 @@ shared_ptr<Field> Field::multiply(shared_ptr<Scalar> fact)
 shared_ptr<Field> Field::divide(shared_ptr<Scalar> fact)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->setOp(node->divide);
+    ScalarDiv * node = new ScalarDiv(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -37,8 +35,7 @@ shared_ptr<Field> Field::divide(shared_ptr<Scalar> fact)
 shared_ptr<Field> Field::add(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->setOp(node->add);
+    FieldAdd * node = new FieldAdd(r, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -50,8 +47,7 @@ shared_ptr<Field> Field::add(shared_ptr<Field> r)
 shared_ptr<Field> Field::subtract(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->setOp(node->sub);
+    FieldSub * node = new FieldSub(r, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -63,8 +59,7 @@ shared_ptr<Field> Field::subtract(shared_ptr<Field> r)
 shared_ptr<Field> Field::multiply(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->setOp(node->mul);
+    FieldMul * node = new FieldMul(r, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -76,8 +71,7 @@ shared_ptr<Field> Field::multiply(shared_ptr<Field> r)
 shared_ptr<Field> Field::divide(shared_ptr<Field> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    FieldArithmetic * node = new FieldArithmetic(r, shared_from_this());
-    node->setOp(node->divide);
+    FieldDiv * node = new FieldDiv(r, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -86,109 +80,20 @@ shared_ptr<Field> Field::divide(shared_ptr<Field> r)
     return ret;
 }
 
-Field::ScalarFactor::ScalarFactor(shared_ptr<Scalar> s, shared_ptr<Field> v)
-{
-    sParent = s;
-    vParent = v;
-}
+Field::ScalarMul::ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Field> f)
+        : OperatorTier3(f->op, s->op, mul) {}
 
-void Field::ScalarFactor::execute()
-{
-    
-}
+Field::ScalarDiv::ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Field> f)
+        : OperatorTier3(f->op, s->op, divide) {}
 
-string Field::ScalarFactor::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = "Multiply";
-        break;
-    case divide:
-        opName = "Divide";
-        break;
-    }
-    
-    string ret = opName + string(": ") + this->sParent->op->getID();
-    ret += string(" ") + this->vParent->op->getID();
-    
-    
-    return ret;
-}
+Field::FieldMul::FieldMul(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
+        : OperatorTier3(f1->op, f2->op, mul) {}
 
-void Field::ScalarFactor::setOp(operations o)
-{
-    op = o;
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = " * ";
-        break;
-    case divide:
-        opName = " / ";
-        break;
-    }
-    
-    label = "(" + vParent->op->getLabel() + opName + sParent->op->getLabel() + ")";
-    
-}
+Field::FieldDiv::FieldDiv(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
+        : OperatorTier3(f1->op, f2->op, divide) {}
 
-Field::FieldArithmetic::FieldArithmetic(shared_ptr<Field> p1, shared_ptr<Field> p2)
-{
-    this->p1 = p1;
-    this->p2 = p2;
-}
+Field::FieldAdd::FieldAdd(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
+        : OperatorTier5(f1->op, f2->op, add) {}
 
-void Field::FieldArithmetic::execute()
-{
-    
-}
-
-string Field::FieldArithmetic::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = "Multiply";
-        break;
-    case divide:
-        opName = "Divide";
-        break;
-    case sub:
-        opName = "Subtract";
-        break;
-    case add:
-        opName = "Add";    
-    }
-    
-    string ret = opName + ": " + this->p1->op->getID();
-    ret += " " + this->p2->op->getID();
-    
-    return ret;
-}
-
-void Field::FieldArithmetic::setOp(operations o)
-{
-    op = o;
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = " * ";
-        break;
-    case divide:
-        opName = " / ";
-        break;
-    case sub:
-        opName = " - ";
-        break;
-    case add:
-        opName = " + ";    
-    }
-    
-    label = "(" + p1->op->getLabel() + opName + p2->op->getLabel() + ")";
-    
-}
+Field::FieldSub::FieldSub(std::shared_ptr<Field> f1, std::shared_ptr<Field> f2)
+        : OperatorTier5(f1->op, f2->op, sub) {}

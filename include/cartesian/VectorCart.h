@@ -41,18 +41,46 @@ public:
 private:
     std::shared_ptr<VectorCart> getShared();
     
-    class AgnosticDeriv : public GNode
+    class Div : public Vector::OperatorTier2
     {
-        friend class VectorCart;
     public:
-        AgnosticDeriv(std::shared_ptr<VectorCart> v);
-        virtual void execute();
-        virtual std::string getDependString();
-    private:
-        std::shared_ptr<VectorCart> vParent;
-        
-        enum operations {div, curl, grad, laplace, decomp, decompCurl};
-        operations op;
+        Div(std::shared_ptr<VectorCart> v);
+        virtual void execute() {}
+    };
+    
+    class Grad : public Vector::OperatorTier2
+    {
+    public:
+        Grad(std::shared_ptr<VectorCart> v);
+        virtual void execute() {}
+    };
+    
+    class Curl : public Vector::OperatorTier2
+    {
+    public:
+        Curl(std::shared_ptr<VectorCart> v);
+        virtual void execute() {}
+    };
+    
+    class Laplacian : public Vector::OperatorTier2
+    {
+    public:
+        Laplacian(std::shared_ptr<VectorCart> v);
+        virtual void execute() {}
+    };
+    
+    class Decompose : public Vector::OperatorTier1
+    {
+    public:
+        Decompose(std::shared_ptr<VectorCart> v);
+        virtual void execute() {}
+    };
+    
+    class DecomposeCurl : public Vector::OperatorTier1
+    {
+    public:
+        DecomposeCurl(std::shared_ptr<VectorCart> v);
+        virtual void execute() {}
     };
     
 };

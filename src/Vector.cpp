@@ -33,8 +33,8 @@ Vector::Vector()
 shared_ptr<Vector> Vector::multiply(shared_ptr<Scalar> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->setOp(node->mul);
+    ScalarMul * node = new ScalarMul(fact, shared_from_this());
+//    node->setOp(node->mul);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -46,8 +46,7 @@ shared_ptr<Vector> Vector::multiply(shared_ptr<Scalar> fact)
 shared_ptr<Vector> Vector::divide(shared_ptr<Scalar> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->setOp(node->divide);
+    ScalarDiv * node = new ScalarDiv(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -59,8 +58,7 @@ shared_ptr<Vector> Vector::divide(shared_ptr<Scalar> fact)
 shared_ptr<Vector> Vector::multiply(shared_ptr<Field> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    FieldFactor * node = new FieldFactor(fact, shared_from_this());
-    node->setOp(node->mul);
+    FieldMul * node = new FieldMul(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -72,8 +70,7 @@ shared_ptr<Vector> Vector::multiply(shared_ptr<Field> fact)
 shared_ptr<Vector> Vector::divide(shared_ptr<Field> fact)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    FieldFactor * node = new FieldFactor(fact, shared_from_this());
-    node->setOp(node->divide);
+    FieldDiv * node = new FieldDiv(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -85,8 +82,7 @@ shared_ptr<Vector> Vector::divide(shared_ptr<Field> fact)
 shared_ptr<Vector> Vector::add(shared_ptr<Vector> r)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
-    node->setOp(node->add);
+    VectorAdd * node = new VectorAdd(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -98,8 +94,7 @@ shared_ptr<Vector> Vector::add(shared_ptr<Vector> r)
 shared_ptr<Vector> Vector::subtract(shared_ptr<Vector> r)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
-    node->setOp(node->sub);
+    VectorSub * node = new VectorSub(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -111,8 +106,7 @@ shared_ptr<Vector> Vector::subtract(shared_ptr<Vector> r)
 shared_ptr<Vector> Vector::cross(shared_ptr<Vector> r)
 {
     shared_ptr<Vector> ret = VariableFactory::createVector();
-    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
-    node->setOp(node->cross);
+    VectorCross * node = new VectorCross(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -124,8 +118,7 @@ shared_ptr<Vector> Vector::cross(shared_ptr<Vector> r)
 shared_ptr<Field> Vector::dot(shared_ptr<Vector> r)
 {
     shared_ptr<Field> ret = VariableFactory::createField();
-    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
-    node->setOp(node->dot);
+    VectorDot * node = new VectorDot(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -138,8 +131,7 @@ shared_ptr<Field> Vector::dot(shared_ptr<Vector> r)
 shared_ptr<Tensor> Vector::outter(shared_ptr<Vector> r)
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    VectorArithmetic * node = new VectorArithmetic(shared_from_this(), r);
-    node->setOp(node->outter);
+    VectorOuter * node = new VectorOuter(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -149,158 +141,29 @@ shared_ptr<Tensor> Vector::outter(shared_ptr<Vector> r)
     
 }
 
-Vector::VectorArithmetic::VectorArithmetic(shared_ptr<Vector> v1, shared_ptr<Vector> v2)
-{
-    this->p1 = v1;
-    this->p2 = v2;
-}
+Vector::ScalarMul::ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v)
+       : OperatorTier3(s->op, v->op, mul) {}
 
-void Vector::VectorArithmetic::execute()
-{
-    
-}
+Vector::ScalarDiv::ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Vector> v)
+       : OperatorTier3(s->op, v->op, divide) {}
 
-string Vector::VectorArithmetic::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case cross:
-        opName = "Cross";
-        break;
-    case dot:
-        opName = "Dot";
-        break;
-    case sub:
-        opName = "Subtract";
-        break;
-    case add:
-        opName = "Add";    
-    }
-    
-    string ret = opName + ": " + this->p1->op->getID();
-    ret += " " + this->p2->op->getID();
-    
-    return ret;
-}
+Vector::FieldMul::FieldMul(std::shared_ptr<Field> f, std::shared_ptr<Vector> v)
+       : OperatorTier3(f->op, v->op, mul) {}
 
-void Vector::VectorArithmetic::setOp(operations o)
-{
-    this->op = o;
-    
-    string opName;
-    switch(op)
-    {
-    case cross:
-        opName = string("\u2A2f");
-        break;
-    case dot:
-        opName = string("\u00B7");
-        break;
-    case sub:
-        opName = " - ";
-        break;
-    case add:
-        opName = " + ";    
-    }
-    
-    label = "(" + this->p1->op->getLabel() + opName + this->p2->op->getLabel() + ")";
-}
+Vector::FieldDiv::FieldDiv(std::shared_ptr<Field> f, std::shared_ptr<Vector> v)
+       : OperatorTier3(f->op, v->op, divide) {}
 
-Vector::ScalarFactor::ScalarFactor(shared_ptr<Scalar> s, shared_ptr<Vector> v)
-{
-    sParent = s;
-    vParent = v;
-}
+Vector::VectorAdd::VectorAdd(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
+       : OperatorTier5(v1->op, v2->op, add) {}
 
-void Vector::ScalarFactor::execute()
-{
-    
-}
+Vector::VectorSub::VectorSub(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
+       : OperatorTier5(v1->op, v2->op, sub) {}
 
-string Vector::ScalarFactor::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = "Multiply";
-        break;
-    case divide:
-        opName = "Divide";
-        break;
-    }
-    
-    string ret = opName + string(": ") + this->sParent->op->getID();
-    ret += string(" ") + this->vParent->op->getID();
-    
-    
-    return ret;
-}
+Vector::VectorCross::VectorCross(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
+       : OperatorTier4(v1->op, v2->op, cross) {}
 
-void Vector::ScalarFactor::setOp(operations o)
-{
-    this->op = o;
-    
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = " * ";
-        break;
-    case divide:
-        opName = " / ";
-        break;
-    }
-    
-    label = "(" + this->vParent->op->getLabel() + opName + this->sParent->op->getLabel() + ")";
-}
+Vector::VectorOuter::VectorOuter(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
+       : OperatorTier4(v1->op, v2->op, outer) {}
 
-Vector::FieldFactor::FieldFactor(shared_ptr<Field> s, shared_ptr<Vector> v)
-{
-    fParent = s;
-    vParent = v;
-}
-
-void Vector::FieldFactor::execute()
-{
-    
-}
-
-string Vector::FieldFactor::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = "Multiply";
-        break;
-    case divide:
-        opName = "Divide";
-        break;
-    }
-    
-    string ret = opName + string(": ") + this->fParent->op->getID();
-    ret += string(" ") + this->vParent->op->getID();
-    
-    
-    return ret;
-}
-
-void Vector::FieldFactor::setOp(operations o)
-{
-    this->op = o;
-    
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = " * ";
-        break;
-    case divide:
-        opName = " / ";
-        break;
-    }
-    
-    label = "(" + this->vParent->op->getLabel() + opName + this->fParent->op->getLabel() + ")";
-}
+Vector::VectorDot::VectorDot(std::shared_ptr<Vector> v1, std::shared_ptr<Vector> v2)
+       : OperatorTier3(v1->op, v2->op, dot) {}

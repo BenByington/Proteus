@@ -35,19 +35,13 @@ public:
 private:
     std::shared_ptr<SolenoidCart> getShared();
     
-    class VectorOp : public GNode
+    class Recompose : public OperatorTier1
     {
-        friend class SolenoidCart;
     public:
-        VectorOp(std::shared_ptr<SolenoidCart> v);
-        virtual void execute();
-        virtual std::string getDependString();
-    private:
-        std::shared_ptr<SolenoidCart> sParent;
-        
-        enum operations {recompose};
-        operations op;
+        Recompose(std::shared_ptr<SolenoidCart> v);
+        virtual void execute() {}
     };
+    
 };
 
 

@@ -33,8 +33,7 @@ Tensor::Tensor()
 shared_ptr<Tensor> Tensor::multiply(shared_ptr<Scalar> fact)
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->op = node->mul;
+    ScalarMul * node = new ScalarMul(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -46,8 +45,7 @@ shared_ptr<Tensor> Tensor::multiply(shared_ptr<Scalar> fact)
 shared_ptr<Tensor> Tensor::divide(shared_ptr<Scalar> fact)
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    ScalarFactor * node = new ScalarFactor(fact, shared_from_this());
-    node->op = node->divide;
+    ScalarDiv * node = new ScalarDiv(fact, shared_from_this());
     ret->op = node;
     
     node->addDependency(this->op);
@@ -59,8 +57,7 @@ shared_ptr<Tensor> Tensor::divide(shared_ptr<Scalar> fact)
 shared_ptr<Tensor> Tensor::add(shared_ptr<Tensor> r)
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    TensorArithmetic * node = new TensorArithmetic(shared_from_this(), r);
-    node->op = node->add;
+    TensorAdd * node = new TensorAdd(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -72,8 +69,7 @@ shared_ptr<Tensor> Tensor::add(shared_ptr<Tensor> r)
 shared_ptr<Tensor> Tensor::subtract(shared_ptr<Tensor> r)
 {
     shared_ptr<Tensor> ret = VariableFactory::createTensor();
-    TensorArithmetic * node = new TensorArithmetic(shared_from_this(), r);
-    node->op = node->sub;
+    TensorSub * node = new TensorSub(shared_from_this(), r);
     ret->op = node;
     
     node->addDependency(this->op);
@@ -82,63 +78,14 @@ shared_ptr<Tensor> Tensor::subtract(shared_ptr<Tensor> r)
     return ret;
 }
 
+Tensor::ScalarMul::ScalarMul(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> t)
+        : OperatorTier3(t->op, s->op, mul) {}
 
-Tensor::TensorArithmetic::TensorArithmetic(shared_ptr<Tensor> v1, shared_ptr<Tensor> v2)
-{
-    this->p1 = v1;
-    this->p2 = v2;
-}
+Tensor::ScalarDiv::ScalarDiv(std::shared_ptr<Scalar> s, std::shared_ptr<Tensor> t)
+        : OperatorTier3(t->op, s->op, divide) {}
 
-void Tensor::TensorArithmetic::execute()
-{
-    
-}
+Tensor::TensorAdd::TensorAdd(std::shared_ptr<Tensor> t1, std::shared_ptr<Tensor> t2)
+        : OperatorTier5(t1->op, t2->op, add) {}
 
-string Tensor::TensorArithmetic::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case sub:
-        opName = "Subtract";
-        break;
-    case add:
-        opName = "Add";    
-    }
-    
-    string ret = opName + ": " + this->p1->op->getID();
-    ret += " " + this->p2->op->getID();
-    
-    return ret;
-}
-
-Tensor::ScalarFactor::ScalarFactor(shared_ptr<Scalar> s, shared_ptr<Tensor> v)
-{
-    sParent = s;
-    vParent = v;
-}
-
-void Tensor::ScalarFactor::execute()
-{
-    
-}
-
-string Tensor::ScalarFactor::getDependString()
-{
-    string opName;
-    switch(op)
-    {
-    case mul:
-        opName = "Multiply";
-        break;
-    case divide:
-        opName = "Divide";
-        break;
-    }
-    
-    string ret = opName + string(": ") + this->sParent->op->getID();
-    ret += string(" ") + this->vParent->op->getID();
-    
-    
-    return ret;
-}
+Tensor::TensorSub::TensorSub(std::shared_ptr<Tensor> t1, std::shared_ptr<Tensor> t2)
+        : OperatorTier5(t1->op, t2->op, sub) {}
