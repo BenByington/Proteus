@@ -154,6 +154,7 @@ int momAdvection = 0;
 int viscosity = 0;
 int buoyancy = 0;
 int magBuoy = 0;
+int magBuoyTemp = 1;  //similar to tempBackground below.  Should be on for consistency, but can be disabled
 int lorentz = 0;
 int tDiff = 0;
 int tempAdvection = 0;

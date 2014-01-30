@@ -22,7 +22,7 @@ IMHD, which stands for Incompressible Magnetohydrodynamics, is one of the major 
 
 ∇ · u = 0,      ∇ · B = 0 
 ∂_t u + ∇·(u u - B B) = -∇P + Ra Pr T + B^2 / β + Pr ∇^2 u + F_u 
-∂_t u + ∇·(u T) = u·k̂ + ∇^2 T 
+∂_t u + ∂_t B·B + ∇·(u T + .5 u B·B) = u·k̂ + ∇^2 T 
 ∂_t B = ∇ x (u x B) + Pr / Pm ∇^2 B + F_B
 
 These are a fairly standard set of Boussinesq equations with a few minor additions.  We have the velocity field u and magnetic field B, the pressure P and the temperature field T.  Most of these terms should be familiar to people that work on MHD problems, but notable additions include F_u and F_B -- arbitrary forcing terms that have proven useful to drive various problems -- and an artificial magnetic buoyancy term B^2 / β.

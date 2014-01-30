@@ -300,11 +300,14 @@ void calcForces()
     if(momEquation)
         calcMomentum();
 
-    if(tEquation)
-        calcTemp();
-
+    //I'm doing something evil here!  mag equation must now be called before
+    //t equation, and the first thing t equation is going to do is reuse the
+    //RHS of the mag equation.  Future modifications may well introduce bugs!!!
     if(magEquation)
         calcMag();
+    
+    if(tEquation)
+        calcTemp();
    
     debug("Forces done\n");
 }
@@ -608,13 +611,44 @@ void calcTemp()
 {
     complex PRECISION * forces = T->force1;
     
-    if(tDiff)
+    if(magBuoy && magBuoyTemp)
     {
-        laplacian(T->spectral, forces, 0, 1.0);
+        //advect the magnetic energy perturbations
+        p_field mag = temp1->x;
+        p_vector flux = temp2;
+        dotProduct(B->vec, B->vec, mag);
+        multiply(u->vec->x->spatial, mag->spatial, flux->x->spatial);
+        multiply(u->vec->y->spatial, mag->spatial, flux->y->spatial);
+        multiply(u->vec->z->spatial, mag->spatial, flux->z->spatial);
+
+        fftForward(flux->x);
+        fftForward(flux->y);
+        fftForward(flux->z);
+
+        p_field advect = temp1->y;
+        divergence(flux, advect);
+        int i;
+        for(i = 0; i < spectralCount; i++)
+        {
+            forces[i] = -.5 * advect->spectral[i];
+        }
+        
+        fftBackward(rhs->x);
+        fftBackward(rhs->y);
+        fftBackward(rhs->z);
+        dotProduct(B->vec, rhs, mag);
+        fftForward(mag);
+        
+        minusEq(forces, mag->spectral);
     }
     else
     {
         memset(forces, 0, spectralCount * sizeof(complex PRECISION));
+    }
+    
+    if(tDiff)
+    {
+        laplacian(T->spectral, forces, 1, 1.0);
     }
 
     if(tempAdvection)

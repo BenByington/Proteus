@@ -177,6 +177,7 @@ extern int momAdvection;
 extern int viscosity;
 extern int buoyancy;
 extern int magBuoy;
+extern int magBuoyTemp;
 extern int lorentz;
 extern int tDiff;
 extern int tempAdvection;

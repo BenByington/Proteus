@@ -340,6 +340,7 @@ void parsePhysics(iostream & in)
     const string sViscosity("viscosity");
     const string sBuoyancy("buoyancy");
     const string sMagBuoy("magBuoy");
+    const string sMagBuoyTemp("magBuoyTemp");
     const string sLorentz("lorentz");
     const string sTDiff("tdiff");
     const string sTempAdvection("tempAdvection");
@@ -456,7 +457,19 @@ void parsePhysics(iostream & in)
             {
                 warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
             }
-            debug("magBuoy flag: %d\n", buoyancy);
+            debug("magBuoy flag: %d\n", magBuoy);
+        }
+        else if((int)one.find(sMagBuoyTemp) != -1)
+        {
+            if((int)two.find(on) != -1)
+                magBuoyTemp = 1;
+            else if((int)two.find(off) != -1)
+                magBuoyTemp = 0;
+            else
+            {
+                warn("unrecognized option %s for %s\n", two.c_str(), one.c_str());
+            }
+            debug("magBuoyTemp flag: %d\n", magBuoyTemp);
         }
         else if((int)one.find(sLorentz) != -1)
         {
